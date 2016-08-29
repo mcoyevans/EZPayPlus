@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSantionLevelsTable extends Migration
+class CreateEmployeeShiftScheduleTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,11 +12,10 @@ class CreateSantionLevelsTable extends Migration
      */
     public function up()
     {
-        Schema::create('santion_levels', function (Blueprint $table) {
+        Schema::create('employee_shift_schedule', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
-            $table->text('description');
-            $table->integer('sanction_id')->unsigned();
+            $table->integer('employee_id')->unsigned();
+            $table->integer('shift_schedule_id')->unsigned();
             $table->timestamps();
         });
     }
@@ -28,6 +27,6 @@ class CreateSantionLevelsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('santion_levels');
+        Schema::drop('employee_shift_schedule');
     }
 }

@@ -14,6 +14,8 @@ class CreateSantionTypesTable extends Migration
     {
         Schema::create('santion_types', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('name');
+            $table->text('description');
             $table->timestamps();
         });
     }

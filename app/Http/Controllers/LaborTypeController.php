@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 
-class LevaeTypeController extends Controller
+class LaborTypeController extends Controller
 {
     /**
      * Display a listing of the resource.

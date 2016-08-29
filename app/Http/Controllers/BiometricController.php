@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 
-class JobCategory extends Controller
+class BiometricController extends Controller
 {
     /**
      * Display a listing of the resource.

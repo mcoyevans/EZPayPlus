@@ -14,7 +14,11 @@ class CreateAllowanceTypesTable extends Migration
     {
         Schema::create('allowance_types', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('name');
+            $table->float('amount');
+            $table->boolean('taxable');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -4,9 +4,9 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class EmployeeAllowance extends Model
+class EmployeeAllowanceType extends Model
 {
-	protected $table = 'employee_allowance';
+	protected $table = 'employee_allowance_type';
 
     public function employee()
     {
@@ -15,6 +15,6 @@ class EmployeeAllowance extends Model
 
     public function allowance()
     {
-    	return $this->belongsTo('App\Allowance');
+    	return $this->belongsTo('App\AllowanceType');
     }
 }
