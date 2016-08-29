@@ -14,6 +14,10 @@ class CreateShiftSchedulesTable extends Migration
     {
         Schema::create('shift_schedules', function (Blueprint $table) {
             $table->increments('id');
+            $table->date('date_start');
+            $table->date('date_end');
+            $table->time('shift_start');
+            $table->time('shift_end');
             $table->float('hours_break')->unsigned();
             $table->timestamps();
         });
