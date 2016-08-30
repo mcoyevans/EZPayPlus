@@ -24,4 +24,9 @@ class Branch extends Model
     {
     	return $this->hasMany('App\HouseBank');
     }
+
+    public function holidays()
+    {
+        return $this->belongsToMany('App\Holiday');
+    }
 }
