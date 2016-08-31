@@ -15,7 +15,6 @@ class CreateDeductionTypesTable extends Migration
         Schema::create('deduction_types', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
-            $table->float('amount');
             $table->timestamps();
             $table->softDeletes();
         });

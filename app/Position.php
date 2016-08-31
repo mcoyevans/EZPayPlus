@@ -24,4 +24,9 @@ class Position extends Model
     {
     	return $this->belongsTo('App\LaborType');
     }
+
+    public function deployment()
+    {
+        return $this->hasMany('App\Deployment');
+    }
 }

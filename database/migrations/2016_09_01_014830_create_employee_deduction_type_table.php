@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateEmployeeAllowanceTypeTable extends Migration
+class CreateEmployeeDeductionTypeTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,17 +12,17 @@ class CreateEmployeeAllowanceTypeTable extends Migration
      */
     public function up()
     {
-        Schema::create('employee_allowance_type', function (Blueprint $table) {
+        Schema::create('employee_deduction_type', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('employee_id')->unsigned();
-            $table->integer('allowance_type_id')->unsigned();
+            $table->integer('deduction_type_id')->unsigned();
             $table->decimal('amount', 8,2);
+            $table->decimal('amortization', 8,2);
             $table->date('date_start');
+            $table->date('date_end')->nullable();
             $table->boolean('first_cut_off');
             $table->boolean('second_cut_off');
             $table->boolean('on_hold');
-            $table->boolean('tax_shield');
-            $table->boolean('taxable');
             $table->timestamps();
         });
     }
@@ -34,6 +34,6 @@ class CreateEmployeeAllowanceTypeTable extends Migration
      */
     public function down()
     {
-        Schema::drop('employee_allowance_type');
+        Schema::drop('employee_deduction_type');
     }
 }

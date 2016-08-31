@@ -29,4 +29,9 @@ class Branch extends Model
     {
         return $this->belongsToMany('App\Holiday');
     }
+
+    public function deployment()
+    {
+        return $this->hasMany('App\Deployment');
+    }
 }

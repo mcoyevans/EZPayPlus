@@ -12,8 +12,18 @@ class Employee extends Model
     	return $this->belongsToMany('App\AllowanceType', 'employee_allowance_type');
     }
 
+    public function deduction_types()
+    {
+        return $this->belongsToMany('App\AllowanceType', 'employee_deduction_type');
+    }
+
     public function shift_schedules()
     {
     	return $this->belongsToMany('App\ShiftSchedule');
+    }
+
+    public function deployments()
+    {
+    	return $this->hasMany('App\Deployment')
     }
 }

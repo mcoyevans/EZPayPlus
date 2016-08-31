@@ -14,6 +14,7 @@ class CreatePayrollsTable extends Migration
     {
         Schema::create('payrolls', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('code');
             $table->text('description');
             $table->decimal('working_days_per_year', 5,2);
             $table->decimal('working_hours_per_day', 4,2);

@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateAllowanceTypesTable extends Migration
+class CreateCostCentersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,9 +12,12 @@ class CreateAllowanceTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create('allowance_types', function (Blueprint $table) {
+        Schema::create('cost_centers', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
+            $table->text('description');
+            $table->string('gl_account')->unique();
+            $table->integer('company_id')->unsigned();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -27,6 +30,6 @@ class CreateAllowanceTypesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('allowance_types');
+        Schema::drop('cost_centers');
     }
 }

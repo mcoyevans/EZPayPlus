@@ -15,4 +15,9 @@ class Payroll extends Model
     {
     	return $this->belongsTo('App\TimeInterpretation');
     }
+
+    public function employees()
+    {
+    	return $this->hasMany('App\Employee');
+    }
 }
