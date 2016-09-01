@@ -26,4 +26,9 @@ class Employee extends Model
     {
     	return $this->hasMany('App\Deployment')
     }
+
+    public function tax_code()
+    {
+        return $this->belongsTo('App\TaxCode');
+    }
 }

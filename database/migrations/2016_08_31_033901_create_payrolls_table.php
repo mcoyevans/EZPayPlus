@@ -19,10 +19,11 @@ class CreatePayrollsTable extends Migration
             $table->decimal('working_days_per_year', 5,2);
             $table->decimal('working_hours_per_day', 4,2);
             $table->tinyInteger('pay_frequency');
-            $table->boolean('tax');
-            $table->boolean('sss');
-            $table->boolean('pagibig');
-            $table->boolean('philhealth');
+            $table->string('tax');
+            $table->string('sss');
+            $table->string('pagibig');
+            $table->string('philhealth');
+            $table->string('basis_of_computation');
             $table->integer('time_interpretation_id')->unsigned();
             $table->timestamps();
             $table->softDeletes();
