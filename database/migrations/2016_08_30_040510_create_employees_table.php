@@ -46,6 +46,7 @@ class CreateEmployeesTable extends Migration
             $table->text('emergency_contact_person_telephone_number')->nullable();
             $table->text('emergency_contact_person_mobile_phone_number')->nullable();
             $table->integer('payroll_id')->unsigned();
+            $table->float('basic_pay');
             $table->timestamps();
         });
     }

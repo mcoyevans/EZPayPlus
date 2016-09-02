@@ -11,4 +11,9 @@ class TaxCode extends Model
     {
     	return $this->hasMany('App\Employee');
     }
+
+    public function taxes()
+    {
+    	return $this->hasMany('App\Tax');
+    }
 }

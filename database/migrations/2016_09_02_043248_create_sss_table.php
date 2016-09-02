@@ -14,6 +14,12 @@ class CreateSSSTable extends Migration
     {
         Schema::create('sss', function (Blueprint $table) {
             $table->increments('id');
+            $table->float('minimum_range');
+            $table->float('maximum_range');
+            $table->float('monthly_salary_credit');
+            $table->float('employee_contribution');
+            $table->float('employer_contribution');
+            $table->float('total_contribution');
             $table->timestamps();
         });
     }

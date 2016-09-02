@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePhilhealthTable extends Migration
+class CreateTaxesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,14 +12,14 @@ class CreatePhilhealthTable extends Migration
      */
     public function up()
     {
-        Schema::create('philhealth', function (Blueprint $table) {
+        Schema::create('taxes', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('tax_code_id')->unsigned();
+            $table->string('pay_frequency');
             $table->float('minimum_range');
             $table->float('maximum_range');
-            $table->float('salary_base');
-            $table->float('employee_share');
-            $table->float('employer_share');
-            $table->float('total_monthly_premium');
+            $table->float('tax');
+            $table->float('excess');
             $table->timestamps();
         });
     }
@@ -31,6 +31,6 @@ class CreatePhilhealthTable extends Migration
      */
     public function down()
     {
-        Schema::drop('philhealth');
+        Schema::drop('taxes');
     }
 }
