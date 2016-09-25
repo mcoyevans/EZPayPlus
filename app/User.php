@@ -12,7 +12,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'full_name', 'email', 'password', 'company_id',
+        'full_name', 'email', 'password', 'group_id',
     ];
 
     /**
@@ -24,13 +24,8 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
-    public function company()
+    public function group()
     {
-        return $this->belongsTo('App\Company');
-    }
-
-    public function groups()
-    {
-        return $this->belongsToMany('App\Group');
+        return $this->belongsTo('App\Group');
     }
 }
