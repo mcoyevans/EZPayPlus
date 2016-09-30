@@ -1,4 +1,11 @@
-<md-content>
+<md-toolbar>
+    <div class="md-toolbar-tools" layout="row" layout-align="center center">
+        <a ui-sref="main">
+            <h1 class="md-display-3 weight-100 white-text">EZPayPlus</h1>
+        </a>
+    </div>
+</md-toolbar>
+<md-content layout="column" flex>
     <div layout="column" layout-align="center center" layout-padding>
         <!-- <img src="/img/batman.png" alt="avatar" class="avatar"> -->
         <h2 class="md-headline">{{ user.name }}</h2>
@@ -6,6 +13,7 @@
         <!-- <p class="md-subhead center-text"><em>"I am vengence. I am the knight. I am BATMAN!!!"</em></p> -->
     </div>
     <md-divider></md-divider>
+    <md-subheader class="md-no-sticky">Menu</md-subheader>
     <ul class="no-padding">
         <li layout="row" flex ng-repeat="page in menu.static">
             <md-button class="static" flex ui-sref="{{page.state}}">
@@ -16,27 +24,54 @@
                 </div>
             </md-button>
         </li>
+        <li ng-repeat="section in menu.section" class="section" flex>
+            <div layout="row" class="section-button-container">
+                <md-button flex ng-click="setActive($index)" aria-label="section-{{ $index }}">
+                    <div layout="row" flex>
+                        <md-icon class="mdi {{section.icon}} grey"></md-icon>
+                        <span flex="5"></span>
+                        <span class="secondary-text">{{ section.name }}</span>
+                        <span flex></span>
+                        <md-icon class="mdi mdi-chevron-down rotate-icon grey"></md-icon>
+                    </div>
+                </md-button>
+            </div>
+            <!-- Child -->
+            <ul class="no-padding pages">
+                <li layout="row" ng-repeat="item in menu.pages[$index]">
+                    <md-button flex ng-click="item.action()">
+                        <div layout="row" flex>
+                            <span flex="5"></span>
+                            <span class="secondary-text">{{ item.label }}</span>
+                            <span flex></span>
+                        </div>
+                    </md-button>
+                </li>
+            </ul>
+        </li>
     </ul>
     <md-divider></md-divider>
     <md-subheader class="md-no-sticky">Account</md-subheader>
-    <li layout="row" flex>
-        <md-button flex ng-click="changePassword()">
-            <div layout="row" flex>
-                <md-icon class="mdi mdi-key-change grey"></md-icon>
-                <span flex="5"></span>
-                <span class="secondary-text">Change Password</span>
-                <span flex></span>
-            </div>
-        </md-button>
-    </li>
-    <li layout="row" flex>
-        <md-button flex ng-click="logout()">
-            <div layout="row" flex>
-                <md-icon class="mdi mdi-logout grey"></md-icon>
-                <span flex="5"></span>
-                <span class="secondary-text">Logout</span>
-                <span flex></span>
-            </div>
-        </md-button>
-    </li>
+    <ul class="no-padding">
+        <li layout="row" flex>
+            <md-button flex ng-click="changePassword()">
+                <div layout="row" flex>
+                    <md-icon class="mdi mdi-key-change grey"></md-icon>
+                    <span flex="5"></span>
+                    <span class="secondary-text">Change Password</span>
+                    <span flex></span>
+                </div>
+            </md-button>
+        </li>
+        <li layout="row" flex>
+            <md-button flex ng-click="logout()">
+                <div layout="row" flex>
+                    <md-icon class="mdi mdi-logout grey"></md-icon>
+                    <span flex="5"></span>
+                    <span class="secondary-text">Logout</span>
+                    <span flex></span>
+                </div>
+            </md-button>
+        </li>
+    </ul>
 </md-content>

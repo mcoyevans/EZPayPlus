@@ -3,6 +3,17 @@ sharedModule
 		var dataHolder = null;
 
 		return {
+			cancel: function(){
+				$mdDialog.cancel();
+			},
+			customDialog: function(data){
+				return $mdDialog.show({
+			      	controller: data.controller,
+			      	templateUrl: data.template,
+			      	parent: angular.element(document.body),
+			      	fullscreen: true,
+			    });
+			},
 			prompt: function(data)
 			{
 				var prompt = $mdDialog.prompt()

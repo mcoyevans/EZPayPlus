@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 
+use App\City;
+
 class CityController extends Controller
 {
     /**
@@ -13,9 +15,26 @@ class CityController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function enlist(Request $request)
+    {
+        $cities = City::query();
+
+        if($request->search)
+        {
+            $cities->where('name', 'like', '%'.$request->search.'%');
+        }
+
+        return $cities->get();
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
-        //
+        return City::all();
     }
 
     /**

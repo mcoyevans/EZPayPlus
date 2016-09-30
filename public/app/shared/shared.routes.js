@@ -3,7 +3,7 @@ sharedModule
 		/* Defaul Theme Blue - Light Blue */
 		$mdThemingProvider.theme('default')
 			.primaryPalette('blue')
-			.accentPalette('pink')
+			.accentPalette('red')
 		
 		/* Dark Theme - Blue */
 		$mdThemingProvider.theme('dark', 'default')

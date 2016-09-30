@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 
+use App\Province;
+
 class ProvinceController extends Controller
 {
     /**
@@ -15,7 +17,7 @@ class ProvinceController extends Controller
      */
     public function index()
     {
-        //
+        return Province::all();
     }
 
     /**

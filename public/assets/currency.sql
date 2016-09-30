@@ -2,7 +2,7 @@
 -- Table structure for table `currency`
 --
 
-CREATE TABLE IF NOT EXISTS `currency` (
+CREATE TABLE IF NOT EXISTS `currencies` (
   `iso` char(3) CHARACTER SET utf8 NOT NULL DEFAULT '',
   `name` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`iso`),
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS `currency` (
 -- Dumping data for table `currency`
 --
 
-INSERT INTO `currency` (`iso`, `name`) VALUES
+INSERT INTO `currencies` (`iso`, `name`) VALUES
 ('KRW', '(South) Korean Won'),
 ('AFA', 'Afghanistan Afghani'),
 ('ALL', 'Albanian Lek'),

@@ -12,7 +12,7 @@ sharedModule
 		/* Defaul Theme Blue - Light Blue */
 		$mdThemingProvider.theme('default')
 			.primaryPalette('blue')
-			.accentPalette('pink')
+			.accentPalette('red')
 		
 		/* Dark Theme - Blue */
 		$mdThemingProvider.theme('dark', 'default')
@@ -34,6 +34,17 @@ sharedModule
 		var dataHolder = null;
 
 		return {
+			cancel: function(){
+				$mdDialog.cancel();
+			},
+			customDialog: function(data){
+				return $mdDialog.show({
+			      	controller: data.controller,
+			      	templateUrl: data.template,
+			      	parent: angular.element(document.body),
+			      	fullscreen: true,
+			    });
+			},
 			prompt: function(data)
 			{
 				var prompt = $mdDialog.prompt()

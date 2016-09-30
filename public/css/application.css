@@ -100,6 +100,9 @@ a:focus {
 md-toolbar.white-toolbar {
   background-color: white; }
 
+md-toolbar.dark-toolbar {
+  background: #303030; }
+
 .site-logo img {
   /*max-width: 35%;
 		max-height: 100%;*/
@@ -239,6 +242,41 @@ md-content.dirty-white {
   border-radius: 50%;
   width: 200px;
   height: 200px; }
+
+.static {
+  /*&:hover{
+		color: white;
+	}*/ }
+
+.pages {
+  overflow: hidden;
+  max-height: 0;
+  -webkit-transition: max-height 0.75s cubic-bezier(0.35, 0, 0.25, 1);
+  transition: max-height 0.75s cubic-bezier(0.35, 0, 0.25, 1); }
+  .pages .active .secondary-text {
+    /*background: rgba(white,0.1);*/
+    color: #03A9F4; }
+
+.rotate-icon {
+  -webkit-transition: -webkit-transform 0.3s ease-in-out;
+  transition: -webkit-transform 0.3s ease-in-out;
+  transition: transform 0.3s ease-in-out;
+  transition: transform 0.3s ease-in-out, -webkit-transform 0.3s ease-in-out; }
+
+.active .pages {
+  height: auto;
+  max-height: 1000px;
+  overflow: hidden;
+  -webkit-transition: max-height 0.75s cubic-bezier(0.35, 0, 0.25, 1);
+  transition: max-height 0.75s cubic-bezier(0.35, 0, 0.25, 1); }
+
+.active .rotate-icon {
+  -webkit-transform: rotate(180deg);
+  transform: rotate(180deg);
+  -webkit-transition: -webkit-transform 0.3s ease-in-out;
+  transition: -webkit-transform 0.3s ease-in-out;
+  transition: transform 0.3s ease-in-out;
+  transition: transform 0.3s ease-in-out, -webkit-transform 0.3s ease-in-out; }
 
 /* transition duration */
 .transition, .fade-transition, .main-view {

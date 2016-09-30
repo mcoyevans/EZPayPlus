@@ -6,8 +6,29 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 
+use App\Company;
+
 class CompanyController extends Controller
 {
+    /**
+     * Display a listing of the resource with parameters.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function enlist(Request $request)
+    {
+        $company = Company::find(1);
+
+        if(isset($request->with))
+        {
+            foreach ($request->with as $query) {
+                $company->load($query);
+            }
+        }
+
+        return $company;
+    }
+
     /**
      * Display a listing of the resource.
      *

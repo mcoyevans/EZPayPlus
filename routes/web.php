@@ -57,9 +57,20 @@ Route::resource('tax-code', 'TaxCodeController');
 Route::resource('time-interpretation', 'TimeInterpretationController');
 Route::resource('user', 'UserController');
 
+/* User Routes */
 Route::group(['prefix' => 'user'], function(){
 	Route::post('logout', 'UserController@logout');
 	Route::post('check', 'UserController@check');
 	Route::post('change-password', 'UserController@changePassword');
 	Route::post('check-password', 'UserController@checkPassword');
+});
+
+/* Company Routes */
+Route::group(['prefix' => 'company'], function(){
+	Route::post('enlist', 'CompanyController@enlist');
+});
+
+/* City Routes */
+Route::group(['prefix' => 'city'], function(){
+	Route::post('enlist', 'CityController@enlist');
 });

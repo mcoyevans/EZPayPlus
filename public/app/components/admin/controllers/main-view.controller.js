@@ -12,29 +12,65 @@ adminModule
 				'icon': 'mdi-view-dashboard',
 				'label': 'Dashboard',
 			},
-			// {
-			// 	'state': 'main.sheets',
-			// 	'icon': 'mdi-file-excel',
-			// 	'label': 'Sheets',
-			// },
-			// {
-			// 	'state': 'main.tracker',
-			// 	'icon': 'mdi-view-list',
-			// 	'label': 'Tracker',
-			// },
+			{
+				'state': 'main.hris',
+				'icon': 'mdi-account-multiple',
+				'label': 'HRIS',
+			},
+			{
+				'state': 'main.payroll',
+				'icon': 'mdi-currency-usd',
+				'label': 'Payroll',
+			},
 			{
 				'state': 'main.notifications',
 				'icon': 'mdi-bell',
 				'label': 'Notifications',
 			},
-			{
-				'state': 'main.settings',
-				'icon': 'mdi-settings',
-				'label': 'Settings',
-			},
-		]
-		
+		];
 
+		$scope.menu.section = [
+			{
+				'name':'Settings',
+				'icon':'mdi-settings',
+			},
+		];
+
+		$scope.menu.pages = [
+			[
+				{
+					'label': 'Profile',
+					action: function(){
+						$state.go('main.profile-settings');
+					}, 
+				},
+				{
+					'label': 'HRIS',
+					action: function(){
+						$state.go('main.hris-settings');
+					},
+				},
+				{
+					'label': 'Time Keeping',
+					action: function(){
+						$state.go('main.time-keeping-settings');
+					},
+				},
+				{
+					'label': 'Payroll',
+					action: function(){
+						$state.go('main.payroll-settings');
+					},
+				},
+			]
+		];
+
+		// set section as active
+		$scope.setActive = function(index){
+		 	angular.element($('[aria-label="'+ 'section-' + index + '"]').closest('li').toggleClass('active'));
+		 	angular.element($('[aria-label="'+ 'section-' + index + '"]').closest('li').siblings().removeClass('active'));
+		};
+		
 		$scope.logout = function(){
 			Helper.post('/user/logout')
 				.success(function(){
@@ -59,4 +95,8 @@ adminModule
 			.success(function(data){
 				$scope.user = data;
 			})
+
+		$scope.$on('fetchAuthenticatedUser', function(){
+			console.log($scope.user);
+		});
 	}]);

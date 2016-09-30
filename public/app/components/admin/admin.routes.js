@@ -10,7 +10,7 @@ adminModule
 					},
 					'content-container@main': {
 						templateUrl: '/app/shared/views/content-container.view.html',
-						// controller: 'sharedDashboardContentContainerController',
+						// controller: 'dashboardContentContainerController',
 					},
 					'toolbar@main': {
 						templateUrl: '/app/shared/templates/toolbar.template.html',
@@ -23,6 +23,24 @@ adminModule
 					// },
 					'content@main':{
 						// templateUrl: '/app/shared/templates/content/dashboard-content.template.html',
+					}
+				}
+			})
+			.state('main.profile-settings', {
+				url: 'profile-settings',
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'profileSettingsContentContainerController',
+					},
+					'toolbar@main.profile-settings': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+					},
+					'left-sidenav@main.profile-settings': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'content@main.profile-settings':{
+						templateUrl: '/app/components/admin/templates/content/profile-settings-content.template.html',
 					}
 				}
 			})

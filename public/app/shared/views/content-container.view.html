@@ -2,8 +2,6 @@
 <md-toolbar ui-view="toolbar"></md-toolbar>
 <!-- Content -->
 <div layout="row" flex class="overflow-y-hidden">
-    <!-- Left Sidenav -->
-	<md-sidenav class="md-sidenav-left" md-component-id="left" md-is-locked-open="$mdMedia('gt-sm')" md-whiteframe="4" ui-view="left-sidenav"></md-sidenav>
     <div layout="column" flex>
         <!-- Subheader -->
         <md-toolbar class="white-toolbar" md-scroll-shrink ng-if="subheader.show" ui-view="subheader"></md-toolbar>
