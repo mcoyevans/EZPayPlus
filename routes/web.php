@@ -74,3 +74,8 @@ Route::group(['prefix' => 'company'], function(){
 Route::group(['prefix' => 'city'], function(){
 	Route::post('enlist', 'CityController@enlist');
 });
+
+/* Province Routes */
+Route::group(['prefix' => 'province'], function(){
+	Route::post('enlist', 'ProvinceController@enlist');
+});

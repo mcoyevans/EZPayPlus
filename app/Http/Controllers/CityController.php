@@ -21,7 +21,14 @@ class CityController extends Controller
 
         if($request->search)
         {
-            $cities->where('name', 'like', '%'.$request->search.'%');
+            if(!$request->strict_search)
+            {
+                $cities->where('name', 'like', '%'.$request->search.'%');
+            }
+            else
+            {
+                $cities->where('name', $request->search);
+            }
         }
 
         return $cities->get();

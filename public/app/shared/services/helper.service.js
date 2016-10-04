@@ -102,7 +102,7 @@ sharedModule
 			post: function(url, data){
 				return $http.post(url, data);
 			},
-			update: function(url, data){
+			put: function(url, data){
 				return $http.put(url, data);
 			},
 			delete: function(url){

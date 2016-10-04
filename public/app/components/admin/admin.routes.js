@@ -26,6 +26,27 @@ adminModule
 					}
 				}
 			})
+			.state('main.admin-settings', {
+				url: 'admin-settings',
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'profileSettingsContentContainerController',
+					},
+					'toolbar@main.admin-settings': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+					},
+					'left-sidenav@main.admin-settings': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'subheader@main.admin-settings': {
+						templateUrl: '/app/components/admin/templates/subheaders/dashboard-subheader.template.html',
+					},
+					'content@main.admin-settings':{
+						templateUrl: '/app/components/admin/templates/content/admin-settings-content.template.html',
+					}
+				}
+			})
 			.state('main.profile-settings', {
 				url: 'profile-settings',
 				views: {
@@ -40,7 +61,7 @@ adminModule
 						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
 					},
 					'content@main.profile-settings':{
-						templateUrl: '/app/components/admin/templates/content/profile-settings-content.template.html',
+						templateUrl: '/app/shared/templates/content/profile-settings-content.template.html',
 					}
 				}
 			})

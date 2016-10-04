@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class GroupModule extends Model
 {
-	protected $table = 'group_module'
+	protected $table = 'group_module';
 
     public function group()
     {

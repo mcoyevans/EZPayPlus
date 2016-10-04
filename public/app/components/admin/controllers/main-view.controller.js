@@ -39,10 +39,10 @@ adminModule
 		$scope.menu.pages = [
 			[
 				{
-					'label': 'Profile',
+					'label': 'Admin',
 					action: function(){
-						$state.go('main.profile-settings');
-					}, 
+						$state.go('main.admin-settings');
+					},
 				},
 				{
 					'label': 'HRIS',
@@ -51,15 +51,21 @@ adminModule
 					},
 				},
 				{
-					'label': 'Time Keeping',
-					action: function(){
-						$state.go('main.time-keeping-settings');
-					},
-				},
-				{
 					'label': 'Payroll',
 					action: function(){
 						$state.go('main.payroll-settings');
+					},
+				},
+				{
+					'label': 'Profile',
+					action: function(){
+						$state.go('main.profile-settings');
+					}, 
+				},
+				{
+					'label': 'Time Keeping',
+					action: function(){
+						$state.go('main.time-keeping-settings');
 					},
 				},
 			]

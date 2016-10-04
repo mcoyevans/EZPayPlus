@@ -33,10 +33,10 @@ $factory->defineAs(App\User::class, 'mcoy', function ($faker) use ($factory) {
     ];
 });
 
-$factory->define(App\Group::class, function (Faker\Generator $faker) {
+$factory->defineAs(App\Group::class, 'super-admin', function (Faker\Generator $faker) {
     return [
-        'name' => 'admin',
-        'description' => 'Admin has access to all modules.',
+        'name' => 'super-admin',
+        'description' => 'Super admin has access to all modules.',
     ];
 });
 
@@ -53,5 +53,61 @@ $factory->define(App\Company::class, function (Faker\Generator $faker) {
         'sss' => '12-3456789-0',
         'pagibig' => '0123-4567-8901',
         'philhealth' => '01-234567890-1',
+    ];
+});
+
+$factory->defineAs(App\Module::class, 'setup', function (Faker\Generator $faker) {
+    return [
+        'name' => 'setup',
+        'description' => 'Module that allows client setup information.',
+    ];
+});
+
+$factory->defineAs(App\Module::class, 'hris', function (Faker\Generator $faker) {
+    return [
+        'name' => 'hris',
+        'description' => 'Module that covers client hris.',
+    ];
+});
+
+$factory->defineAs(App\Module::class, 'payroll', function (Faker\Generator $faker) {
+    return [
+        'name' => 'payroll',
+        'description' => 'Module that covers client payroll.',
+    ];
+});
+
+$factory->defineAs(App\Module::class, 'timekeeping', function (Faker\Generator $faker) {
+    return [
+        'name' => 'timekeeping',
+        'description' => 'Module that covers client timekeeping.',
+    ];
+});
+
+$factory->defineAs(App\GroupModule::class, 'super-admin-setup', function (Faker\Generator $faker) {
+    return [
+        'group_id' => 1,
+        'module_id' => 1,
+    ];
+});
+
+$factory->defineAs(App\GroupModule::class, 'super-admin-hris', function (Faker\Generator $faker) {
+    return [
+        'group_id' => 1,
+        'module_id' => 2,
+    ];
+});
+
+$factory->defineAs(App\GroupModule::class, 'super-admin-payroll', function (Faker\Generator $faker) {
+    return [
+        'group_id' => 1,
+        'module_id' => 3,
+    ];
+});
+
+$factory->defineAs(App\GroupModule::class, 'super-admin-timekeeping', function (Faker\Generator $faker) {
+    return [
+        'group_id' => 1,
+        'module_id' => 4,
     ];
 });

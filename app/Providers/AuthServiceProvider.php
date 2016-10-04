@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Comapny;
+use App\Policies\ComapnyPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -25,6 +27,8 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //
+        Gate::define('update-company', function($user){
+            return $user->group_id === 1 || $user->group_id === 2; // Admin or Human Resource Only
+        });
     }
 }

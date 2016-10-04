@@ -10,6 +10,37 @@ use App\Province;
 
 class ProvinceController extends Controller
 {
+     /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function enlist(Request $request)
+    {
+        $provinces = Province::query();
+
+        if($request->has('city'))
+        {
+            $provinces->with(['cities' => function($query) use ($request){
+                $query->where('name', $request->city);
+            }]);
+        }
+
+        if($request->has('where'))
+        {
+            for ($i=0; $i < count($request->where); $i++) { 
+                $provinces->where($request->input('where')[$i]['label'], $request->input('where')[$i]['condition'], $request->input('where')[$i]['value']);       
+            }   
+        }
+
+        if($request->has('result'))
+        {
+            return $request->result == 'first' ? $provinces->first() : $provinces->get();
+        }
+
+        return $provinces->get();
+    }
+
     /**
      * Display a listing of the resource.
      *

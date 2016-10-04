@@ -20,7 +20,11 @@ adminModule
 		$scope.fab.action = function(){
 			Helper.customDialog($scope.fab.dialog)
 				.then(function(){
-					$scope.init();
+					Helper.preload();
+					Helper.notify('Changes saved.')
+						.then(function(){
+							$scope.init(true);
+						})
 				}, function(){
 					return;
 				});
@@ -28,7 +32,7 @@ adminModule
 
 		$scope.fab.show = true;
 
-		$scope.init = function()
+		$scope.init = function(refresh)
 		{
 			var query = {};
 			query.with = ['city', 'province', 'country'];
@@ -36,6 +40,11 @@ adminModule
 			Helper.post('/company/enlist', query)
 				.success(function(data){
 					$scope.company = data;
+
+					if(refresh)
+					{
+						Helper.stop();
+					}
 				})
 				.error(function(){
 					Helper.error();
