@@ -1,4 +1,4 @@
-adminModule
+settings
 	.controller('profileSettingsContentContainerController', ['$scope', 'Helper', function($scope, Helper){
 		$scope.toolbar = {};
 
@@ -15,7 +15,7 @@ adminModule
 		$scope.fab.dialog = {};
 		
 		$scope.fab.dialog.controller = 'editProfileDialogController';
-		$scope.fab.dialog.template = '/app/components/admin/templates/dialogs/edit-profile-dialog.template.html';
+		$scope.fab.dialog.template = '/app/components/settings/templates/dialogs/edit-profile-dialog.template.html';
 
 		$scope.fab.action = function(){
 			Helper.customDialog($scope.fab.dialog)

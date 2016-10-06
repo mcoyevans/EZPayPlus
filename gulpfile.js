@@ -30,6 +30,18 @@ elixir(function(mix) {
         /* Shared Scripts */
         .scriptsIn('public/app/shared', 'public/js/shared.js')
 
-        /* Admin Scripts */
-        .scriptsIn('public/app/components/admin', 'public/js/admin.js')
+        /* App Scripts */
+        .scriptsIn('public/app/components/app', 'public/js/app.js')
+
+        /* HRIS Scripts */
+        .scriptsIn('public/app/components/hris', 'public/js/hris.js')
+
+        /* Payroll Scripts */
+        .scriptsIn('public/app/components/payroll', 'public/js/payroll.js')
+
+        /* Timekeeping Scripts */
+        .scriptsIn('public/app/components/timekeeping', 'public/js/timekeeping.js')
+
+        /* Settings Scripts */
+        .scriptsIn('public/app/components/settings', 'public/js/settings.js')
 });

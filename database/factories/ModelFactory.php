@@ -56,10 +56,10 @@ $factory->define(App\Company::class, function (Faker\Generator $faker) {
     ];
 });
 
-$factory->defineAs(App\Module::class, 'setup', function (Faker\Generator $faker) {
+$factory->defineAs(App\Module::class, 'settings', function (Faker\Generator $faker) {
     return [
-        'name' => 'setup',
-        'description' => 'Module that allows client setup information.',
+        'name' => 'settings',
+        'description' => 'Module that allows client settings information.',
     ];
 });
 

@@ -23,6 +23,8 @@ class UserController extends Controller
 
         $user->unread_notifications = $user->unreadNotifications;
 
+        $user->load('group.modules');
+
         return $user;
     }
 

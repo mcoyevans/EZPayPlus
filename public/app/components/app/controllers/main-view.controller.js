@@ -1,4 +1,4 @@
-adminModule
+app
 	.controller('mainViewController', ['$scope', '$state', '$mdDialog', '$mdSidenav', '$mdToast', 'Helper', function($scope, $state, $mdDialog, $mdSidenav, $mdToast, Helper){
 		$scope.toggleSidenav = function(menuID){
 			$mdSidenav(menuID).toggle();
@@ -11,21 +11,6 @@ adminModule
 				'state': 'main',
 				'icon': 'mdi-view-dashboard',
 				'label': 'Dashboard',
-			},
-			{
-				'state': 'main.hris',
-				'icon': 'mdi-account-multiple',
-				'label': 'HRIS',
-			},
-			{
-				'state': 'main.payroll',
-				'icon': 'mdi-currency-usd',
-				'label': 'Payroll',
-			},
-			{
-				'state': 'main.notifications',
-				'icon': 'mdi-bell',
-				'label': 'Notifications',
 			},
 		];
 
@@ -99,6 +84,29 @@ adminModule
 
 		Helper.post('/user/check')
 			.success(function(data){
+				angular.forEach(data.group.modules, function(module){
+					if(module.name == 'hris')
+					{
+						var hris = {
+							'state': 'main.hris',
+							'icon': 'mdi-account-multiple',
+							'label': 'HRIS',
+						}
+
+						$scope.menu.static.push(hris);
+					}
+					else if(module.name == 'payroll')
+					{
+						var payroll = {
+							'state': 'main.payroll',
+							'icon': 'mdi-currency-usd',
+							'label': 'Payroll',
+						}
+
+						$scope.menu.static.push(payroll);
+					}
+				});
+
 				$scope.user = data;
 			})
 

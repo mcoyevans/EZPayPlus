@@ -1,4 +1,4 @@
-adminModule
+app
 	.config(['$stateProvider', function($stateProvider){
 		$stateProvider
 			.state('main', {
@@ -40,7 +40,7 @@ adminModule
 						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
 					},
 					'subheader@main.admin-settings': {
-						templateUrl: '/app/components/admin/templates/subheaders/dashboard-subheader.template.html',
+						templateUrl: '/app/components/settings/templates/subheaders/dashboard-subheader.template.html',
 					},
 					'content@main.admin-settings':{
 						templateUrl: '/app/components/admin/templates/content/admin-settings-content.template.html',

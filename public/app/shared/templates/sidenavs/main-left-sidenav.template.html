@@ -54,6 +54,16 @@
     <md-subheader class="md-no-sticky">Account</md-subheader>
     <ul class="no-padding">
         <li layout="row" flex>
+            <md-button flex ui-sref="main.notifications">
+                <div layout="row" flex>
+                    <md-icon class="mdi mdi-bell grey"></md-icon>
+                    <span flex="5"></span>
+                    <span class="secondary-text">Notifications</span>
+                    <span flex></span>
+                </div>
+            </md-button>
+        </li>
+        <li layout="row" flex>
             <md-button flex ng-click="changePassword()">
                 <div layout="row" flex>
                     <md-icon class="mdi mdi-key-change grey"></md-icon>

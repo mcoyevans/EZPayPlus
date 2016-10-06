@@ -1,0 +1,1 @@
+var payroll = angular.module('payroll', []);

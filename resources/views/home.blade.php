@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="{{$user->group->name}}">
+<html lang="en" ng-app="app">
 <head>
 	<meta charset="UTF-8">
 	<meta name="theme-color" content="#2196F3" />
@@ -23,7 +23,11 @@
 	<script src="/js/vendor.js"></script>
 	<!-- Shared Scripts -->
 	<script src="/js/shared.js"></script>
-	<!-- {{$user->group->name}} Script -->
-	<script src="/js/{{$user->group->name}}.js"></script>
+	<!-- App Script -->
+	<script src="/js/app.js"></script>
+	<!-- Modules Scripts -->
+	@foreach($user->group->modules as $module)
+	<script src="/js/{{$module->name}}.js"></script>
+	@endforeach
 </body>
 </html>

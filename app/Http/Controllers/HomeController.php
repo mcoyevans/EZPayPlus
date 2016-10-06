@@ -25,7 +25,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $user = User::where('id', Auth::user()->id)->with('group')->first();
+        $user = User::where('id', Auth::user()->id)->with('group.modules')->first();
         
         return view('home')->with('user', $user);
     }

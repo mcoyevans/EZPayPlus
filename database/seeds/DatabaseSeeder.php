@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
         factory(App\GroupModule::class, 'super-admin-hris')->create();
         factory(App\GroupModule::class, 'super-admin-payroll')->create();
         factory(App\GroupModule::class, 'super-admin-timekeeping')->create();
-        factory(App\Module::class, 'setup')->create();
+        factory(App\Module::class, 'settings')->create();
         factory(App\Module::class, 'hris')->create();
         factory(App\Module::class, 'payroll')->create();
         factory(App\Module::class, 'timekeeping')->create();

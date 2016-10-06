@@ -1,0 +1,1 @@
+{"version":3,"sources":["hris.module.js"],"names":[],"mappings":"AAAA","file":"hris.js","sourcesContent":["var hris = angular.module('hris', []);"],"sourceRoot":"/source/"}
