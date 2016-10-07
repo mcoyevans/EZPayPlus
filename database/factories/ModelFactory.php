@@ -111,3 +111,12 @@ $factory->defineAs(App\GroupModule::class, 'super-admin-timekeeping', function (
         'module_id' => 4,
     ];
 });
+
+$factory->define(App\Branch::class, function (Faker\Generator $faker) {
+    return [
+        'name' => $faker->name,
+        'description' => 'Some dummy description.',
+        'gl_account' => str_random(12),
+    ];
+});
+

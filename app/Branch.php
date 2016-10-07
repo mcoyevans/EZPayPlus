@@ -15,15 +15,10 @@ class Branch extends Model
     	return $this->belongsTo('App\Company');
     }
 
-    public function currency()
-    {
-    	return $this->belongsTo
-    }
-
-    public function house_banks()
-    {
-    	return $this->hasMany('App\HouseBank');
-    }
+    // public function house_banks()
+    // {
+    // 	return $this->hasMany('App\HouseBank');
+    // }
 
     public function holidays()
     {

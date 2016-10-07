@@ -1,0 +1,26 @@
+<div infinite-scroll='type.paginateLoad()' infinite-scroll-distance="1" infinite-scroll-disabled="type.busy" infinite-scroll-parent ng-if="type.show">
+	<md-list>
+		<md-list-item class="md-3-line" ng-repeat="type in type.items | filter: toolbar.searchText | orderBy:sortType:sortReverse" ng-click="showOptions(type)" ng-if="showInactive || !type.deleted_at">
+			<h2 class="md-avatar" ng-class="type.deleted_at ? 'accent-bg': 'primary-bg'" layout="row" layout-align="center center">
+				<span class="md-headline white-text">{{type.name.charAt(0).toUpperCase()}}</span>
+			</h2>
+			<div class="md-list-item-text">
+				<h3>{{type.name}}</h3>
+				<h4>{{type.description}} {{type.email}}</h4>
+				<p layout="column">
+					{{type.gl_account}}
+				</p>
+			</div>
+		</md-list-item>
+	</md-list>
+</div>
+<div layout="row" layout-align="center center" layout-padding layout-margin ng-if="isLoading">
+	<md-progress-circular class="md-primary" md-diameter="60"></md-progress-circular>
+</div>
+<div layout-padding layout-margin ng-if="!type.items.length && type.show && !type.no_matches">
+	Nothing to display.
+</div>
+<div layout-padding layout-margin ng-if="type.no_matches && type.show">
+	<p>No results matching <strong class="accent-text">"{{query.searchText}}"</strong> were found.</p>
+</div>
+

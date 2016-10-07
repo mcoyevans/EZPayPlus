@@ -6,8 +6,47 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 
+use App\Branch;
+
+use Auth;
+use DB;
+use Carbon\Carbon;
+
 class BranchController extends Controller
 {
+    /**
+     * Checks for duplicate entry.
+     *
+     * @return bool
+     */
+    public function checkDuplicate(Request $request)
+    {
+        $duplicate = $request->has('id') ? Branch::where('gl_account', $request->gl_account)->whereNotIn('id', [$request->id])->first() : Branch::where('gl_account', $request->gl_account)->first();
+
+        return response()->json($duplicate ? true : false);
+    }
+    /**
+     * Display a listing of the resource with parameters.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function enlist(Request $request)
+    {
+        $branches = Branch::query();
+
+        if($request->has('withTrashed'))
+        {
+            $branches->withTrashed();
+        }
+
+        if($request->has('paginate'))
+        {
+            return $branches->paginate($request->paginate);
+        }
+
+        return $branches->get();
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -36,7 +75,28 @@ class BranchController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->authorize('create', Branch::class);
+
+        $duplicate = Branch::where('gl_account', $request->gl_account)->first();
+
+        if($duplicate)
+        {
+            return response()->json(true);
+        }
+
+        $this->validate($request, [
+            'name' => 'required',
+            'description' => 'required',
+            'gl_account' => 'required|min:12|max:12',
+        ]);
+
+        $branch = new Branch;
+
+        $branch->name = $request->name;
+        $branch->description = $request->description;
+        $branch->gl_account = $request->gl_account;
+
+        $branch->save();
     }
 
     /**

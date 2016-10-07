@@ -12,8 +12,8 @@ class HouseBank extends Model
     	return $this->belongsTo('App\Branch');
     }
 
-    public function branch()
-    {
-    	return $this->belongsTo('App\Branch');
-    }
+    // public function branch()
+    // {
+    // 	return $this->belongsTo('App\Branch');
+    // }
 }

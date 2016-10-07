@@ -34,28 +34,30 @@ app
 				}
 			})
 			.state('main.admin-settings', {
-				url: 'admin-settings',
+				url: 'settings/admin',
 				views: {
 					'content-container': {
 						templateUrl: '/app/shared/views/content-container.view.html',
-						controller: 'profileSettingsContentContainerController',
+						controller: 'adminSettingsContentContainerController',
 					},
 					'toolbar@main.admin-settings': {
 						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'adminSettingsToolbarController',
 					},
 					'left-sidenav@main.admin-settings': {
 						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
 					},
 					'subheader@main.admin-settings': {
-						templateUrl: '/app/components/settings/templates/subheaders/dashboard-subheader.template.html',
+						templateUrl: '/app/components/settings/templates/subheaders/admin-settings-subheader.template.html',
+						controller: 'adminSettingsSubheaderController',
 					},
 					'content@main.admin-settings':{
-						templateUrl: '/app/components/admin/templates/content/admin-settings-content.template.html',
+						templateUrl: '/app/components/settings/templates/content/admin-settings-content.template.html',
 					}
 				}
 			})
 			.state('main.profile-settings', {
-				url: 'profile-settings',
+				url: 'settings/profile',
 				views: {
 					'content-container': {
 						templateUrl: '/app/shared/views/content-container.view.html',

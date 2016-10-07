@@ -125,7 +125,7 @@ sharedModule
 				dataHolder = data;
 			},
 			/* Retrieves data */
-			get: function(){
+			fetch: function(){
 				return dataHolder;
 			},
 			checkDuplicate: function(urlBase, data){

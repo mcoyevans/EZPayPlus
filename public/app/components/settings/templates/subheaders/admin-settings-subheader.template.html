@@ -1,5 +1,5 @@
 <div class="md-toolbar-tools">
 	<md-nav-bar aria-label="navigation" md-selected-nav-item="subheader.current.label" flex>
-	    <md-nav-item  ng-repeat="nav in subheader.navs" md-nav-click="nav.action()" name="{{nav.label}}">{{nav.label}}</md-nav-item>
+	    <md-nav-item  ng-repeat="nav in subheader.navs" md-nav-click="nav.action(nav)" name="{{nav.label}}">{{nav.label}}</md-nav-item>
 	</md-nav-bar>
 </div>

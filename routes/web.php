@@ -79,3 +79,9 @@ Route::group(['prefix' => 'city'], function(){
 Route::group(['prefix' => 'province'], function(){
 	Route::post('enlist', 'ProvinceController@enlist');
 });
+
+/* Branch Routes */
+Route::group(['prefix' => 'branch'], function(){
+	Route::post('enlist', 'BranchController@enlist');
+	Route::post('check-duplicate', 'BranchController@checkDuplicate');
+});
