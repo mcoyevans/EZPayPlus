@@ -21,5 +21,9 @@ class DatabaseSeeder extends Seeder
         factory(App\Module::class, 'payroll')->create();
         factory(App\Module::class, 'timekeeping')->create();
         factory(App\User::class, 'mcoy')->create();
+        $this->call(CountriesTableSeeder::class);
+        $this->call(CurrenciesTableSeeder::class);
+        $this->call(CitiesTableSeeder::class);
+        $this->call(ProvincesTableSeeder::class);
     }
 }
