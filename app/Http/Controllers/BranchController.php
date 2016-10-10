@@ -39,6 +39,11 @@ class BranchController extends Controller
             $branches->withTrashed();
         }
 
+        if($request->has('search'))
+        {
+            $branches->where('name', 'like', '%'.$request->search.'%')->orWhere('description', 'like', '%'.$request->search.'%')->orWhere('gl_account', 'like', '%'.$request->search.'%');
+        }
+
         if($request->has('paginate'))
         {
             return $branches->paginate($request->paginate);
@@ -107,7 +112,7 @@ class BranchController extends Controller
      */
     public function show($id)
     {
-        //
+        return Branch::withTrashed()->where('id', $id)->firstOrFail();
     }
 
     /**
@@ -130,7 +135,28 @@ class BranchController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->authorize('create', Branch::class);
+
+        $duplicate = Branch::where('gl_account', $request->gl_account)->whereNotIn('id', [$id])->first();
+
+        if($duplicate)
+        {
+            return response()->json(true);
+        }
+
+        $this->validate($request, [
+            'name' => 'required',
+            'description' => 'required',
+            'gl_account' => 'required|min:12|max:12',
+        ]);
+
+        $branch = Branch::where('id', $id)->first();
+
+        $branch->name = $request->name;
+        $branch->description = $request->description;
+        $branch->gl_account = $request->gl_account;
+
+        $branch->save();
     }
 
     /**
@@ -141,6 +167,8 @@ class BranchController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $this->authorize('create', Branch::class);
+
+        Branch::where('id', $id)->delete();
     }
 }

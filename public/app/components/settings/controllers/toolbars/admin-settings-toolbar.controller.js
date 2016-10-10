@@ -1,5 +1,5 @@
 settings
-	.controller('adminSettingsToolbarController', ['$scope', function($scope){
+	.controller('adminSettingsToolbarController', ['$scope', '$filter', function($scope, $filter){
 		$scope.toolbar.parentState = 'Settings';
 		$scope.toolbar.childState = 'Admin';
 
@@ -23,7 +23,6 @@ settings
 		 *
 		*/
 		$scope.hideSearchBar = function(){
-			$scope.type.busy = false;
 			$scope.searchBar = false;
 			$scope.toolbar.searchText = '';
 			$scope.toolbar.searchItem = '';
@@ -33,56 +32,12 @@ settings
 				$scope.type.no_matches = false;
 				$scope.type.items = [];
 				$scope.searched = false;
+				$scope.$emit('refresh');
 			}
 		};
-		
+
 		$scope.searchUserInput = function(){
-			$scope.type.busy = true;
-			$scope.isLoading = true;
-  			$scope.type.show = false;
-  			
-  			$scope.query = {};
-  			$scope.query.searchText = $scope.toolbar.searchText;
-  			$scope.query.withTrashed = true;
-
-  			if($scope.subheader.currentNavItem == 'Designers'){
-  				$scope.query.where = [
-  					{
-  						'label': 'role',
-  						'condition': '=',
-  						'value': 'designer',
-  					}
-  				];
-  			}
-  			else if($scope.subheader.currentNavItem == 'Quality Control'){
-  				$scope.query.where = [
-  					{
-  						'label': 'role',
-  						'condition': '=',
-  						'value': 'quality_control',
-  					}
-  				];	
-  			}
-
-  			Setting.search($scope.subheader.currentNavItem, $scope.query)
-  				.success(function(data){
-  					$scope.toolbar.items = [];
-  					if(data.length){
-	  					angular.forEach(data, function(item){
-	  						pushItem(item);
-	  					});
-	  					$scope.type.items = data;
-  					}
-  					else{
-  						$scope.type.items = [];	
-	  					$scope.type.no_matches = true;
-  					}
-  					$scope.searched = true;
-  					$scope.type.show = true;
-  					$scope.isLoading = false;
-  				})
-				.error(function(data){
-					Preloader.error();
-				});
+			$scope.$emit('search');
+			$scope.searched = true;
 		};
 	}]);

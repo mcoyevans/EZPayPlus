@@ -2,10 +2,10 @@
 
 namespace App\Providers;
 
-use App\Comapny;
 use App\Branch;
-use App\Policies\ComapnyPolicy;
+use App\HouseBank;
 use App\Policies\BranchPolicy;
+use App\Policies\HouseBankPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -19,6 +19,7 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         // 'App\Model' => 'App\Policies\ModelPolicy',
         'App\Branch' => 'App\Policies\BranchPolicy',
+        'App\HouseBank' => 'App\Policies\HouseBankPolicy',
     ];
 
     /**

@@ -18,13 +18,79 @@ settings
 					'controller':'createBranchDialogController',
 					'template':'/app/components/settings/templates/dialogs/branch-form-dialog.template.html',
 				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						action: function(data){
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'editBranchDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/branch-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete Branch';
+							dialog.message = 'Delete ' + data.name + ' branch?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/branch/' + data.id)
+										.success(function(){
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'GL Account',
+						'type': 'gl_account',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
 				action: function(current){
 					setInit(current);
 				},
 			},
 			{
 				'label':'House Banks',
-				'url': '/house_bank/enlist',
+				'url': '/house-bank/enlist',
 				'request': {
 					'withTrashed': true,
 					'with': [
@@ -42,6 +108,50 @@ settings
 				action: function(current){
 					setInit(current);
 				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						action: function(data){
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'editHouseBankDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/house-bank-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete House Bank';
+							dialog.message = 'Delete ' + data.name + ' house bank?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/house-bank/' + data.id)
+										.success(function(){
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
 			},
 			{
 				'label':'User Groups',

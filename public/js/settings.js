@@ -8,6 +8,15 @@ settings
 		$scope.subheader = {};
 		$scope.subheader.show = true;
 
+		$scope.subheader.toggleActive = function(){
+			$scope.showInactive = !$scope.showInactive;
+		}
+		$scope.subheader.sortBy = function(filter){
+			filter.sortReverse = !filter.sortReverse;			
+			$scope.sortType = filter.type;
+			$scope.sortReverse = filter.sortReverse;
+		}
+
 		/*
 		 * Object for toolbar
 		 *
@@ -21,6 +30,7 @@ settings
 		$scope.fab = {};
 		$scope.fab.icon = 'mdi-plus';
 
+		/* Action originates from subheader */
 		$scope.$on('setInit', function(){
 			var current = Helper.fetch();
 
@@ -29,8 +39,43 @@ settings
 			$scope.init(current);
 		});
 
+		/* Action originates from toolbar */
+		$scope.$on('search', function(){
+			$scope.subheader.current.request.search = $scope.toolbar.searchText;
+			$scope.refresh();
+		});
+
+		/* Listens for any request for refresh */
+		$scope.$on('refresh', function(){
+			$scope.subheader.current.request.search = null;
+			$scope.refresh();
+		});
+
+		$scope.listItemAction = function(data){
+			if(!data.deleted_at)
+			{
+				data.current = $scope.subheader.current 
+				Helper.set(data);
+
+				var dialog = {};
+				dialog.controller = 'listItemActionsDialogController';
+				dialog.template = '/app/shared/templates/dialogs/list-item-actions-dialog.template.html';
+
+				Helper.customDialog(dialog);
+			}
+		}
+
+		/* Formats every data in the paginated call */
 		var pushItem = function(data){
 			data.created_at = new Date(data.created_at);
+
+			var item = {};
+
+			item.display = data.name;
+			item.description = data.description;
+			item.gl_account = data.gl_account;
+
+			$scope.toolbar.items.push(item);
 		}
 
 		$scope.init = function(query, refresh){
@@ -59,7 +104,7 @@ settings
 					$scope.fab.show = true;
 
 					if(data.data.length){
-						// iterate over each record and set the updated_at date and first letter
+						// iterate over each record and set the format
 						angular.forEach(data.data, function(item){
 							pushItem(item);
 						});
@@ -192,6 +237,215 @@ settings
 			{
 				$scope.busy = true;
 				Helper.post('/branch', $scope.branch)
+					.success(function(duplicate){
+						if(duplicate){
+							$scope.busy = false;
+							return;
+						}
+
+						Helper.stop();
+					})
+					.error(function(){
+						Helper.error();
+					});
+			}
+		}
+	}]);
+settings
+	.controller('createHouseBankDialogController', ['$scope', '$filter', 'Helper', function($scope, $filter, Helper){
+		$scope.house_bank = {};
+		$scope.currency = {};
+		$scope.duplicateBankAccountNumber = false;
+		$scope.duplicateGLAccount = false;
+
+		$scope.busy = false;
+
+		Helper.get('/currency')
+			.success(function(data){
+				$scope.currencies = data;
+			})
+
+		$scope.currency.getItems = function(query){
+			var results = query ? $filter('filter')($scope.currencies, query) : $scope.currencies;
+			return results;
+		}
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(query){
+			Helper.post('/house-bank/check-duplicate', query)
+				.success(function(data){
+					if(query.bank_account_number)
+					{
+						$scope.duplicateBankAccountNumber = data;
+					}
+					else if(query.gl_account)
+					{
+						$scope.duplicateGLAccount = data;
+					}
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.houseBankForm.$invalid){
+				angular.forEach($scope.houseBankForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			if(!$scope.duplicateBankAccountNumber && !$scope.duplicateGLAccount)
+			{
+				$scope.busy = true;
+				Helper.post('/house-bank', $scope.house_bank)
+					.success(function(duplicate){
+						if(duplicate){
+							$scope.busy = false;
+							return;
+						}
+
+						Helper.stop();
+					})
+					.error(function(){
+						Helper.error();
+					});
+			}
+		}
+	}]);
+settings
+	.controller('editBranchDialogController', ['$scope', 'Helper', function($scope, Helper){
+		var branch = Helper.fetch();
+
+		Helper.get('/branch/' + branch.id)
+			.success(function(data){
+				$scope.branch = data;
+			})
+			.error(function(){
+				Preloader.error();
+			});
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post('/branch/check-duplicate', $scope.branch)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.branchForm.$invalid){
+				angular.forEach($scope.branchForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+				Helper.put('/branch/' + $scope.branch.id, $scope.branch)
+					.success(function(duplicate){
+						if(duplicate){
+							$scope.busy = false;
+							return;
+						}
+
+						Helper.stop();
+					})
+					.error(function(){
+						Helper.error();
+					});
+			}
+		}
+	}]);
+settings
+	.controller('editHouseBankDialogController', ['$scope', '$filter', 'Helper', function($scope, $filter, Helper){
+		var house_bank = Helper.fetch();
+
+		$scope.currency = {};
+		$scope.duplicateBankAccountNumber = false;
+		$scope.duplicateGLAccount = false;
+
+		$scope.busy = false;
+
+		var query = {};
+		query.where = [
+			{
+				'label':'id',
+				'condition':'=',
+				'value':house_bank.id,
+			}
+		];
+		query.with = [
+			{
+				'relation':'currency',
+				'withTrashed':false,
+			},
+		];
+		query.first = true;
+
+		Helper.post('/house-bank/enlist', query)
+			.success(function(data){
+				$scope.house_bank = data;
+
+				Helper.get('/currency')
+					.success(function(data){
+						$scope.currencies = data;
+						$scope.currency.getItems();						
+					})
+			});
+
+		$scope.currency.getItems = function(query){
+			var results = query ? $filter('filter')($scope.currencies, query) : $scope.currencies;
+			return results;
+		}
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(query){
+			query.id = house_bank.id;
+			Helper.post('/house-bank/check-duplicate', query)
+				.success(function(data){
+					if(query.bank_account_number)
+					{
+						$scope.duplicateBankAccountNumber = data;
+					}
+					else if(query.gl_account)
+					{
+						$scope.duplicateGLAccount = data;
+					}
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.houseBankForm.$invalid){
+				angular.forEach($scope.houseBankForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			if(!$scope.duplicateBankAccountNumber && !$scope.duplicateGLAccount)
+			{
+				$scope.busy = true;
+				Helper.put('/house-bank/' + $scope.house_bank.id, $scope.house_bank)
 					.success(function(duplicate){
 						if(duplicate){
 							$scope.busy = false;
@@ -368,13 +622,79 @@ settings
 					'controller':'createBranchDialogController',
 					'template':'/app/components/settings/templates/dialogs/branch-form-dialog.template.html',
 				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						action: function(data){
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'editBranchDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/branch-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete Branch';
+							dialog.message = 'Delete ' + data.name + ' branch?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/branch/' + data.id)
+										.success(function(){
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'GL Account',
+						'type': 'gl_account',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
 				action: function(current){
 					setInit(current);
 				},
 			},
 			{
 				'label':'House Banks',
-				'url': '/house_bank/enlist',
+				'url': '/house-bank/enlist',
 				'request': {
 					'withTrashed': true,
 					'with': [
@@ -392,6 +712,50 @@ settings
 				action: function(current){
 					setInit(current);
 				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						action: function(data){
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'editHouseBankDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/house-bank-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete House Bank';
+							dialog.message = 'Delete ' + data.name + ' house bank?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/house-bank/' + data.id)
+										.success(function(){
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
 			},
 			{
 				'label':'User Groups',
@@ -434,7 +798,7 @@ settings
 		setInit($scope.subheader.navs[0]);
 	}]);
 settings
-	.controller('adminSettingsToolbarController', ['$scope', function($scope){
+	.controller('adminSettingsToolbarController', ['$scope', '$filter', function($scope, $filter){
 		$scope.toolbar.parentState = 'Settings';
 		$scope.toolbar.childState = 'Admin';
 
@@ -458,7 +822,6 @@ settings
 		 *
 		*/
 		$scope.hideSearchBar = function(){
-			$scope.type.busy = false;
 			$scope.searchBar = false;
 			$scope.toolbar.searchText = '';
 			$scope.toolbar.searchItem = '';
@@ -468,57 +831,13 @@ settings
 				$scope.type.no_matches = false;
 				$scope.type.items = [];
 				$scope.searched = false;
+				$scope.$emit('refresh');
 			}
 		};
-		
+
 		$scope.searchUserInput = function(){
-			$scope.type.busy = true;
-			$scope.isLoading = true;
-  			$scope.type.show = false;
-  			
-  			$scope.query = {};
-  			$scope.query.searchText = $scope.toolbar.searchText;
-  			$scope.query.withTrashed = true;
-
-  			if($scope.subheader.currentNavItem == 'Designers'){
-  				$scope.query.where = [
-  					{
-  						'label': 'role',
-  						'condition': '=',
-  						'value': 'designer',
-  					}
-  				];
-  			}
-  			else if($scope.subheader.currentNavItem == 'Quality Control'){
-  				$scope.query.where = [
-  					{
-  						'label': 'role',
-  						'condition': '=',
-  						'value': 'quality_control',
-  					}
-  				];	
-  			}
-
-  			Setting.search($scope.subheader.currentNavItem, $scope.query)
-  				.success(function(data){
-  					$scope.toolbar.items = [];
-  					if(data.length){
-	  					angular.forEach(data, function(item){
-	  						pushItem(item);
-	  					});
-	  					$scope.type.items = data;
-  					}
-  					else{
-  						$scope.type.items = [];	
-	  					$scope.type.no_matches = true;
-  					}
-  					$scope.searched = true;
-  					$scope.type.show = true;
-  					$scope.isLoading = false;
-  				})
-				.error(function(data){
-					Preloader.error();
-				});
+			$scope.$emit('search');
+			$scope.searched = true;
 		};
 	}]);
 //# sourceMappingURL=settings.js.map

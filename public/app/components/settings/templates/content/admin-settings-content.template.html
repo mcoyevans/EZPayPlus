@@ -1,6 +1,6 @@
 <div infinite-scroll='type.paginateLoad()' infinite-scroll-distance="1" infinite-scroll-disabled="type.busy" infinite-scroll-parent ng-if="type.show">
 	<md-list>
-		<md-list-item class="md-3-line" ng-repeat="type in type.items | filter: toolbar.searchText | orderBy:sortType:sortReverse" ng-click="showOptions(type)" ng-if="showInactive || !type.deleted_at">
+		<md-list-item class="md-3-line" ng-repeat="type in type.items | filter: toolbar.searchText | orderBy:sortType:sortReverse" ng-if="showInactive || !type.deleted_at" ng-click="listItemAction(type)">
 			<h2 class="md-avatar" ng-class="type.deleted_at ? 'accent-bg': 'primary-bg'" layout="row" layout-align="center center">
 				<span class="md-headline white-text">{{type.name.charAt(0).toUpperCase()}}</span>
 			</h2>
