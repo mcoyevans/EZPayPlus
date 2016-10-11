@@ -65,6 +65,11 @@ class HouseBankController extends Controller
             }
         }
 
+        if($request->has('search'))
+        {
+            $house_banks->where('name', 'like', '%'.$request->search.'%')->orWhere('bank_branch', 'like', '%'.$request->search.'%')->orWhere('bank_account_number', 'like', '%'.$request->search.'%')->orWhere('bank_account_name', 'like', '%'.$request->search.'%')->orWhere('gl_account', 'like', '%'.$request->search.'%');
+        }
+
         if($request->has('paginate'))
         {
             return $house_banks->paginate($request->paginate);
@@ -113,7 +118,7 @@ class HouseBankController extends Controller
             'bank_branch' => 'required',
             'bank_account_number' => 'required',
             'bank_account_name' => 'required',
-            'gl_account' => 'required',
+            'gl_account' => 'required|min:12|max:12',
             'currency.id' => 'required|numeric',
         ]);
 
@@ -124,16 +129,18 @@ class HouseBankController extends Controller
             return response()->json(true);
         }
 
-        $house_bank = new HouseBank;
+        DB::transaction(function() use ($request){
+            $house_bank = new HouseBank;
 
-        $house_bank->name = $request->name;
-        $house_bank->bank_branch = $request->bank_branch;
-        $house_bank->bank_account_number = $request->bank_account_number;
-        $house_bank->bank_account_name = $request->bank_account_name;
-        $house_bank->gl_account = $request->gl_account;
-        $house_bank->currency_id = $request->input('currency.id');
+            $house_bank->name = $request->name;
+            $house_bank->bank_branch = $request->bank_branch;
+            $house_bank->bank_account_number = $request->bank_account_number;
+            $house_bank->bank_account_name = $request->bank_account_name;
+            $house_bank->gl_account = $request->gl_account;
+            $house_bank->currency_id = $request->input('currency.id');
 
-        $house_bank->save();
+            $house_bank->save();
+        });
     }
 
     /**
@@ -190,16 +197,18 @@ class HouseBankController extends Controller
             return response()->json(true);
         }
 
-        $house_bank = HouseBank::where('id', $id)->first();
+        DB::transaction(function() use ($request, $id){
+            $house_bank = HouseBank::where('id', $id)->first();
 
-        $house_bank->name = $request->name;
-        $house_bank->bank_branch = $request->bank_branch;
-        $house_bank->bank_account_number = $request->bank_account_number;
-        $house_bank->bank_account_name = $request->bank_account_name;
-        $house_bank->gl_account = $request->gl_account;
-        $house_bank->currency_id = $request->input('currency.id');
+            $house_bank->name = $request->name;
+            $house_bank->bank_branch = $request->bank_branch;
+            $house_bank->bank_account_number = $request->bank_account_number;
+            $house_bank->bank_account_name = $request->bank_account_name;
+            $house_bank->gl_account = $request->gl_account;
+            $house_bank->currency_id = $request->input('currency.id');
 
-        $house_bank->save();
+            $house_bank->save();
+        });
     }
 
     /**

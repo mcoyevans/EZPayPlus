@@ -95,13 +95,15 @@ class BranchController extends Controller
             'gl_account' => 'required|min:12|max:12',
         ]);
 
-        $branch = new Branch;
+        DB::transaction(function() use ($request){
+            $branch = new Branch;
 
-        $branch->name = $request->name;
-        $branch->description = $request->description;
-        $branch->gl_account = $request->gl_account;
+            $branch->name = $request->name;
+            $branch->description = $request->description;
+            $branch->gl_account = $request->gl_account;
 
-        $branch->save();
+            $branch->save();
+        });
     }
 
     /**

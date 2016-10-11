@@ -13,6 +13,7 @@ class CreatePayrollPeriodsTable extends Migration
     public function up()
     {
         Schema::create('payroll_periods', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string('cut_off');
             $table->string('month');

@@ -13,6 +13,7 @@ class CreateGroupModuleTable extends Migration
     public function up()
     {
         Schema::create('group_module', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->integer('group_id')->unsigned();
             $table->integer('module_id')->unsigned();

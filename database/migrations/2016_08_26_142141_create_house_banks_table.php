@@ -13,6 +13,7 @@ class CreateHouseBanksTable extends Migration
     public function up()
     {
         Schema::create('house_banks', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string('name');
             $table->string('bank_branch');

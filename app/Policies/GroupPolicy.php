@@ -3,10 +3,10 @@
 namespace App\Policies;
 
 use App\User;
-use App\Branch;
+use App\Group;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class BranchPolicy
+class GroupPolicy
 {
     use HandlesAuthorization;
 
@@ -20,20 +20,21 @@ class BranchPolicy
             return true;
         }
     }
+
     /**
-     * Determine whether the user can view the branch.
+     * Determine whether the user can view the group.
      *
      * @param  App\User  $user
-     * @param  App\Branch  $branch
+     * @param  App\Group  $group
      * @return mixed
      */
-    public function view(User $user, Branch $branch)
+    public function view(User $user, Group $group)
     {
         //
     }
 
     /**
-     * Determine whether the user can create branches.
+     * Determine whether the user can create groups.
      *
      * @param  App\User  $user
      * @return mixed
@@ -53,26 +54,26 @@ class BranchPolicy
     }
 
     /**
-     * Determine whether the user can update the branch.
+     * Determine whether the user can update the group.
      *
      * @param  App\User  $user
-     * @param  App\Branch  $branch
+     * @param  App\Group  $group
      * @return mixed
      */
-    public function update(User $user, Branch $branch)
+    public function update(User $user, Group $group)
     {
-        //
+        return $user->group_id === $group->id;
     }
 
     /**
-     * Determine whether the user can delete the branch.
+     * Determine whether the user can delete the group.
      *
      * @param  App\User  $user
-     * @param  App\Branch  $branch
+     * @param  App\Group  $group
      * @return mixed
      */
-    public function delete(User $user, Branch $branch)
+    public function delete(User $user, Group $group)
     {
-        //
+        return $user->group_id === $group->id;
     }
 }

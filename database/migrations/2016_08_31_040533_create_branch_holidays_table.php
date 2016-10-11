@@ -13,6 +13,7 @@ class CreateBranchHolidaysTable extends Migration
     public function up()
     {
         Schema::create('branch_holidays', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->integer('branch_id')->unsigned();
             $table->integer('holiday_id')->unsigned();

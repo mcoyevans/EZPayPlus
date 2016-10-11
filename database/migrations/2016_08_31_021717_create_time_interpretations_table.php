@@ -13,6 +13,7 @@ class CreateTimeInterpretationsTable extends Migration
     public function up()
     {
         Schema::create('time_interpretations', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string('name');
             $table->decimal('night_differential', 4, 3);

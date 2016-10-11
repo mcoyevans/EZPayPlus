@@ -53,10 +53,7 @@ sharedModule
 			      	.textContent(message)
 			      	.position('bottom right')
 			      	.hideDelay(3000);
-
-			    var audio = new Audio('/audio/notif.mp3')
-			    audio.play();
-			    
+			      	
 			    return $mdToast.show(toast);
 			},
 			/* Starts the preloader */

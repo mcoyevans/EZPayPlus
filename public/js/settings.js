@@ -96,6 +96,7 @@ settings
 					$scope.fab.action = function(){
 						Helper.customDialog(query.fab)
 							.then(function(){
+								Helper.notify(query.fab.message);
 								$scope.refresh();
 							}, function(){
 								return;
@@ -252,6 +253,59 @@ settings
 		}
 	}]);
 settings
+	.controller('createGroupDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.group = {};
+		$scope.group.modules = [];
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		Helper.get('/module')
+			.success(function(data){
+				$scope.modules = data;
+			})
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post('/group/check-duplicate', $scope.group)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.groupForm.$invalid){
+				angular.forEach($scope.groupForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+				
+				Helper.post('/group', $scope.group)
+					.success(function(duplicate){
+						if(duplicate){
+							$scope.busy = false;
+							return;
+						}
+
+						Helper.stop();
+					})
+					.error(function(){
+						Helper.error();
+					});
+			}
+		}
+	}]);
+settings
 	.controller('createHouseBankDialogController', ['$scope', '$filter', 'Helper', function($scope, $filter, Helper){
 		$scope.house_bank = {};
 		$scope.currency = {};
@@ -357,6 +411,110 @@ settings
 			{
 				$scope.busy = true;
 				Helper.put('/branch/' + $scope.branch.id, $scope.branch)
+					.success(function(duplicate){
+						if(duplicate){
+							$scope.busy = false;
+							return;
+						}
+
+						Helper.stop();
+					})
+					.error(function(){
+						Helper.error();
+					});
+			}
+		}
+	}]);
+settings
+	.controller('editGroupDialogController', ['$scope', 'Helper', function($scope, Helper){
+		var group = Helper.fetch();
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		var query = {};
+		query.where = [
+			{
+				'label':'id',
+				'condition':'=',
+				'value': group.id,
+			}
+		];
+		query.first = true;
+
+		Helper.get('/module')
+			.success(function(data){
+				$scope.modules = data;
+
+				$scope.count = $scope.modules.length;
+				Helper.post('/group/enlist', query)
+					.success(function(data){
+						$scope.group = data;
+						$scope.group.modules = [];
+
+						angular.forEach($scope.modules, function(item, key){
+							$scope.group.modules.push(null);
+
+							var query = {};
+							query.with = [
+								{
+									'relation':'module',
+									'withTrashed': false,
+								},
+							];
+							query.where = [
+								{
+									'label': 'group_id',
+									'condition': '=',
+									'value': group.id,
+								},
+								{
+									'label': 'module_id',
+									'condition': '=',
+									'value': item.id,
+								},
+							];
+							query.first = true;
+
+							Helper.post('/group-module/enlist', query)
+								.success(function(data){
+									$scope.count--;
+									if(data)
+									{
+										$scope.group.modules.splice(key, 1, data.module);
+									}
+								});
+						});
+					});
+			});
+		
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post('/group/check-duplicate', $scope.group)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.groupForm.$invalid){
+				angular.forEach($scope.groupForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+				
+				Helper.put('/group/' + group.id, $scope.group)
 					.success(function(duplicate){
 						if(duplicate){
 							$scope.busy = false;
@@ -621,6 +779,7 @@ settings
 				'fab': {
 					'controller':'createBranchDialogController',
 					'template':'/app/components/settings/templates/dialogs/branch-form-dialog.template.html',
+					'message': 'Branch saved.'
 				},
 				'menu': [
 					{
@@ -708,6 +867,7 @@ settings
 				'fab': {
 					'controller':'createHouseBankDialogController',
 					'template':'/app/components/settings/templates/dialogs/house-bank-form-dialog.template.html',
+					'message': 'House bank saved.'
 				},
 				action: function(current){
 					setInit(current);
@@ -756,18 +916,117 @@ settings
 						},
 					},
 				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Bank Branch',
+						'type': 'bank_branch',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Bank Account Number',
+						'type': 'bank_account_number',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Bank Account Name',
+						'type': 'bank_account_name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'GL Account',
+						'type': 'gl_account',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
 			},
 			{
 				'label':'User Groups',
 				'url': '/group/enlist',
 				'request' : {
-					'withTrashed': false,
+					'with': [
+						{
+							'relation':'modules',
+							'withTrashed': false,
+						},
+					],
 					'paginate':20,
 				},
 				'fab': {
 					'controller':'createGroupDialogController',
 					'template':'/app/components/settings/templates/dialogs/group-form-dialog.template.html',
+					'message': 'User group saved.'
 				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						action: function(data){
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'editGroupDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/group-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete Group';
+							dialog.message = 'Delete ' + data.name + ' group?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/group/' + data.id)
+										.success(function(){
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
 				action: function(current){
 					setInit(current);
 				},
@@ -788,6 +1047,7 @@ settings
 				'fab': {
 					'controller':'createUserDialogController',
 					'template':'/app/components/settings/templates/dialogs/user-form-dialog.template.html',
+					'message': 'User saved.'
 				},
 				action: function(current){
 					setInit(current);

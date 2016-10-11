@@ -13,6 +13,7 @@ class CreateCurrenciesTable extends Migration
     public function up()
     {
         Schema::create('currencies', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->char('iso', 3);
             $table->string('name')->unique();

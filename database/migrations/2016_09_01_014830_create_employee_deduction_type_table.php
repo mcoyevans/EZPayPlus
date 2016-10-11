@@ -13,6 +13,7 @@ class CreateEmployeeDeductionTypeTable extends Migration
     public function up()
     {
         Schema::create('employee_deduction_type', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->integer('employee_id')->unsigned();
             $table->integer('deduction_type_id')->unsigned();

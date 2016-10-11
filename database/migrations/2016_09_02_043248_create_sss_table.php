@@ -13,6 +13,7 @@ class CreateSSSTable extends Migration
     public function up()
     {
         Schema::create('sss', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->float('minimum_range');
             $table->float('maximum_range');

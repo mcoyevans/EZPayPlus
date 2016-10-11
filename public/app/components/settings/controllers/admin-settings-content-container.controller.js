@@ -95,6 +95,7 @@ settings
 					$scope.fab.action = function(){
 						Helper.customDialog(query.fab)
 							.then(function(){
+								Helper.notify(query.fab.message);
 								$scope.refresh();
 							}, function(){
 								return;

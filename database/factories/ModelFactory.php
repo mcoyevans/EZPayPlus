@@ -35,7 +35,7 @@ $factory->defineAs(App\User::class, 'mcoy', function ($faker) use ($factory) {
 
 $factory->defineAs(App\Group::class, 'super-admin', function (Faker\Generator $faker) {
     return [
-        'name' => 'super-admin',
+        'name' => 'Super-Admin',
         'description' => 'Super admin has access to all modules.',
     ];
 });
@@ -58,28 +58,28 @@ $factory->define(App\Company::class, function (Faker\Generator $faker) {
 
 $factory->defineAs(App\Module::class, 'settings', function (Faker\Generator $faker) {
     return [
-        'name' => 'settings',
+        'name' => 'Settings',
         'description' => 'Module that allows client settings information.',
     ];
 });
 
 $factory->defineAs(App\Module::class, 'hris', function (Faker\Generator $faker) {
     return [
-        'name' => 'hris',
+        'name' => 'HRIS',
         'description' => 'Module that covers client hris.',
     ];
 });
 
 $factory->defineAs(App\Module::class, 'payroll', function (Faker\Generator $faker) {
     return [
-        'name' => 'payroll',
+        'name' => 'Payroll',
         'description' => 'Module that covers client payroll.',
     ];
 });
 
 $factory->defineAs(App\Module::class, 'timekeeping', function (Faker\Generator $faker) {
     return [
-        'name' => 'timekeeping',
+        'name' => 'Timekeeping',
         'description' => 'Module that covers client timekeeping.',
     ];
 });

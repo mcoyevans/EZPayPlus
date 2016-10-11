@@ -13,6 +13,7 @@ class CreateShiftSchedulesTable extends Migration
     public function up()
     {
         Schema::create('shift_schedules', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->date('date_start');
             $table->date('date_end');

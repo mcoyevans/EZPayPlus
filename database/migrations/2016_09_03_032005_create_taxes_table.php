@@ -13,6 +13,7 @@ class CreateTaxesTable extends Migration
     public function up()
     {
         Schema::create('taxes', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->integer('tax_code_id')->unsigned();
             $table->string('pay_frequency');

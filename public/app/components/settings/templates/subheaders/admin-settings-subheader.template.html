@@ -16,9 +16,9 @@
             <md-tooltip hide-xs hide-sm hide-md>Sort By</md-tooltip>
         </md-button>
         <md-menu-content width="4">
-            <md-subheader>Filter</md-subheader>
+            <md-subheader ng-if="subheader.current.request.withTrashed">Filter</md-subheader>
             <!-- Active -->
-            <md-menu-item>
+            <md-menu-item ng-if="subheader.current.request.withTrashed">
                 <md-button aria-label="{{showInactive}}" ng-click="subheader.toggleActive()" flex>
                     <div layout="row">
                         <span>Show inactive</span>

@@ -11,6 +11,16 @@ class HouseBankPolicy
     use HandlesAuthorization;
 
     /**
+     * Allow permissions for super-admin users
+     *
+     */
+    public function before($user)
+    {
+        if ($user->group_id === 1) {
+            return true;
+        }
+    }
+    /**
      * Determine whether the user can view the houseBank.
      *
      * @param  App\User  $user

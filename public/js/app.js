@@ -91,48 +91,6 @@ app
 			},
 		];
 
-		$scope.menu.section = [
-			{
-				'name':'Settings',
-				'icon':'mdi-settings',
-			},
-		];
-
-		$scope.menu.pages = [
-			[
-				{
-					'label': 'Admin',
-					action: function(){
-						$state.go('main.admin-settings');
-					},
-				},
-				{
-					'label': 'HRIS',
-					action: function(){
-						$state.go('main.hris-settings');
-					},
-				},
-				{
-					'label': 'Payroll',
-					action: function(){
-						$state.go('main.payroll-settings');
-					},
-				},
-				{
-					'label': 'Profile',
-					action: function(){
-						$state.go('main.profile-settings');
-					}, 
-				},
-				{
-					'label': 'Time Keeping',
-					action: function(){
-						$state.go('main.time-keeping-settings');
-					},
-				},
-			]
-		];
-
 		// set section as active
 		$scope.setActive = function(index){
 		 	angular.element($('[aria-label="'+ 'section-' + index + '"]').closest('li').toggleClass('active'));
@@ -162,7 +120,7 @@ app
 		Helper.post('/user/check')
 			.success(function(data){
 				angular.forEach(data.group.modules, function(module){
-					if(module.name == 'hris')
+					if(module.name == 'HRIS')
 					{
 						var hris = {
 							'state': 'main.hris',
@@ -172,7 +130,7 @@ app
 
 						$scope.menu.static.push(hris);
 					}
-					else if(module.name == 'payroll')
+					else if(module.name == 'Payroll')
 					{
 						var payroll = {
 							'state': 'main.payroll',
@@ -181,6 +139,60 @@ app
 						}
 
 						$scope.menu.static.push(payroll);
+					}
+					else if(module.name == 'Timekeeping')
+					{
+						var payroll = {
+							'state': 'main.timekeeping',
+							'icon': 'mdi-calendar-clock',
+							'label': 'Timekeeping',
+						}
+
+						$scope.menu.static.push(payroll);
+					}
+					else if(module.name == 'Settings')
+					{
+						$scope.menu.section = [
+							{
+								'name':'Settings',
+								'icon':'mdi-settings',
+							},
+						];
+
+						$scope.menu.pages = [
+							[
+								{
+									'label': 'Admin',
+									action: function(){
+										$state.go('main.admin-settings');
+									},
+								},
+								{
+									'label': 'HRIS',
+									action: function(){
+										$state.go('main.hris-settings');
+									},
+								},
+								{
+									'label': 'Payroll',
+									action: function(){
+										$state.go('main.payroll-settings');
+									},
+								},
+								{
+									'label': 'Profile',
+									action: function(){
+										$state.go('main.profile-settings');
+									}, 
+								},
+								{
+									'label': 'Time Keeping',
+									action: function(){
+										$state.go('main.time-keeping-settings');
+									},
+								},
+							]
+						];
 					}
 				});
 

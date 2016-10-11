@@ -13,6 +13,7 @@ class CreatePayslipsTable extends Migration
     public function up()
     {
         Schema::create('payslips', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->integer('employee_id')->unsigned();
             $table->float('tardy');

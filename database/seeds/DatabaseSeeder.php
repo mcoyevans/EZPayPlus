@@ -11,7 +11,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-		factory(App\Group::class, 'super-admin')->create();
+        factory(App\Group::class, 'super-admin')->create();
+		factory(App\Company::class)->create();
         factory(App\GroupModule::class, 'super-admin-setup')->create();
         factory(App\GroupModule::class, 'super-admin-hris')->create();
         factory(App\GroupModule::class, 'super-admin-payroll')->create();

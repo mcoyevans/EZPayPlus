@@ -13,6 +13,7 @@ class CreateDeploymentsTable extends Migration
     public function up()
     {
         Schema::create('deployments', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->integer('employee_id')->unsigned();
             $table->integer('cost_center_id')->unsigned();

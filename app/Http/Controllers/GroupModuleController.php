@@ -6,14 +6,58 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 
-use App\Module;
+use App\GroupModule;
 
 use Auth;
 use DB;
-use Cabon\Cabon;
+use Carbon;
 
-class ModuleController extends Controller
+class GroupModuleController extends Controller
 {
+    /**
+     * Display a listing of the resource with parameters.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function enlist(Request $request)
+    {
+        $group_modules = GroupModule::query();
+
+        if($request->has('with'))
+        {
+            for ($i=0; $i < count($request->with); $i++) { 
+                if(!$request->input('with')[$i]['withTrashed'])
+                {
+                    $group_modules->with($request->input('with')[$i]['relation']);
+                }
+            }
+        }
+
+        if($request->has('where'))
+        {
+            for ($i=0; $i < count($request->where); $i++) { 
+                $group_modules->where($request->input('where')[$i]['label'], $request->input('where')[$i]['condition'], $request->input('where')[$i]['value']);
+            }
+        }
+
+        if($request->has('search'))
+        {
+            $group_modules->where('name', 'like', '%'.$request->search.'%')->orWhere('description', 'like', '%'.$request->search.'%');
+        }
+
+        if($request->has('paginate'))
+        {
+            return $group_modules->paginate($request->paginate);
+        }
+
+        if($request->has('first'))
+        {
+            return $group_modules->first();
+        }
+
+        return $group_modules->get();
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -21,7 +65,7 @@ class ModuleController extends Controller
      */
     public function index()
     {
-        return Module::all();
+        //
     }
 
     /**

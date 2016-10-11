@@ -89,6 +89,16 @@ Route::group(['prefix' => 'branch'], function(){
 /* House Bank Routes */
 Route::group(['prefix' => 'house-bank'], function(){
 	Route::post('enlist', 'HouseBankController@enlist');
-	Route::post('check-gl-account', 'HouseBankController@checkGLAccount');
 	Route::post('check-duplicate', 'HouseBankController@checkDuplicate');
+});
+
+/* Group Routes */
+Route::group(['prefix' => 'group'], function(){
+	Route::post('enlist', 'GroupController@enlist');
+	Route::post('check-duplicate', 'GroupController@checkDuplicate');
+});
+
+/* Group Module Routes */
+Route::group(['prefix' => 'group-module'], function(){
+	Route::post('enlist', 'GroupModuleController@enlist');
 });

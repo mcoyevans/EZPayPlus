@@ -13,6 +13,7 @@ class CreatePayrollsTable extends Migration
     public function up()
     {
         Schema::create('payrolls', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string('code');
             $table->text('description');

@@ -13,6 +13,7 @@ class CreateEmployeeShiftScheduleTable extends Migration
     public function up()
     {
         Schema::create('employee_shift_schedule', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->integer('employee_id')->unsigned();
             $table->integer('shift_schedule_id')->unsigned();
