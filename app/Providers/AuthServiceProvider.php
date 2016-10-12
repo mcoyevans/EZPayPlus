@@ -3,11 +3,16 @@
 namespace App\Providers;
 
 use App\Branch;
+use App\Company;
 use App\Group;
 use App\HouseBank;
+use App\Module;
+use App\User;
 use App\Policies\BranchPolicy;
+use App\Policies\CompanyPolicy;
 use App\Policies\GroupPolicy;
 use App\Policies\HouseBankPolicy;
+use App\Policies\ModulePolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -23,6 +28,7 @@ class AuthServiceProvider extends ServiceProvider
         'App\Branch' => 'App\Policies\BranchPolicy',
         'App\Group' => 'App\Policies\GroupPolicy',
         'App\HouseBank' => 'App\Policies\HouseBankPolicy',
+        'App\Module' => 'App\Policies\ModulePolicy',
     ];
 
     /**
@@ -34,8 +40,17 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        Gate::define('update-company', function($user){
-            return $user->group_id === 1 || $user->group_id === 2; // Admin or Human Resource Only
-        });
+        Gate::define('manage-user', function($user){
+            $user = User::with('group.modules')->where('id', $user->id)->first();
+
+            foreach ($user->group->modules as $module) {
+                if($module->name == 'Settings')
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        });        
     }
 }

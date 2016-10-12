@@ -9,9 +9,59 @@ use App\Http\Requests;
 use App\User;
 use Auth;
 use Hash;
+use Gate;
 
 class UserController extends Controller
 {
+    /**
+     * Display a listing of the resource with parameters.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function enlist(Request $request)
+    {
+        $users = User::query();
+
+        if($request->has('withTrashed'))
+        {
+            $users->withTrashed();
+        }
+
+        if($request->has('with'))
+        {
+            for ($i=0; $i < count($request->with); $i++) { 
+                if(!$request->input('with')[$i]['withTrashed'])
+                {
+                    $users->with($request->input('with')[$i]['relation']);
+                }
+            }
+        }
+
+        if($request->has('where'))
+        {
+            for ($i=0; $i < count($request->where); $i++) { 
+                $users->where($request->input('where')[$i]['label'], $request->input('where')[$i]['condition'], $request->input('where')[$i]['value']);
+            }
+        }
+
+        if($request->has('search'))
+        {
+            $users->where('name', 'like', '%'.$request->search.'%')->orWhere('email', 'like', '%'.$request->search.'%');
+        }
+
+        if($request->has('paginate'))
+        {
+            return $users->paginate($request->paginate);
+        }
+
+        if($request->has('first'))
+        {
+            return $users->first();
+        }
+
+        return $users->get();
+    }
+
     /**
      * Checks authenticated user.
      *
@@ -94,7 +144,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        // 
     }
 
     /**
@@ -105,7 +155,31 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        if(Gate::forUser($request->user())->allows('manage-user'))
+        {
+            $duplicate = User::where('email', $request->email)->first();
+
+            if($duplicate)
+            {
+                return response()->json(true);
+            }
+
+            $this->validate($request, [
+                'name' => 'required',
+                'email' => 'required|unique:users',
+                'password' => 'required',
+                'group_id' => 'required|numeric',
+            ]);
+
+            $user = new User;
+
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->password = bcrypt($request->password);
+            $user->group_id = $request->group_id;
+
+            $user->save();
+        }
     }
 
     /**
@@ -116,7 +190,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        //
+        return User::withTrashed()->where('id', $id)->first();
     }
 
     /**
@@ -139,7 +213,27 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        if(Gate::forUser($request->user())->allows('manage-user'))
+        {
+            $duplicate = User::whereNotIn('id', [$id])->where('email', $request->email)->first();
+
+            if($duplicate)
+            {
+                return response()->json(true);
+            }
+
+            $this->validate($request, [
+                'name' => 'required',
+                'group_id' => 'required|numeric',
+            ]);
+
+            $user = User::where('id', $id)->first();
+
+            $user->name = $request->name;
+            $user->group_id = $request->group_id;
+
+            $user->save();
+        }
     }
 
     /**
@@ -150,6 +244,9 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        //
+        if(Gate::forUser(Auth::user())->allows('manage-user'))
+        {
+            User::where('id', $id)->delete();
+        }
     }
 }

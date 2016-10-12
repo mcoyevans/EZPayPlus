@@ -273,12 +273,19 @@ settings
 				'label':'Users',
 				'url': '/user/enlist',
 				'request' : {
-					'withTrashed': false,
+					'withTrashed': true,
 					'with' : [
 						{
 							'relation':'group',
 							'withTrashed': false,
 						}
+					],
+					'where': [
+						{
+							'label':'id',
+							'condition':'!=',
+							'value': 1,
+						},
 					],
 					'paginate':20,
 				},
@@ -287,6 +294,67 @@ settings
 					'template':'/app/components/settings/templates/dialogs/user-form-dialog.template.html',
 					'message': 'User saved.'
 				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						action: function(data){
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'editUserDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/user-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Disable Account',
+						'icon': 'mdi-account-remove',
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Disable account';
+							dialog.message = 'Disable ' + data.name + '\'s account?'
+							dialog.ok = 'Disable';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/user/' + data.id)
+										.success(function(){
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Email',
+						'type': 'email',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
 				action: function(current){
 					setInit(current);
 				},

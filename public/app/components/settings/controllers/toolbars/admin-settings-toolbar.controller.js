@@ -3,6 +3,10 @@ settings
 		$scope.toolbar.parentState = 'Settings';
 		$scope.toolbar.childState = 'Admin';
 
+		$scope.$on('close', function(){
+			$scope.hideSearchBar();
+		});
+
 		$scope.toolbar.getItems = function(query){
 			var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items;
 			return results;
@@ -16,6 +20,7 @@ settings
 		$scope.showSearchBar = function(){
 			$scope.type.busy = true;
 			$scope.searchBar = true;
+			$scope.showInactive = true;
 		};
 
 		/**

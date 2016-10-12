@@ -120,6 +120,8 @@ app
 				});
 
 				$scope.user = data;
+
+				Helper.setAuthUser(data);
 			})
 
 		$scope.$on('fetchAuthenticatedUser', function(){

@@ -42,6 +42,7 @@ settings
 		$scope.$on('search', function(){
 			$scope.subheader.current.request.search = $scope.toolbar.searchText;
 			$scope.refresh();
+			$scope.showInactive = true;
 		});
 
 		/* Listens for any request for refresh */
@@ -81,6 +82,8 @@ settings
 			$scope.type = {};
 			$scope.type.items = [];
 			$scope.toolbar.items = [];
+
+			$scope.$broadcast('close');
 
 			// 2 is default so the next page to be loaded will be page 2 
 			$scope.type.page = 2;

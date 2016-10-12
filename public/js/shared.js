@@ -36,6 +36,7 @@ var timekeeping = angular.module('timekeeping', []);
 sharedModule
 	.service('Helper', ['$mdDialog', '$mdToast', '$http', function($mdDialog, $mdToast, $http){
 		var dataHolder = null;
+		var user = null;
 
 		return {
 			cancel: function(){
@@ -125,8 +126,11 @@ sharedModule
 			fetch: function(){
 				return dataHolder;
 			},
-			checkDuplicate: function(urlBase, data){
-				return $http.post(urlBase + '/check-duplicate', data);
+			setAuthUser: function(data){
+				user = data;
+			},
+			authUser: function(data){
+				return user;
 			},
 			get: function(url){
 				return $http.get(url);

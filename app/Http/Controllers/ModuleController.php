@@ -53,7 +53,11 @@ class ModuleController extends Controller
      */
     public function show($id)
     {
-        //
+        $module = Module::where('id', $id)->first();
+
+        $this->authorize('view', $module);
+
+        return $module;
     }
 
     /**

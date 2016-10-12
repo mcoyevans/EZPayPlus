@@ -3,37 +3,27 @@
 namespace App\Policies;
 
 use App\User;
-use App\HouseBank;
+use App\Company;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class HouseBankPolicy
+class CompanyPolicy
 {
     use HandlesAuthorization;
 
     /**
-     * Allow permissions for super-admin users
-     *
-     */
-    public function before($user)
-    {
-        if ($user->group_id === 1) {
-            return true;
-        }
-    }
-    /**
-     * Determine whether the user can view the houseBank.
+     * Determine whether the user can view the company.
      *
      * @param  App\User  $user
-     * @param  App\HouseBank  $houseBank
+     * @param  App\Company  $company
      * @return mixed
      */
-    public function view(User $user, HouseBank $houseBank)
+    public function view(User $user, Company $company)
     {
         //
     }
 
     /**
-     * Determine whether the user can create houseBanks.
+     * Determine whether the user can create companies.
      *
      * @param  App\User  $user
      * @return mixed
@@ -53,25 +43,25 @@ class HouseBankPolicy
     }
 
     /**
-     * Determine whether the user can update the houseBank.
+     * Determine whether the user can update the company.
      *
      * @param  App\User  $user
-     * @param  App\HouseBank  $houseBank
+     * @param  App\Company  $company
      * @return mixed
      */
-    public function update(User $user, HouseBank $houseBank)
+    public function update(User $user, Company $company)
     {
         //
     }
 
     /**
-     * Determine whether the user can delete the houseBank.
+     * Determine whether the user can delete the company.
      *
      * @param  App\User  $user
-     * @param  App\HouseBank  $houseBank
+     * @param  App\Company  $company
      * @return mixed
      */
-    public function delete(User $user, HouseBank $houseBank)
+    public function delete(User $user, Company $company)
     {
         //
     }

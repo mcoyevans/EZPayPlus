@@ -59,10 +59,12 @@ Route::resource('user', 'UserController');
 
 /* User Routes */
 Route::group(['prefix' => 'user'], function(){
-	Route::post('logout', 'UserController@logout');
 	Route::post('check', 'UserController@check');
+	Route::post('check-email', 'UserController@checkEmail');
 	Route::post('change-password', 'UserController@changePassword');
 	Route::post('check-password', 'UserController@checkPassword');
+	Route::post('enlist', 'UserController@enlist');
+	Route::post('logout', 'UserController@logout');
 });
 
 /* Company Routes */

@@ -43,6 +43,7 @@ settings
 		$scope.$on('search', function(){
 			$scope.subheader.current.request.search = $scope.toolbar.searchText;
 			$scope.refresh();
+			$scope.showInactive = true;
 		});
 
 		/* Listens for any request for refresh */
@@ -82,6 +83,8 @@ settings
 			$scope.type = {};
 			$scope.type.items = [];
 			$scope.toolbar.items = [];
+
+			$scope.$broadcast('close');
 
 			// 2 is default so the next page to be loaded will be page 2 
 			$scope.type.page = 2;
@@ -366,6 +369,62 @@ settings
 					})
 					.error(function(){
 						Helper.error();
+					});
+			}
+		}
+	}]);
+settings
+	.controller('createUserDialogController', ['$scope', 'Helper', function($scope, Helper){
+		var user = Helper.authUser();
+
+		$scope.user = {};
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+		
+		Helper.post('/group/enlist')
+			.success(function(data){
+				$scope.groups = data;
+			})
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post('/user/check-email', $scope.user)
+				.success(function(data){
+					$scope.duplicate = data ? true : false;
+				})
+		}
+
+		$scope.submit = function(){
+			$scope.error = false;
+			if($scope.userForm.$invalid){
+				angular.forEach($scope.userForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			if(!$scope.duplicate && $scope.user.password == $scope.user.confirm)
+			{
+				$scope.busy = true;
+				Helper.post('/user', $scope.user)
+					.success(function(duplicate){
+						if(duplicate){
+							$scope.busy = false;
+							return;
+						}
+
+						Helper.stop();
+					})
+					.error(function(){
+						$scope.busy = false;
+						$scope.error = true;
 					});
 			}
 		}
@@ -761,6 +820,69 @@ settings
 		}();
 	}]);
 settings
+	.controller('editUserDialogController', ['$scope', 'Helper', function($scope, Helper){
+		var user = Helper.authUser();
+
+		var dataUser = Helper.fetch();
+		
+		$scope.edit = true;
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		Helper.get('/user/' + dataUser.id)
+			.success(function(data){
+				$scope.user = data;
+			})
+
+		Helper.post('/group/enlist')
+			.success(function(data){
+				$scope.groups = data;
+			})
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post('/user/check-email', $scope.user)
+				.success(function(data){
+					$scope.duplicate = data ? true : false;
+				})
+		}
+
+		$scope.submit = function(){
+			$scope.error = false;
+			if($scope.userForm.$invalid){
+				angular.forEach($scope.userForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+				Helper.put('/user/' + dataUser.id , $scope.user)
+					.success(function(duplicate){
+						if(duplicate){
+							$scope.busy = false;
+							return;
+						}
+
+						Helper.stop();
+					})
+					.error(function(){
+						$scope.busy = false;
+						$scope.error = true;
+					});
+			}
+		}
+	}]);
+settings
 	.controller('adminSettingsSubheaderController', ['$scope', 'Helper', function($scope, Helper){
 		var setInit = function(data){
 			Helper.set(data);
@@ -1035,12 +1157,19 @@ settings
 				'label':'Users',
 				'url': '/user/enlist',
 				'request' : {
-					'withTrashed': false,
+					'withTrashed': true,
 					'with' : [
 						{
 							'relation':'group',
 							'withTrashed': false,
 						}
+					],
+					'where': [
+						{
+							'label':'id',
+							'condition':'!=',
+							'value': 1,
+						},
 					],
 					'paginate':20,
 				},
@@ -1049,6 +1178,67 @@ settings
 					'template':'/app/components/settings/templates/dialogs/user-form-dialog.template.html',
 					'message': 'User saved.'
 				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						action: function(data){
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'editUserDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/user-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Disable Account',
+						'icon': 'mdi-account-remove',
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Disable account';
+							dialog.message = 'Disable ' + data.name + '\'s account?'
+							dialog.ok = 'Disable';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/user/' + data.id)
+										.success(function(){
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Email',
+						'type': 'email',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
 				action: function(current){
 					setInit(current);
 				},
@@ -1061,6 +1251,10 @@ settings
 	.controller('adminSettingsToolbarController', ['$scope', '$filter', function($scope, $filter){
 		$scope.toolbar.parentState = 'Settings';
 		$scope.toolbar.childState = 'Admin';
+
+		$scope.$on('close', function(){
+			$scope.hideSearchBar();
+		});
 
 		$scope.toolbar.getItems = function(query){
 			var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items;
@@ -1075,6 +1269,7 @@ settings
 		$scope.showSearchBar = function(){
 			$scope.type.busy = true;
 			$scope.searchBar = true;
+			$scope.showInactive = true;
 		};
 
 		/**

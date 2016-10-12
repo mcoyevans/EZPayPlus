@@ -43,7 +43,7 @@ class BranchPolicy
         $user = User::with('group.modules')->where('id', $user->id)->first();
 
         foreach ($user->group->modules as $module) {
-            if($module->name == 'settings')
+            if($module->name == 'Settings')
             {
                 return true;
             }

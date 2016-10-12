@@ -28,6 +28,17 @@ app
 			})
 			.state('main.admin-settings', {
 				url: 'settings/admin',
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/1')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
 				views: {
 					'content-container': {
 						templateUrl: '/app/shared/views/content-container.view.html',
@@ -51,6 +62,17 @@ app
 			})
 			.state('main.profile-settings', {
 				url: 'settings/profile',
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/1')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
 				views: {
 					'content-container': {
 						templateUrl: '/app/shared/views/content-container.view.html',
