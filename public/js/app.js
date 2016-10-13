@@ -67,6 +67,40 @@ app
 					}
 				}
 			})
+			.state('main.hris-settings', {
+				url: 'settings/hris',
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/1')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'hrisSettingsContentContainerController',
+					},
+					'toolbar@main.hris-settings': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'hrisSettingsToolbarController',
+					},
+					'left-sidenav@main.hris-settings': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'subheader@main.hris-settings': {
+						templateUrl: '/app/components/settings/templates/subheaders/hris-settings-subheader.template.html',
+						controller: 'hrisSettingsSubheaderController',
+					},
+					'content@main.hris-settings':{
+						templateUrl: '/app/components/settings/templates/content/hris-settings-content.template.html',
+					}
+				}
+			})
 			.state('main.profile-settings', {
 				url: 'settings/profile',
 				resolve:{

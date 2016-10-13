@@ -10,6 +10,7 @@ use App\Branch;
 
 use Auth;
 use DB;
+use Gate;
 use Carbon\Carbon;
 
 class BranchController extends Controller
@@ -80,30 +81,36 @@ class BranchController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize('create', Branch::class);
+        if(Gate::forUser($request->user())->allows('settings-access'))
+        {       
+            $duplicate = Branch::where('gl_account', $request->gl_account)->first();
 
-        $duplicate = Branch::where('gl_account', $request->gl_account)->first();
+            if($duplicate)
+            {
+                return response()->json(true);
+            }
 
-        if($duplicate)
+            $this->validate($request, [
+                'name' => 'required',
+                'description' => 'required',
+                'gl_account' => 'required|min:12|max:12',
+            ]);
+
+            DB::transaction(function() use ($request){
+                $branch = new Branch;
+
+                $branch->name = $request->name;
+                $branch->description = $request->description;
+                $branch->gl_account = $request->gl_account;
+
+                $branch->save();
+            });
+        }
+        else
         {
-            return response()->json(true);
+            abort(403, 'Unauthorized action.');
         }
 
-        $this->validate($request, [
-            'name' => 'required',
-            'description' => 'required',
-            'gl_account' => 'required|min:12|max:12',
-        ]);
-
-        DB::transaction(function() use ($request){
-            $branch = new Branch;
-
-            $branch->name = $request->name;
-            $branch->description = $request->description;
-            $branch->gl_account = $request->gl_account;
-
-            $branch->save();
-        });
     }
 
     /**
@@ -137,28 +144,33 @@ class BranchController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->authorize('create', Branch::class);
-
-        $duplicate = Branch::where('gl_account', $request->gl_account)->whereNotIn('id', [$id])->first();
-
-        if($duplicate)
+        if(Gate::forUser($request->user())->allows('settings-access'))
         {
-            return response()->json(true);
+            $duplicate = Branch::where('gl_account', $request->gl_account)->whereNotIn('id', [$id])->first();
+
+            if($duplicate)
+            {
+                return response()->json(true);
+            }
+
+            $this->validate($request, [
+                'name' => 'required',
+                'description' => 'required',
+                'gl_account' => 'required|min:12|max:12',
+            ]);
+
+            $branch = Branch::where('id', $id)->first();
+
+            $branch->name = $request->name;
+            $branch->description = $request->description;
+            $branch->gl_account = $request->gl_account;
+
+            $branch->save();
         }
-
-        $this->validate($request, [
-            'name' => 'required',
-            'description' => 'required',
-            'gl_account' => 'required|min:12|max:12',
-        ]);
-
-        $branch = Branch::where('id', $id)->first();
-
-        $branch->name = $request->name;
-        $branch->description = $request->description;
-        $branch->gl_account = $request->gl_account;
-
-        $branch->save();
+        else
+        {
+            abort(403, 'Unauthorized action.');
+        }
     }
 
     /**
@@ -169,8 +181,9 @@ class BranchController extends Controller
      */
     public function destroy($id)
     {
-        $this->authorize('create', Branch::class);
-
-        Branch::where('id', $id)->delete();
+        if(Gate::forUser(Auth::user())->allows('settings-access'))
+        {
+            Branch::where('id', $id)->delete();
+        }
     }
 }

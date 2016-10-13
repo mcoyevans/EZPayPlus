@@ -100,7 +100,20 @@ Route::group(['prefix' => 'group'], function(){
 	Route::post('check-duplicate', 'GroupController@checkDuplicate');
 });
 
-/* Group Module Routes */
-Route::group(['prefix' => 'group-module'], function(){
-	Route::post('enlist', 'GroupModuleController@enlist');
+/* Department Routes */
+Route::group(['prefix' => 'department'], function(){
+	Route::post('enlist', 'DepartmentController@enlist');
+	Route::post('check-duplicate', 'DepartmentController@checkDuplicate');
+});
+
+/* Job Category Routes */
+Route::group(['prefix' => 'job-category'], function(){
+	Route::post('enlist', 'JobCategoryController@enlist');
+	Route::post('check-duplicate', 'JobCategoryController@checkDuplicate');
+});
+
+/* Labor Type Routes */
+Route::group(['prefix' => 'labor-type'], function(){
+	Route::post('enlist', 'LaborTypeController@enlist');
+	Route::post('check-duplicate', 'LaborTypeController@checkDuplicate');
 });

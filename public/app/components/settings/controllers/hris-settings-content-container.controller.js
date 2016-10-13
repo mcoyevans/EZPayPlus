@@ -1,5 +1,5 @@
 settings
-	.controller('adminSettingsContentContainerController', ['$scope', 'Helper', function($scope, Helper){
+	.controller('hrisSettingsContentContainerController', ['$scope', 'Helper', function($scope, Helper){
 		/*
 		 * Object for subheader
 		 *
@@ -21,7 +21,7 @@ settings
 		 *
 		*/
 		$scope.toolbar = {};
-
+		
 		/*
 		 * Object for fab
 		 *
@@ -50,8 +50,8 @@ settings
 		/* Listens for any request for refresh */
 		$scope.$on('refresh', function(){
 			$scope.subheader.current.request.search = null;
-			$scope.refresh();
 			$scope.$broadcast('close');
+			$scope.refresh();
 		});
 
 		$scope.listItemAction = function(data){
@@ -59,14 +59,14 @@ settings
 			{
 				data.current = $scope.subheader.current;
 
-				// if the tab is in user groups and the data clicked has users under him
-				if(data.current.label == 'User Groups' && data.users.length)
+				// if the tab is in departments and the data clicked has positions under it
+				if((data.current.label == 'Departments' || data.current.label == 'Job Categories' || data.current.label == 'Labor Types') && data.positions.length)
 				{
 					// disable the delete button
 					data.current.menu[1].show = false;
 				}
 				// otherwise
-				else if(data.current.label == 'User Groups' && !data.users.length)
+				else if((data.current.label == 'Departments' || data.current.label == 'Job Categories' || data.current.label == 'Labor Types') && !data.positions.length)
 				{
 					// enable the delete button
 					data.current.menu[1].show = true;

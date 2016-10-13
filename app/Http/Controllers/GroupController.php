@@ -216,11 +216,16 @@ class GroupController extends Controller
 
         $this->authorize('delete', $group);
 
-        if(!isset($group->users))
+        if(!count($group->users))
         {
+            // delete the relationships
+            $group->group_module()->delete();
+            // delete the model
             $group->delete();
+
+            return;
         }
 
-        abort(403, 'Unauthorized action.');
+        abort(403, 'Unable to delete.');
     }
 }
