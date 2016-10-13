@@ -2,7 +2,7 @@
 	<md-dialog-content>
 	    <md-subheader>{{label}}</md-subheader>
 	    <md-list ng-cloak>
-	        <md-list-item flex ng-repeat="item in data.current.menu">
+	        <md-list-item flex ng-repeat="item in data.current.menu" ng-if="item.show">
 	            <md-button flex ng-click="item.action(data)">
 			        <div layout="row" flex>
 		                <md-icon class="mdi {{item.icon}} grey"></md-icon>

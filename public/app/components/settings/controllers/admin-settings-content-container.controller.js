@@ -54,7 +54,21 @@ settings
 		$scope.listItemAction = function(data){
 			if(!data.deleted_at)
 			{
-				data.current = $scope.subheader.current 
+				data.current = $scope.subheader.current;
+
+				// if the tab is in user groups and the data clicked has users under him
+				if(data.current.label == 'User Groups' && data.users.length)
+				{
+					// disable the delete button
+					data.current.menu[1].show = false;
+				}
+				// otherwise
+				else if(data.current.label == 'User Groups' && !data.users.length)
+				{
+					// enable the delete button
+					data.current.menu[1].show = true;
+				}
+
 				Helper.set(data);
 
 				var dialog = {};

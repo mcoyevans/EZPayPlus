@@ -55,7 +55,21 @@ settings
 		$scope.listItemAction = function(data){
 			if(!data.deleted_at)
 			{
-				data.current = $scope.subheader.current 
+				data.current = $scope.subheader.current;
+
+				// if the tab is in user groups and the data clicked has users under him
+				if(data.current.label == 'User Groups' && data.users.length)
+				{
+					// disable the delete button
+					data.current.menu[1].show = false;
+				}
+				// otherwise
+				else if(data.current.label == 'User Groups' && !data.users.length)
+				{
+					// enable the delete button
+					data.current.menu[1].show = true;
+				}
+
 				Helper.set(data);
 
 				var dialog = {};
@@ -250,7 +264,8 @@ settings
 						Helper.stop();
 					})
 					.error(function(){
-						Helper.error();
+						$scope.busy = false;
+						$scope.error = true;
 					});
 			}
 		}
@@ -303,7 +318,8 @@ settings
 						Helper.stop();
 					})
 					.error(function(){
-						Helper.error();
+						$scope.busy = false;
+						$scope.error = true;
 					});
 			}
 		}
@@ -368,7 +384,8 @@ settings
 						Helper.stop();
 					})
 					.error(function(){
-						Helper.error();
+						$scope.busy = false;
+						$scope.error = true;
 					});
 			}
 		}
@@ -479,7 +496,8 @@ settings
 						Helper.stop();
 					})
 					.error(function(){
-						Helper.error();
+						$scope.busy = false;
+						$scope.error = true;
 					});
 			}
 		}
@@ -583,7 +601,8 @@ settings
 						Helper.stop();
 					})
 					.error(function(){
-						Helper.error();
+						$scope.busy = false;
+						$scope.error = true;
 					});
 			}
 		}
@@ -672,7 +691,8 @@ settings
 						Helper.stop();
 					})
 					.error(function(){
-						Helper.error();
+						$scope.busy = false;
+						$scope.error = true;
 					});
 			}
 		}
@@ -793,7 +813,8 @@ settings
 					Helper.stop();
 				})
 				.error(function(){
-					Helper.error();
+					$scope.busy = false;
+					$scope.error = true;
 				});
 		}
 
@@ -907,6 +928,7 @@ settings
 					{
 						'label': 'Edit',
 						'icon': 'mdi-pencil',
+						'show':true,
 						action: function(data){
 							Helper.set(data);
 
@@ -916,6 +938,7 @@ settings
 
 							Helper.customDialog(dialog)
 								.then(function(){
+									Helper.notify('Branch updated.');
 									$scope.$emit('refresh');
 								}, function(){
 									return;
@@ -925,9 +948,10 @@ settings
 					{
 						'label': 'Delete',
 						'icon': 'mdi-delete',
+						'show':true,
 						action: function(data){
 							var dialog = {};
-							dialog.title = 'Delete Branch';
+							dialog.title = 'Delete';
 							dialog.message = 'Delete ' + data.name + ' branch?'
 							dialog.ok = 'Delete';
 							dialog.cancel = 'Cancel';
@@ -936,6 +960,7 @@ settings
 								.then(function(){
 									Helper.delete('/branch/' + data.id)
 										.success(function(){
+											Helper.notify('Branch deleted.');
 											$scope.$emit('refresh');
 										})
 										.error(function(){
@@ -998,6 +1023,7 @@ settings
 					{
 						'label': 'Edit',
 						'icon': 'mdi-pencil',
+						'show':true,
 						action: function(data){
 							Helper.set(data);
 
@@ -1007,6 +1033,7 @@ settings
 
 							Helper.customDialog(dialog)
 								.then(function(){
+									Helper.notify('House bank updated.');
 									$scope.$emit('refresh');
 								}, function(){
 									return;
@@ -1016,6 +1043,7 @@ settings
 					{
 						'label': 'Delete',
 						'icon': 'mdi-delete',
+						'show':true,
 						action: function(data){
 							var dialog = {};
 							dialog.title = 'Delete House Bank';
@@ -1027,6 +1055,7 @@ settings
 								.then(function(){
 									Helper.delete('/house-bank/' + data.id)
 										.success(function(){
+											Helper.notify('House bank deleted.');
 											$scope.$emit('refresh');
 										})
 										.error(function(){
@@ -1080,6 +1109,10 @@ settings
 							'relation':'modules',
 							'withTrashed': false,
 						},
+						{
+							'relation':'users',
+							'withTrashed': false,	
+						},
 					],
 					'paginate':20,
 				},
@@ -1092,6 +1125,7 @@ settings
 					{
 						'label': 'Edit',
 						'icon': 'mdi-pencil',
+						'show':true,
 						action: function(data){
 							Helper.set(data);
 
@@ -1101,6 +1135,7 @@ settings
 
 							Helper.customDialog(dialog)
 								.then(function(){
+									Helper.notify('User group updated.');
 									$scope.$emit('refresh');
 								}, function(){
 									return;
@@ -1110,6 +1145,7 @@ settings
 					{
 						'label': 'Delete',
 						'icon': 'mdi-delete',
+						'show':true,
 						action: function(data){
 							var dialog = {};
 							dialog.title = 'Delete Group';
@@ -1121,6 +1157,7 @@ settings
 								.then(function(){
 									Helper.delete('/group/' + data.id)
 										.success(function(){
+											Helper.notify('User group deleted.');
 											$scope.$emit('refresh');
 										})
 										.error(function(){
@@ -1182,6 +1219,7 @@ settings
 					{
 						'label': 'Edit',
 						'icon': 'mdi-pencil',
+						'show':true,
 						action: function(data){
 							Helper.set(data);
 
@@ -1191,6 +1229,7 @@ settings
 
 							Helper.customDialog(dialog)
 								.then(function(){
+									Helper.notify('User updated.');
 									$scope.$emit('refresh');
 								}, function(){
 									return;
@@ -1200,6 +1239,7 @@ settings
 					{
 						'label': 'Disable Account',
 						'icon': 'mdi-account-remove',
+						'show':true,
 						action: function(data){
 							var dialog = {};
 							dialog.title = 'Disable account';
@@ -1211,6 +1251,7 @@ settings
 								.then(function(){
 									Helper.delete('/user/' + data.id)
 										.success(function(){
+											Helper.notify('User account disabled.');
 											$scope.$emit('refresh');
 										})
 										.error(function(){
