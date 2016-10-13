@@ -212,10 +212,15 @@ class GroupController extends Controller
      */
     public function destroy($id)
     {
-        $group = Group::where('id', $id)->first();
+        $group = Group::with('users')->where('id', $id)->first();
 
         $this->authorize('delete', $group);
 
-        $group->delete();
+        if(!isset($group->users))
+        {
+            $group->delete();
+        }
+
+        abort(403, 'Unauthorized action.');
     }
 }

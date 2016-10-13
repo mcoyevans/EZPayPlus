@@ -23,6 +23,7 @@ settings
 					{
 						'label': 'Edit',
 						'icon': 'mdi-pencil',
+						'show':true,
 						action: function(data){
 							Helper.set(data);
 
@@ -42,6 +43,7 @@ settings
 					{
 						'label': 'Delete',
 						'icon': 'mdi-delete',
+						'show':true,
 						action: function(data){
 							var dialog = {};
 							dialog.title = 'Delete';
@@ -116,6 +118,7 @@ settings
 					{
 						'label': 'Edit',
 						'icon': 'mdi-pencil',
+						'show':true,
 						action: function(data){
 							Helper.set(data);
 
@@ -135,6 +138,7 @@ settings
 					{
 						'label': 'Delete',
 						'icon': 'mdi-delete',
+						'show':true,
 						action: function(data){
 							var dialog = {};
 							dialog.title = 'Delete House Bank';
@@ -200,6 +204,10 @@ settings
 							'relation':'modules',
 							'withTrashed': false,
 						},
+						{
+							'relation':'users',
+							'withTrashed': false,	
+						},
 					],
 					'paginate':20,
 				},
@@ -212,6 +220,7 @@ settings
 					{
 						'label': 'Edit',
 						'icon': 'mdi-pencil',
+						'show':true,
 						action: function(data){
 							Helper.set(data);
 
@@ -231,6 +240,7 @@ settings
 					{
 						'label': 'Delete',
 						'icon': 'mdi-delete',
+						'show':true,
 						action: function(data){
 							var dialog = {};
 							dialog.title = 'Delete Group';
@@ -304,6 +314,7 @@ settings
 					{
 						'label': 'Edit',
 						'icon': 'mdi-pencil',
+						'show':true,
 						action: function(data){
 							Helper.set(data);
 
@@ -323,6 +334,7 @@ settings
 					{
 						'label': 'Disable Account',
 						'icon': 'mdi-account-remove',
+						'show':true,
 						action: function(data){
 							var dialog = {};
 							dialog.title = 'Disable account';
