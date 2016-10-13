@@ -1,0 +1,53 @@
+<md-dialog aria-label="Branch Form"  flex flex-gt-sm="50" ng-cloak>
+    <form name="branchForm">
+        <md-toolbar >
+            <div class="md-toolbar-tools">
+                <h2 class="white-text">Branch</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <md-icon class="mdi mdi-close mdi-24px" aria-label="Close dialog"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content flex layout-padding layout-wrap>
+            <md-subheader class="md-accent" ng-if="error">Oops! Something went wrong! An error occured. Please try again.</md-subheader>
+            <div layout="row" layout-wrap flex>
+                <!-- Name -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Name</label>
+                    <input type="text" name="Name" required ng-model="branch.name" ng-disabled="busy">
+                    <div ng-messages="branchForm.Name.$error" ng-if="branchForm.Name.$touched">
+                        <div ng-message="required">Name is required.</div>
+                    </div>
+                </md-input-container>
+                <!-- Description -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Description</label>
+                    <input type="text" name="Description" required ng-model="branch.description" ng-disabled="busy">
+                    <div ng-messages="branchForm.Description.$error" ng-if="branchForm.Description.$touched">
+                        <div ng-message="required">Description is required.</div>
+                    </div>
+                </md-input-container>
+            </div>
+            <div layout="row" flex>
+                 <!-- GL Account -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>GL Account</label>
+                    <input type="text" name="GLAccount" required ng-model="branch.gl_account" ng-pattern="/^\d+$/" minlength="12" maxlength="12" ng-change="checkDuplicate()" ng-disabled="busy">
+                    <div class="pattern" ng-if="duplicate && branchForm.GLAccount.$valid">GL Account already in use.</div>
+                    <div ng-messages="branchForm.GLAccount.$error" ng-if="branchForm.GLAccount.$touched">
+                        <div ng-message-exp="['required', 'pattern', 'minlength', 'maxlength']">
+                            GL Account is required, unique, has 12 characters, and must be numeric.
+                        </div>
+                    </div>
+                </md-input-container>
+            </div>
+        </md-dialog-content>
+    </form>
+    <div layout="row" layout-align="end center">   
+        <md-button ng-if="!busy" class="md-primary" aria-label="Submit" ng-click="submit()">
+            Save
+        </md-button>
+        <md-progress-circular ng-if="busy" md-mode="indeterminate" class="md-primary" md-diameter="60"></md-progress-circular>
+    </div>
+</md-dialog>

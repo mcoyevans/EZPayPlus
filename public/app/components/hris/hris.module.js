@@ -1,0 +1,1 @@
+var hris = angular.module('hris', []);

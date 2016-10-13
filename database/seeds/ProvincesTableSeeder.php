@@ -1,0 +1,97 @@
+<?php
+
+use Illuminate\Database\Seeder;
+
+class ProvincesTableSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        DB::table('provinces')->insert([
+        	['name' => 'Abra', 'country_id' => 177],
+			['name' => 'Agusan del Norte', 'country_id' => 177],
+			['name' => 'Agusan del Sur', 'country_id' => 177],
+			['name' => 'Aklan', 'country_id' => 177],
+			['name' => 'Albay', 'country_id' => 177],
+			['name' => 'Antique', 'country_id' => 177],
+			['name' => 'Apayao', 'country_id' => 177],
+			['name' => 'Aurora', 'country_id' => 177],
+			['name' => 'Basilan', 'country_id' => 177],
+			['name' => 'Bataan', 'country_id' => 177],
+			['name' => 'Batanes', 'country_id' => 177],
+			['name' => 'Batangas', 'country_id' => 177],
+			['name' => 'Benguet', 'country_id' => 177],
+			['name' => 'Biliran', 'country_id' => 177],
+			['name' => 'Bohol', 'country_id' => 177],
+			['name' => 'Bukidnon', 'country_id' => 177],
+			['name' => 'Bulacan', 'country_id' => 177],
+			['name' => 'Cagayan', 'country_id' => 177],
+			['name' => 'Camarines Norte', 'country_id' => 177],
+			['name' => 'Camarines Sur', 'country_id' => 177],
+			['name' => 'Camiguin', 'country_id' => 177],
+			['name' => 'Capiz', 'country_id' => 177],
+			['name' => 'Catanduanes', 'country_id' => 177],
+			['name' => 'Cavite', 'country_id' => 177],
+			['name' => 'Cebu', 'country_id' => 177],
+			['name' => 'Compostela Valley', 'country_id' => 177],
+			['name' => 'Cotabato', 'country_id' => 177],
+			['name' => 'Davao del Norte', 'country_id' => 177],
+			['name' => 'Davao del Sur', 'country_id' => 177],
+			['name' => 'Davao Oriental', 'country_id' => 177],
+			['name' => 'Eastern Samar', 'country_id' => 177],
+			['name' => 'Guimaras', 'country_id' => 177],
+			['name' => 'Ifugao', 'country_id' => 177],
+			['name' => 'Ilocos Norte', 'country_id' => 177],
+			['name' => 'Ilocos Sur', 'country_id' => 177],
+			['name' => 'Iloilo', 'country_id' => 177],
+			['name' => 'Isabela', 'country_id' => 177],
+			['name' => 'Kalinga', 'country_id' => 177],
+			['name' => 'La Union', 'country_id' => 177],
+			['name' => 'Laguna', 'country_id' => 177],
+			['name' => 'Lanao del Norte', 'country_id' => 177],
+			['name' => 'Lanao del Sur', 'country_id' => 177],
+			['name' => 'Leyte', 'country_id' => 177],
+			['name' => 'Maguindanao', 'country_id' => 177],
+			['name' => 'Marinduque', 'country_id' => 177],
+			['name' => 'Masbate', 'country_id' => 177],
+			['name' => 'Metro Manila', 'country_id' => 177],
+			['name' => 'Misamis Occidental', 'country_id' => 177],
+			['name' => 'Misamis Oriental', 'country_id' => 177],
+			['name' => 'Mountain Province', 'country_id' => 177],
+			['name' => 'Negros Occidental', 'country_id' => 177],
+			['name' => 'Negros Oriental', 'country_id' => 177],
+			['name' => 'Northern Samar', 'country_id' => 177],
+			['name' => 'Nueva Ecija', 'country_id' => 177],
+			['name' => 'Nueva Vizcaya', 'country_id' => 177],
+			['name' => 'Occidental Mindoro', 'country_id' => 177],
+			['name' => 'Oriental Mindoro', 'country_id' => 177],
+			['name' => 'Palawan', 'country_id' => 177],
+			['name' => 'Pampanga', 'country_id' => 177],
+			['name' => 'Pangasinan', 'country_id' => 177],
+			['name' => 'Quezon', 'country_id' => 177],
+			['name' => 'Quirino', 'country_id' => 177],
+			['name' => 'Rizal', 'country_id' => 177],
+			['name' => 'Romblon', 'country_id' => 177],
+			['name' => 'Samar', 'country_id' => 177],
+			['name' => 'Sarangani', 'country_id' => 177],
+			['name' => 'Siquijor', 'country_id' => 177],
+			['name' => 'Sorsogon', 'country_id' => 177],
+			['name' => 'South Cotabato', 'country_id' => 177],
+			['name' => 'Southern Leyte', 'country_id' => 177],
+			['name' => 'Sultan Kudarat', 'country_id' => 177],
+			['name' => 'Sulu', 'country_id' => 177],
+			['name' => 'Surigao del Norte', 'country_id' => 177],
+			['name' => 'Surigao del Sur', 'country_id' => 177],
+			['name' => 'Tarlac', 'country_id' => 177],
+			['name' => 'Tawi-Tawi', 'country_id' => 177],
+			['name' => 'Zambales', 'country_id' => 177],
+			['name' => 'Zamboanga del Norte', 'country_id' => 177],
+			['name' => 'Zamboanga del Sur', 'country_id' => 177],
+			['name' => 'Zamboanga Sibugay', 'country_id' => 177]
+    	]);
+    }
+}

@@ -1,0 +1,88 @@
+<md-dialog aria-label="House Bank Form"  flex flex-gt-sm="50" ng-cloak>
+    <form name="houseBankForm">
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2 class="white-text">House Bank</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <md-icon class="mdi mdi-close mdi-24px" aria-label="Close dialog"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content flex layout-padding layout-wrap>
+            <md-subheader class="md-accent" ng-if="error">Oops! Something went wrong! An error occured. Please try again.</md-subheader>
+            <div layout="row" layout-wrap flex>
+                <!-- Name -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Name</label>
+                    <input type="text" name="Name" required ng-model="house_bank.name" ng-disabled="busy">
+                    <div ng-messages="houseBankForm.Name.$error" ng-if="houseBankForm.Name.$touched">
+                        <div ng-message="required">Name is required.</div>
+                    </div>
+                </md-input-container>
+                <!-- Bank Branch -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Bank Branch</label>
+                    <input type="text" name="BankBranch" required ng-model="house_bank.bank_branch">
+                    <div ng-messages="houseBankForm.BankBranch.$error" ng-if="houseBankForm.BankBranch.$touched">
+                        <div ng-message="required">Bank branch is required.</div>
+                    </div>
+                </md-input-container>
+            </div>
+            <div layout="row" layout-wrap flex>
+                <!-- Bank Account Number -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Bank Account Number</label>
+                    <input type="text" name="BankAccountNumber" required ng-pattern="/^\d+$/" ng-blur="checkDuplicate({bank_account_number:house_bank.bank_account_number})" ng-model="house_bank.bank_account_number" maxlength="25" ng-disabled="busy">
+                    <div class="pattern" ng-if="duplicateBankAccountNumber && houseBankForm.BankAccountNumber.$valid">Bank account number already in use.</div>
+                    <div ng-messages="houseBankForm.BankAccountNumber.$error" ng-if="houseBankForm.BankAccountNumber.$touched">
+                        <div ng-message-exp="['required', 'pattern', 'maxlength']">
+                            Bank Account Number is required, unique, has a maximum of 25 characters and must be numeric.
+                        </div>
+                    </div>
+                </md-input-container>
+                 <!-- Bank Account Name -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Bank Account Name</label>
+                    <input type="text" name="BankAccountName" required ng-model="house_bank.bank_account_name" ng-disabled="busy">
+                    <div ng-messages="houseBankForm.BankAccountName.$error" ng-if="houseBankForm.BankAccountName.$touched">
+                        <div ng-message="required">
+                            Bank account name is required.
+                        </div>
+                    </div>
+                </md-input-container>
+            </div>
+            <div layout="row" flex>
+                 <!-- GL Account -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>GL Account</label>
+                    <input type="text" name="GLAccount" required ng-model="house_bank.gl_account" ng-pattern="/^\d+$/" minlength="12" maxlength="12" ng-blur="checkDuplicate({gl_account:house_bank.gl_account})" ng-disabled="busy">
+                    <div class="pattern" ng-if="duplicateGLAccount && houseBankForm.GLAccount.$valid">GL Account already in use.</div>
+                    <div ng-messages="houseBankForm.GLAccount.$error" ng-if="houseBankForm.GLAccount.$touched">
+                        <div ng-message-exp="['required', 'pattern', 'minlength', 'maxlength']">
+                            GL Account is required, unique, has 12 characters, and must be numeric.
+                        </div>
+                    </div>
+                </md-input-container>
+                <!-- Currency -->
+                <md-autocomplete flex required md-input-name="Currency" md-selected-item="house_bank.currency" md-search-text="currency.searchText" md-items="item in currency.getItems(currency.searchText)" md-item-text="item.iso" md-floating-label="Currency" md-require-match md-input-minlength="3" md-input-maxlength="3" ng-disabled="busy">
+                    <md-item-template>
+                        <span md-highlight-text="currency.searchText">{{item.iso}} - {{item.name}}</span>
+                    </md-item-template>
+                    <div ng-messages="houseBankForm.Currency.$error" ng-if="houseBankForm.Currency.$touched">
+                        <div ng-message="required">Currency is required.</div>
+                        <div ng-message="md-require-match">Please select an existing currency.</div>
+                        <div ng-message="minlength">Currency must be at least 3 characters.</div>
+                        <div ng-message="maxlength">Currency cannot be more than 3 characters.</div>
+                    </div>
+                </md-autocomplete>
+            </div>
+        </md-dialog-content>
+    </form>
+    <div layout="row" layout-align="end center">   
+        <md-button ng-if="!busy" class="md-primary" aria-label="Submit" ng-click="submit()">
+            Save
+        </md-button>
+        <md-progress-circular ng-if="busy" md-mode="indeterminate" class="md-primary" md-diameter="60"></md-progress-circular>
+    </div>
+</md-dialog>
