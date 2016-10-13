@@ -114,7 +114,8 @@ settings
 					Helper.stop();
 				})
 				.error(function(){
-					Helper.error();
+					$scope.busy = false;
+					$scope.error = true;
 				});
 		}
 

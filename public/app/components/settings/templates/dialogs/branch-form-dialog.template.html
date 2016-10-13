@@ -10,11 +10,12 @@
             </div>
         </md-toolbar>
         <md-dialog-content flex layout-padding layout-wrap>
+            <md-subheader class="md-accent" ng-if="error">Oops! Something went wrong! An error occured. Please try again.</md-subheader>
             <div layout="row" layout-wrap flex>
                 <!-- Name -->
                 <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
                     <label>Name</label>
-                    <input type="text" name="Name" required ng-model="branch.name">
+                    <input type="text" name="Name" required ng-model="branch.name" ng-disabled="busy">
                     <div ng-messages="branchForm.Name.$error" ng-if="branchForm.Name.$touched">
                         <div ng-message="required">Name is required.</div>
                     </div>
@@ -22,7 +23,7 @@
                 <!-- Description -->
                 <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
                     <label>Description</label>
-                    <input type="text" name="Description" required ng-model="branch.description">
+                    <input type="text" name="Description" required ng-model="branch.description" ng-disabled="busy">
                     <div ng-messages="branchForm.Description.$error" ng-if="branchForm.Description.$touched">
                         <div ng-message="required">Description is required.</div>
                     </div>
@@ -32,7 +33,7 @@
                  <!-- GL Account -->
                 <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
                     <label>GL Account</label>
-                    <input type="text" name="GLAccount" required ng-model="branch.gl_account" ng-pattern="/^\d+$/" minlength="12" maxlength="12" ng-change="checkDuplicate()">
+                    <input type="text" name="GLAccount" required ng-model="branch.gl_account" ng-pattern="/^\d+$/" minlength="12" maxlength="12" ng-change="checkDuplicate()" ng-disabled="busy">
                     <div class="pattern" ng-if="duplicate && branchForm.GLAccount.$valid">GL Account already in use.</div>
                     <div ng-messages="branchForm.GLAccount.$error" ng-if="branchForm.GLAccount.$touched">
                         <div ng-message-exp="['required', 'pattern', 'minlength', 'maxlength']">

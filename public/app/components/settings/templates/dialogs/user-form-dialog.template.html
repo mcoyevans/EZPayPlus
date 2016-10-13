@@ -15,7 +15,7 @@
                 <!-- Name -->
                 <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
                     <label>Name</label>
-                    <input type="text" name="Name" required ng-model="user.name">
+                    <input type="text" name="Name" required ng-model="user.name" ng-disabled="busy">
                     <div ng-messages="userForm.Name.$error" ng-if="userForm.Name.$touched">
                         <div ng-message="required">Name is required.</div>
                     </div>
@@ -23,7 +23,7 @@
                 <!-- Email -->
                 <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm ng-if="!edit">
                     <label>Email</label>
-                    <input type="email" name="Email" required minlength="10" maxlength="100" ng-pattern="/^.+@.+\..+$/" ng-model="user.email" ng-blur="checkDuplicate()">
+                    <input type="email" name="Email" required minlength="10" maxlength="100" ng-pattern="/^.+@.+\..+$/" ng-model="user.email" ng-blur="checkDuplicate()" ng-disabled="busy">
                     <div class="pattern" ng-if="duplicate && userForm.Email.$valid">Email already in use.</div>
                     <div ng-messages="userForm.Email.$error" ng-if="userForm.Email.$touched">
                         <div ng-message-exp="['required', 'minlength', 'maxlength', 'pattern']">
@@ -36,7 +36,7 @@
                 <!-- Password -->
                 <md-input-container class="md-block" flex="100" flex-gt-sm="50">
                     <label>Password</label>
-                    <input type="password" name="Password" required ng-model="user.password" ng-minlength="8">
+                    <input type="password" name="Password" required ng-model="user.password" ng-minlength="8" ng-disabled="busy">
                     <div class="pattern" ng-if="user.password != user.confirm && userForm.Password.$touched && userForm.confirmPassword.$touched">Passwords doesn't match.</div>
                     <div ng-messages="userForm.Password.$error" ng-if="userForm.Password.$touched">
                         <div ng-message="required">Password is required.</div>
@@ -46,7 +46,7 @@
                 <!-- Confirm -->
                 <md-input-container class="md-block" flex="100" flex-gt-sm="50">
                     <label>Confirm Password</label>
-                    <input type="password" name="confirmPassword" required ng-model="user.confirm" ng-minlength="8">
+                    <input type="password" name="confirmPassword" required ng-model="user.confirm" ng-minlength="8" ng-disabled="busy">
                     <div class="pattern" ng-if="user.password != user.confirm && userForm.Password.$touched && userForm.confirmPassword.$touched">Passwords doesn't match.</div>
                     <div ng-messages="userForm.confirmPassword.$error" ng-if="userForm.confirmPassword.$touched">
                         <div ng-message="required">Confirm password is required.</div>
@@ -58,7 +58,7 @@
                  <!-- User Group -->
                 <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
                     <label>User Group</label>
-                    <md-select name="Group" ng-model="user.group_id" required>
+                    <md-select name="Group" ng-model="user.group_id" required ng-disabled="busy">
                         <md-option ng-repeat="group in groups | orderBy:'name'" value="{{group.id}}">{{group.name}} - {{group.description}}</md-option>
                     </md-select>
                     <div ng-messages="userForm.Group.$error" ng-if="userForm.Group.$touched">

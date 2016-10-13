@@ -32,6 +32,7 @@ settings
 
 							Helper.customDialog(dialog)
 								.then(function(){
+									Helper.notify('Branch updated.');
 									$scope.$emit('refresh');
 								}, function(){
 									return;
@@ -43,7 +44,7 @@ settings
 						'icon': 'mdi-delete',
 						action: function(data){
 							var dialog = {};
-							dialog.title = 'Delete Branch';
+							dialog.title = 'Delete';
 							dialog.message = 'Delete ' + data.name + ' branch?'
 							dialog.ok = 'Delete';
 							dialog.cancel = 'Cancel';
@@ -52,6 +53,7 @@ settings
 								.then(function(){
 									Helper.delete('/branch/' + data.id)
 										.success(function(){
+											Helper.notify('Branch deleted.');
 											$scope.$emit('refresh');
 										})
 										.error(function(){
@@ -123,6 +125,7 @@ settings
 
 							Helper.customDialog(dialog)
 								.then(function(){
+									Helper.notify('House bank updated.');
 									$scope.$emit('refresh');
 								}, function(){
 									return;
@@ -143,6 +146,7 @@ settings
 								.then(function(){
 									Helper.delete('/house-bank/' + data.id)
 										.success(function(){
+											Helper.notify('House bank deleted.');
 											$scope.$emit('refresh');
 										})
 										.error(function(){
@@ -217,6 +221,7 @@ settings
 
 							Helper.customDialog(dialog)
 								.then(function(){
+									Helper.notify('User group updated.');
 									$scope.$emit('refresh');
 								}, function(){
 									return;
@@ -237,6 +242,7 @@ settings
 								.then(function(){
 									Helper.delete('/group/' + data.id)
 										.success(function(){
+											Helper.notify('User group deleted.');
 											$scope.$emit('refresh');
 										})
 										.error(function(){
@@ -307,6 +313,7 @@ settings
 
 							Helper.customDialog(dialog)
 								.then(function(){
+									Helper.notify('User updated.');
 									$scope.$emit('refresh');
 								}, function(){
 									return;
@@ -327,6 +334,7 @@ settings
 								.then(function(){
 									Helper.delete('/user/' + data.id)
 										.success(function(){
+											Helper.notify('User account disabled.');
 											$scope.$emit('refresh');
 										})
 										.error(function(){

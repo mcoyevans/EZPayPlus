@@ -10,11 +10,12 @@
             </div>
         </md-toolbar>
         <md-dialog-content flex layout-padding layout-wrap>
+            <md-subheader class="md-accent" ng-if="error">Oops! Something went wrong! An error occured. Please try again.</md-subheader>
             <div layout="row" layout-wrap flex>
                 <!-- Name -->
                 <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
                     <label>Name</label>
-                    <input type="text" name="Name" required ng-model="company.name">
+                    <input type="text" name="Name" required ng-model="company.name" ng-disabled="busy">
                     <div ng-messages="companyForm.Name.$error" ng-if="companyForm.Name.$touched">
                         <div ng-message="required">Name is required.</div>
                     </div>
@@ -34,7 +35,7 @@
                 <!-- City -->
                 <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
                     <label>City</label>
-                    <input type="text" name="City" required ng-model="company.city" ng-blur="checkCity()">
+                    <input type="text" name="City" required ng-model="company.city" ng-blur="checkCity()" ng-disabled="busy">
                     <div class="pattern" ng-if="!cities.length && showError">No cities or municipalities matching "{{company.city}}" were found.</div>
                     <div ng-messages="companyForm.City.$error" ng-if="companyForm.City.$touched">
                         <div ng-message="required">City is required.</div>
@@ -43,7 +44,7 @@
                 <!-- Province -->
                 <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
                     <label>Province</label>
-                    <md-select name="Province" ng-model="company.province_id" md-on-open="fetchProvinces()" ng-change="checkProvince()" required ng-disabled="!cities.length">
+                    <md-select name="Province" ng-model="company.province_id" md-on-open="fetchProvinces()" ng-change="checkProvince()" required ng-disabled="!cities.length" ng-disabled="busy">
                         <md-option ng-value="province.id" ng-repeat="province in provinces" ng-if="province.cities.length">
                             {{province.name}}
                         </md-option>
@@ -56,7 +57,7 @@
                 <!-- Postal Code -->
                 <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
                     <label>Postal Code</label>
-                    <input type="text" name="PostalCode" required ng-model="company.postal_code" ng-pattern="/^\d+$/">
+                    <input type="text" name="PostalCode" required ng-model="company.postal_code" ng-pattern="/^\d+$/" ng-disabled="busy">
                     <div ng-messages="companyForm.PostalCode.$error" ng-if="companyForm.PostalCode.$touched">                    
                         <div ng-message-exp="['required', 'pattern']">
                             Postal code is required and must be numeric.
@@ -68,7 +69,7 @@
                 <!-- Contact Number -->
                 <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
                     <label>Contact Number</label>
-                    <input type="text" name="ContactNumber" required ng-model="company.contact_number">
+                    <input type="text" name="ContactNumber" required ng-model="company.contact_number" ng-disabled="busy">
                     <div ng-messages="companyForm.ContactNumber.$error" ng-if="companyForm.ContactNumber.$touched">
                         <div ng-message="required">Contact Number is required.</div>
                     </div>
@@ -78,7 +79,7 @@
                 <!-- Pag-IBIG -->
                 <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
                     <label>Pag-IBIG</label>
-                    <input type="text" name="PagIBIG" required ng-model="pagibig" minlength="12" maxlength="12" ng-pattern="/^\d+$/" ng-change="formatPagIBIG()">
+                    <input type="text" name="PagIBIG" required ng-model="pagibig" minlength="12" maxlength="12" ng-pattern="/^\d+$/" ng-change="formatPagIBIG()" ng-disabled="busy">
                     <div class="hint" ng-if="!companyForm.PagIBIG.$touched && !pagibig">12 digit number</div>
                     <div class="hint" ng-if="companyForm.PagIBIG.$valid">{{company.pagibig}}</div>
                     <div ng-messages="companyForm.PagIBIG.$error" ng-if="companyForm.PagIBIG.$touched">
@@ -88,7 +89,7 @@
                 <!-- PhilHealth -->
                 <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
                     <label>PhilHealth</label>
-                    <input type="text" name="PhilHealth" required ng-model="philhealth" minlength="12" maxlength="12" ng-pattern="/^\d+$/" ng-change="formatPhilHealth()">
+                    <input type="text" name="PhilHealth" required ng-model="philhealth" minlength="12" maxlength="12" ng-pattern="/^\d+$/" ng-change="formatPhilHealth()" ng-disabled="busy">
                     <div class="hint" ng-if="!companyForm.PhilHealth.$touched && !philhealth">12 digit number</div>
                     <div class="hint" ng-if="companyForm.PhilHealth.$valid">{{company.philhealth}}</div>
                     <div ng-messages="companyForm.PhilHealth.$error" ng-if="companyForm.PhilHealth.$touched">
@@ -100,7 +101,7 @@
                 <!-- SSS -->
                 <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
                     <label>SSS</label>
-                    <input type="text" name="SSS" required ng-model="sss" minlength="10" maxlength="10" ng-pattern="/^\d+$/" ng-change="formatSSS()">
+                    <input type="text" name="SSS" required ng-model="sss" minlength="10" maxlength="10" ng-pattern="/^\d+$/" ng-change="formatSSS()" ng-disabled="busy">
                     <div class="hint" ng-if="!companyForm.SSS.$touched && !sss">10 digit number</div>
                     <div class="hint" ng-if="companyForm.SSS.$valid">{{company.sss}}</div>
                     <div ng-messages="companyForm.SSS.$error" ng-if="companyForm.SSS.$touched">
@@ -110,7 +111,7 @@
                 <!-- TIN -->
                 <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
                     <label>TIN</label>
-                    <input type="text" name="TIN" required ng-model="tin" minlength="9" maxlength="9" ng-pattern="/^\d+$/" ng-change="formatTIN()">
+                    <input type="text" name="TIN" required ng-model="tin" minlength="9" maxlength="9" ng-pattern="/^\d+$/" ng-change="formatTIN()" ng-disabled="busy">
                     <div class="hint" ng-if="!companyForm.TIN.$touched && !tin">9 digit number</div>
                     <div class="hint" ng-if="companyForm.TIN.$valid">{{company.tin}}</div>
                     <div ng-messages="companyForm.TIN.$error" ng-if="companyForm.TIN.$touched">

@@ -10,11 +10,12 @@
             </div>
         </md-toolbar>
         <md-dialog-content flex layout-padding layout-wrap>
+            <md-subheader class="md-accent" ng-if="error">Oops! Something went wrong! An error occured. Please try again.</md-subheader>
             <div layout="row" layout-wrap flex>
                 <!-- Name -->
                 <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
                     <label>Name</label>
-                    <input type="text" name="Name" required ng-model="group.name" ng-blur="checkDuplicate()">
+                    <input type="text" name="Name" required ng-model="group.name" ng-blur="checkDuplicate()" ng-disabled="busy">
                     <div class="pattern" ng-if="duplicate">Group already exists.</div>
                     <div ng-messages="groupForm.Name.$error" ng-if="groupForm.Name.$touched">
                         <div ng-message="required">Name is required.</div>
@@ -23,7 +24,7 @@
                 <!-- Description -->
                 <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
                     <label>Description</label>
-                    <input type="text" name="Description" required ng-model="group.description">
+                    <input type="text" name="Description" required ng-model="group.description" ng-disabled="busy">
                     <div ng-messages="groupForm.Description.$error" ng-if="groupForm.Description.$touched">
                         <div ng-message="required">Description is required.</div>
                     </div>

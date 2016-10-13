@@ -10,11 +10,12 @@
             </div>
         </md-toolbar>
         <md-dialog-content flex layout-padding layout-wrap>
+            <md-subheader class="md-accent" ng-if="error">Oops! Something went wrong! An error occured. Please try again.</md-subheader>
             <div layout="row" layout-wrap flex>
                 <!-- Name -->
                 <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
                     <label>Name</label>
-                    <input type="text" name="Name" required ng-model="house_bank.name">
+                    <input type="text" name="Name" required ng-model="house_bank.name" ng-disabled="busy">
                     <div ng-messages="houseBankForm.Name.$error" ng-if="houseBankForm.Name.$touched">
                         <div ng-message="required">Name is required.</div>
                     </div>
@@ -32,7 +33,7 @@
                 <!-- Bank Account Number -->
                 <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
                     <label>Bank Account Number</label>
-                    <input type="text" name="BankAccountNumber" required ng-pattern="/^\d+$/" ng-blur="checkDuplicate({bank_account_number:house_bank.bank_account_number})" ng-model="house_bank.bank_account_number" maxlength="25">
+                    <input type="text" name="BankAccountNumber" required ng-pattern="/^\d+$/" ng-blur="checkDuplicate({bank_account_number:house_bank.bank_account_number})" ng-model="house_bank.bank_account_number" maxlength="25" ng-disabled="busy">
                     <div class="pattern" ng-if="duplicateBankAccountNumber && houseBankForm.BankAccountNumber.$valid">Bank account number already in use.</div>
                     <div ng-messages="houseBankForm.BankAccountNumber.$error" ng-if="houseBankForm.BankAccountNumber.$touched">
                         <div ng-message-exp="['required', 'pattern', 'maxlength']">
@@ -43,7 +44,7 @@
                  <!-- Bank Account Name -->
                 <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
                     <label>Bank Account Name</label>
-                    <input type="text" name="BankAccountName" required ng-model="house_bank.bank_account_name">
+                    <input type="text" name="BankAccountName" required ng-model="house_bank.bank_account_name" ng-disabled="busy">
                     <div ng-messages="houseBankForm.BankAccountName.$error" ng-if="houseBankForm.BankAccountName.$touched">
                         <div ng-message="required">
                             Bank account name is required.
@@ -55,7 +56,7 @@
                  <!-- GL Account -->
                 <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
                     <label>GL Account</label>
-                    <input type="text" name="GLAccount" required ng-model="house_bank.gl_account" ng-pattern="/^\d+$/" minlength="12" maxlength="12" ng-blur="checkDuplicate({gl_account:house_bank.gl_account})">
+                    <input type="text" name="GLAccount" required ng-model="house_bank.gl_account" ng-pattern="/^\d+$/" minlength="12" maxlength="12" ng-blur="checkDuplicate({gl_account:house_bank.gl_account})" ng-disabled="busy">
                     <div class="pattern" ng-if="duplicateGLAccount && houseBankForm.GLAccount.$valid">GL Account already in use.</div>
                     <div ng-messages="houseBankForm.GLAccount.$error" ng-if="houseBankForm.GLAccount.$touched">
                         <div ng-message-exp="['required', 'pattern', 'minlength', 'maxlength']">
@@ -64,7 +65,7 @@
                     </div>
                 </md-input-container>
                 <!-- Currency -->
-                <md-autocomplete flex required md-input-name="Currency" md-selected-item="house_bank.currency" md-search-text="currency.searchText" md-items="item in currency.getItems(currency.searchText)" md-item-text="item.iso" md-floating-label="Currency" md-require-match md-input-minlength="3" md-input-maxlength="3">
+                <md-autocomplete flex required md-input-name="Currency" md-selected-item="house_bank.currency" md-search-text="currency.searchText" md-items="item in currency.getItems(currency.searchText)" md-item-text="item.iso" md-floating-label="Currency" md-require-match md-input-minlength="3" md-input-maxlength="3" ng-disabled="busy">
                     <md-item-template>
                         <span md-highlight-text="currency.searchText">{{item.iso}} - {{item.name}}</span>
                     </md-item-template>
