@@ -106,6 +106,11 @@ class DepartmentController extends Controller
                 return response()->json(true);
             }
 
+            $this->validate($request, [
+                'name' => 'required',
+                'description' => 'required',
+            ]);
+
             DB::transaction(function() use($request){
                 $department = new Department;
 
@@ -160,6 +165,11 @@ class DepartmentController extends Controller
             {
                 return response()->json(true);
             }
+
+            $this->validate($request, [
+                'name' => 'required',
+                'description' => 'required',
+            ]);
 
             DB::transaction(function() use($request, $id){
                 $department = Department::where('id', $id)->first();

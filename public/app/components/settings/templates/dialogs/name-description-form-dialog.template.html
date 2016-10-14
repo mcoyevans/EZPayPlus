@@ -1,8 +1,8 @@
-<md-dialog aria-label="Department Form"  flex flex-gt-sm="50" ng-cloak>
-    <form name="departmentForm">
+<md-dialog aria-label="{{config.label}} Form"  flex flex-gt-sm="50" ng-cloak>
+    <form name="modelForm">
         <md-toolbar >
             <div class="md-toolbar-tools">
-                <h2 class="white-text">Department</h2>
+                <h2 class="white-text">{{config.label}}</h2>
                 <span flex></span>
                 <md-button class="md-icon-button" ng-click="cancel()">
                     <md-icon class="mdi mdi-close mdi-24px" aria-label="Close dialog"></md-icon>
@@ -15,17 +15,17 @@
                 <!-- Name -->
                 <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
                     <label>Name</label>
-                    <input type="text" name="Name" required ng-model="department.name" ng-disabled="busy" ng-blur="checkDuplicate()">
-                    <div class="pattern" ng-if="duplicate && departmentForm.Name.$valid">Department already exists.</div>
-                    <div ng-messages="departmentForm.Name.$error" ng-if="departmentForm.Name.$touched">
+                    <input type="text" name="Name" required ng-model="model.name" ng-disabled="busy" ng-blur="checkDuplicate()">
+                    <div class="pattern" ng-if="duplicate && modelForm.Name.$valid">{{config.label}} already exists.</div>
+                    <div ng-messages="modelForm.Name.$error" ng-if="modelForm.Name.$touched">
                         <div ng-message="required">Name is required.</div>
                     </div>
                 </md-input-container>
                 <!-- Description -->
                 <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
                     <label>Description</label>
-                    <input type="text" name="Description" required ng-model="department.description" ng-disabled="busy">
-                    <div ng-messages="departmentForm.Description.$error" ng-if="departmentForm.Description.$touched">
+                    <input type="text" name="Description" required ng-model="model.description" ng-disabled="busy">
+                    <div ng-messages="modelForm.Description.$error" ng-if="modelForm.Description.$touched">
                         <div ng-message="required">Description is required.</div>
                     </div>
                 </md-input-container>

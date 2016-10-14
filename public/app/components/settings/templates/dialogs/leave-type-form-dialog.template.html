@@ -1,8 +1,8 @@
-<md-dialog aria-label="Labor Type Form"  flex flex-gt-sm="50" ng-cloak>
-    <form name="laborTypeForm">
+<md-dialog aria-label="Leave Form"  flex flex-gt-sm="50" ng-cloak>
+    <form name="leaveTypeForm">
         <md-toolbar >
             <div class="md-toolbar-tools">
-                <h2 class="white-text">Labor Type</h2>
+                <h2 class="white-text">Leave</h2>
                 <span flex></span>
                 <md-button class="md-icon-button" ng-click="cancel()">
                     <md-icon class="mdi mdi-close mdi-24px" aria-label="Close dialog"></md-icon>
@@ -15,20 +15,32 @@
                 <!-- Name -->
                 <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
                     <label>Name</label>
-                    <input type="text" name="Name" required ng-model="labor_type.name" ng-disabled="busy" ng-blur="checkDuplicate()">
-                    <div class="pattern" ng-if="duplicate && laborTypeForm.Name.$valid">Labor type already exists.</div>
-                    <div ng-messages="laborTypeForm.Name.$error" ng-if="laborTypeForm.Name.$touched">
+                    <input type="text" name="Name" required ng-model="leave.name" ng-disabled="busy" ng-blur="checkDuplicate()">
+                    <div class="pattern" ng-if="duplicate && leaveTypeForm.Name.$valid">Leave already exists.</div>
+                    <div ng-messages="leaveTypeForm.Name.$error" ng-if="leaveTypeForm.Name.$touched">
                         <div ng-message="required">Name is required.</div>
                     </div>
                 </md-input-container>
                 <!-- Description -->
                 <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
                     <label>Description</label>
-                    <input type="text" name="Description" required ng-model="labor_type.description" ng-disabled="busy">
-                    <div ng-messages="laborTypeForm.Description.$error" ng-if="laborTypeForm.Description.$touched">
+                    <input type="text" name="Description" required ng-model="leave.description" ng-disabled="busy">
+                    <div ng-messages="leaveTypeForm.Description.$error" ng-if="leaveTypeForm.Description.$touched">
                         <div ng-message="required">Description is required.</div>
                     </div>
                 </md-input-container>
+            </div>
+            <div layout="row" flex layout-wrap>
+                <!-- Paid -->
+                <md-switch class="md-primary" ng-model="leave.paid" aria-label="Paid" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <span ng-if="leave.paid">Paid</span>
+                    <span ng-if="!leave.paid">Unpaid</span>
+                </md-switch>
+                <!-- Convertible -->
+                <md-switch class="md-primary" ng-model="leave.convertible" aria-label="Convertible" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <span ng-if="leave.convertible">Convertible</span>
+                    <span ng-if="!leave.convertible">Unconvertible</span>
+                </md-switch>
             </div>
         </md-dialog-content>
     </form>

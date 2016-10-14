@@ -13,6 +13,6 @@ class DeductionType extends Model
 
     public function employees()
     {
-    	return $this->hasMany('App\Employee');
+    	return $this->belongsToMany('App\Employee', 'employee_deduction_type');
     }
 }

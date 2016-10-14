@@ -1,0 +1,73 @@
+<md-dialog aria-label="Position Form"  flex flex-gt-sm="50" ng-cloak>
+    <form name="positionForm">
+        <md-toolbar >
+            <div class="md-toolbar-tools">
+                <h2 class="white-text">Position</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <md-icon class="mdi mdi-close mdi-24px" aria-label="Close dialog"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content flex layout-padding layout-wrap>
+            <md-subheader class="md-accent" ng-if="error">Oops! Something went wrong! An error occured. Please try again.</md-subheader>
+            <div layout="row" layout-wrap flex>
+                <!-- Name -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Name</label>
+                    <input type="text" name="Name" required ng-model="position.name" ng-disabled="busy" ng-blur="checkDuplicate()">
+                    <div class="pattern" ng-if="duplicate && positionForm.Name.$valid">Position already exists.</div>
+                    <div ng-messages="positionForm.Name.$error" ng-if="positionForm.Name.$touched">
+                        <div ng-message="required">Name is required.</div>
+                    </div>
+                </md-input-container>
+                <!-- Description -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Description</label>
+                    <input type="text" name="Description" required ng-model="position.description" ng-disabled="busy">
+                    <div ng-messages="positionForm.Description.$error" ng-if="positionForm.Description.$touched">
+                        <div ng-message="required">Description is required.</div>
+                    </div>
+                </md-input-container>
+            </div>
+            <div layout="row" flex layout-wrap>
+                <!-- Department -->
+                <md-input-container flex-xs="100" flex-sm="100" flex-gt-sm ng-if="position && departments">
+                    <label>Department</label>
+                    <md-select name="Department" ng-model="position.department_id" required ng-change="checkDuplicate()">
+                        <md-option ng-repeat="department in departments | orderBy: 'name'" value="{{department.id}}">{{department.name}} - {{department.description}}</md-option>
+                    </md-select>
+                    <div ng-messages="positionForm.Department.$error" ng-if="positionForm.Department.$touched">
+                        <div ng-message="required">Department is required.</div>
+                    </div>
+                </md-input-container>
+                <!-- Job Category -->
+                <md-input-container flex-xs="100" flex-sm="100" flex-gt-sm ng-if="position && job_categories">
+                    <label>Job Category</label>
+                    <md-select name="JobCategory" ng-model="position.job_category_id" required ng-change="checkDuplicate()">
+                        <md-option ng-repeat="job_category in job_categories | orderBy: 'name'" value="{{job_category.id}}">{{job_category.name}} - {{job_category.description}}</md-option>
+                    </md-select>
+                    <div ng-messages="positionForm.JobCategory.$error" ng-if="positionForm.JobCategory.$touched">
+                        <div ng-message="required">Job category is required.</div>
+                    </div>
+                </md-input-container>
+                <!-- Labor Type -->
+                <md-input-container flex-xs="100" flex-sm="100" flex-gt-sm ng-if="position && labor_types">
+                    <label>Labor Type</label>
+                    <md-select name="LaborType" ng-model="position.labor_type_id" required ng-change="checkDuplicate()">
+                        <md-option ng-repeat="labor_type in labor_types | orderBy: 'name'" value="{{labor_type.id}}">{{labor_type.name}} - {{labor_type.description}}</md-option>
+                    </md-select>
+                    <div ng-messages="positionForm.LaborType.$error" ng-if="positionForm.LaborType.$touched">
+                        <div ng-message="required">Labor Type is required.</div>
+                    </div>
+                </md-input-container>
+            </div>
+        </md-dialog-content>
+    </form>
+    <div layout="row" layout-align="end center">   
+        <md-button ng-if="!busy" class="md-primary" aria-label="Submit" ng-click="submit()">
+            Save
+        </md-button>
+        <md-progress-circular ng-if="busy" md-mode="indeterminate" class="md-primary" md-diameter="60"></md-progress-circular>
+    </div>
+</md-dialog>

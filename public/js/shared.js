@@ -47,7 +47,7 @@ sharedModule
 			      	controller: data.controller,
 			      	templateUrl: data.template,
 			      	parent: angular.element(document.body),
-			      	fullscreen: true,
+			      	fullscreen: data.fullscreen,
 			    });
 			},
 			prompt: function(data)
@@ -191,7 +191,5 @@ sharedModule
 sharedModule
 	.controller('listItemActionsDialogController', ['$scope', 'Helper', function($scope, Helper){
 		$scope.data = Helper.fetch();
-
-		$scope.label = $scope.data.name;
 	}]);
 //# sourceMappingURL=shared.js.map

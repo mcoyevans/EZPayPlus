@@ -76,7 +76,7 @@ class JobCategoryController extends Controller
      */
     public function index()
     {
-        //
+        return JobCategory::all();
     }
 
     /**
@@ -108,6 +108,11 @@ class JobCategoryController extends Controller
         {
             return response()->json(true);
         }
+
+        $this->validate($request, [
+            'name' => 'required',
+            'description' => 'required',
+        ]);
 
         DB::transaction(function() use($request){
             $job_category = new JobCategory;
@@ -161,6 +166,11 @@ class JobCategoryController extends Controller
         {
             return response()->json(true);
         }
+
+        $this->validate($request, [
+            'name' => 'required',
+            'description' => 'required',
+        ]);
 
         DB::transaction(function() use($request, $id){
             $job_category = JobCategory::where('id', $id)->first();

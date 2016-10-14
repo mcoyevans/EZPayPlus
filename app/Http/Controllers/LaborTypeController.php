@@ -104,6 +104,11 @@ class LaborTypeController extends Controller
             return response()->json(true);
         }
 
+        $this->validate($request, [
+            'name' => 'required',
+            'description' => 'required',
+        ]);
+
         DB::transaction(function() use($request){
             $labor_type = new LaborType;
 
@@ -156,6 +161,11 @@ class LaborTypeController extends Controller
         {
             return response()->json(true);
         }
+
+        $this->validate($request, [
+            'name' => 'required',
+            'description' => 'required',
+        ]);
 
         DB::transaction(function() use($request, $id){
             $labor_type = LaborType::where('id', $id)->first();

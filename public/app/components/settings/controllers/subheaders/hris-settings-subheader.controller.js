@@ -22,9 +22,13 @@ settings
 					'paginate':20,
 				},
 				'fab': {
-					'controller':'createDepartmentDialogController',
-					'template':'/app/components/settings/templates/dialogs/department-form-dialog.template.html',
-					'message': 'Department saved.'
+					'fullscreen' : true,
+					'controller':'nameDescriptionDialogController',
+					'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
+					'message': 'Department saved.',
+					'action' : 'create',
+					'url': '/department',
+					'label': 'Department',
 				},
 				'menu': [
 					{
@@ -32,11 +36,15 @@ settings
 						'icon': 'mdi-pencil',
 						'show': true,
 						action: function(data){
+							data.action = 'edit';
+							data.url = '/department';
+							data.label = 'Department';
+
 							Helper.set(data);
 
 							var dialog = {};
-							dialog.controller = 'editDepartmentDialogController';
-							dialog.template = '/app/components/settings/templates/dialogs/department-form-dialog.template.html';
+							dialog.controller = 'nameDescriptionDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
 
 							Helper.customDialog(dialog)
 								.then(function(){
@@ -114,13 +122,21 @@ settings
 							'relation' : 'labor_type',
 							'withTrashed': false,
 						},
+						{
+							'relation' : 'deployments',
+							'withTrashed': false,	
+						},
 					],
 					'paginate':20,
 				},
 				'fab': {
-					'controller':'createPositionDialogController',
+					'fullscreen' : true,
+					'controller':'positionDialogController',
 					'template':'/app/components/settings/templates/dialogs/position-form-dialog.template.html',
-					'message': 'Position saved.'
+					'message': 'Position saved.',
+					'action' : 'create',
+					'url': '/position',
+
 				},
 				action: function(current){
 					setInit(current);
@@ -131,10 +147,13 @@ settings
 						'icon': 'mdi-pencil',
 						'show': true,
 						action: function(data){
+							data.action = 'edit';
+							data.url = '/position';
+
 							Helper.set(data);
 
 							var dialog = {};
-							dialog.controller = 'editPositionDialogController';
+							dialog.controller = 'positionDialogController';
 							dialog.template = '/app/components/settings/templates/dialogs/position-form-dialog.template.html';
 
 							Helper.customDialog(dialog)
@@ -205,9 +224,13 @@ settings
 					'paginate':20,
 				},
 				'fab': {
-					'controller':'createJobCategoryDialogController',
-					'template':'/app/components/settings/templates/dialogs/job-category-form-dialog.template.html',
-					'message': 'Job category saved.'
+					'fullscreen' : true,
+					'controller':'nameDescriptionDialogController',
+					'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
+					'message': 'Job category saved.',
+					'action' : 'create',
+					'url': '/job-category',
+					'label': 'Job category',
 				},
 				'menu': [
 					{
@@ -215,11 +238,15 @@ settings
 						'icon': 'mdi-pencil',
 						'show': true,
 						action: function(data){
+							data.action = 'edit';
+							data.url = '/job-category';
+							data.label = 'Job category';
+
 							Helper.set(data);
 
 							var dialog = {};
-							dialog.controller = 'editJobCategoryDialogController';
-							dialog.template = '/app/components/settings/templates/dialogs/job-category-form-dialog.template.html';
+							dialog.controller = 'nameDescriptionDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
 
 							Helper.customDialog(dialog)
 								.then(function(){
@@ -292,9 +319,14 @@ settings
 					'paginate':20,
 				},
 				'fab': {
-					'controller':'createLaborTypeDialogController',
-					'template':'/app/components/settings/templates/dialogs/labor-type-form-dialog.template.html',
-					'message': 'Labor type saved.'
+					'fullscreen' : true,
+					'controller':'nameDescriptionDialogController',
+					'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
+					'message': 'Labor type saved.',
+					'action' : 'create',
+					'fullscreen' : true,
+					'url': '/labor-type',
+					'label': 'Labor type',
 				},
 				'menu': [
 					{
@@ -302,11 +334,15 @@ settings
 						'icon': 'mdi-pencil',
 						'show': true,
 						action: function(data){
+							data.action = 'edit';
+							data.url = '/labor-type';
+							data.label = 'Labor type';
+
 							Helper.set(data);
 
 							var dialog = {};
-							dialog.controller = 'editLaborTypeDialogController';
-							dialog.template = '/app/components/settings/templates/dialogs/labor-type-form-dialog.template.html';
+							dialog.controller = 'nameDescriptionDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
 
 							Helper.customDialog(dialog)
 								.then(function(){
@@ -324,7 +360,7 @@ settings
 						action: function(data){
 							var dialog = {};
 							dialog.title = 'Delete';
-							dialog.message = 'Disable ' + data.name + ' labor type?'
+							dialog.message = 'Delete ' + data.name + ' labor type?'
 							dialog.ok = 'Delete';
 							dialog.cancel = 'Cancel';
 
@@ -368,21 +404,17 @@ settings
 			// Leaves
 			{
 				'label':'Leaves',
-				'url': '/department/enlist',
+				'url': '/leave-type/enlist',
 				'request': {
-					'with': [
-						{
-							'relation':'positions',
-							'withTrashed':false,
-						},
-					],
-					'withTrashed': true,
 					'paginate':20,
 				},
 				'fab': {
-					'controller':'createDepartmentDialogController',
-					'template':'/app/components/settings/templates/dialogs/department-form-dialog.template.html',
-					'message': 'Department saved.'
+					'fullscreen' : true,
+					'controller':'leaveTypeDialogController',
+					'template':'/app/components/settings/templates/dialogs/leave-type-form-dialog.template.html',
+					'message': 'Leave saved.',
+					'action' : 'create',
+					'url': '/leave-type',
 				},
 				'menu': [
 					{
@@ -390,15 +422,18 @@ settings
 						'icon': 'mdi-pencil',
 						'show': true,
 						action: function(data){
+							data.action = 'edit';
+							data.url = '/leave-type';
+
 							Helper.set(data);
 
 							var dialog = {};
-							dialog.controller = 'editDepartmentDialogController';
-							dialog.template = '/app/components/settings/templates/dialogs/department-form-dialog.template.html';
+							dialog.controller = 'leaveTypeDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/leave-type-form-dialog.template.html';
 
 							Helper.customDialog(dialog)
 								.then(function(){
-									Helper.notify('Department updated.');
+									Helper.notify('Leave updated.');
 									$scope.$emit('refresh');
 								}, function(){
 									return;
@@ -412,15 +447,111 @@ settings
 						action: function(data){
 							var dialog = {};
 							dialog.title = 'Delete';
-							dialog.message = 'Delete ' + data.name + ' department?'
+							dialog.message = 'Delete ' + data.name + ' leave?'
 							dialog.ok = 'Delete';
 							dialog.cancel = 'Cancel';
 
 							Helper.confirm(dialog)
 								.then(function(){
-									Helper.delete('/department/' + data.id)
+									Helper.delete('/leave-type/' + data.id)
 										.success(function(){
-											Helper.notify('Department deleted.');
+											Helper.notify('Leave deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+			// Allowances
+			{
+				'label':'Allowances',
+				'url': '/allowance-type/enlist',
+				'request' : {
+					'withTrashed': true,
+					'with' : [
+						{
+							'relation':'employees',
+							'withTrashed': false,
+						}
+					],
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'nameDescriptionDialogController',
+					'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
+					'message': 'Allowance type saved.',
+					'action' : 'create',
+					'url': '/allowance-type',
+					'label': 'Allowance',
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/allowance-type';
+							data.label = 'Allowance';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'nameDescriptionDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Allowance type updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' allowance?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/allowance-type/' + data.id)
+										.success(function(){
+											Helper.notify('Allowance type deleted.');
 											$scope.$emit('refresh');
 										})
 										.error(function(){
@@ -456,32 +587,25 @@ settings
 			// Deductions
 			{
 				'label':'Deductions',
-				'url': '/position/enlist',
-				'request': {
+				'url': '/deduction-type/enlist',
+				'request' : {
 					'withTrashed': true,
-					'with': [
+					'with' : [
 						{
-							'relation' : 'department',
+							'relation':'employees',
 							'withTrashed': false,
-						},
-						{
-							'relation' : 'job_category',
-							'withTrashed': false,
-						},
-						{
-							'relation' : 'labor_type',
-							'withTrashed': false,
-						},
+						}
 					],
 					'paginate':20,
 				},
 				'fab': {
-					'controller':'createPositionDialogController',
-					'template':'/app/components/settings/templates/dialogs/position-form-dialog.template.html',
-					'message': 'Position saved.'
-				},
-				action: function(current){
-					setInit(current);
+					'fullscreen' : true,
+					'controller':'nameDescriptionDialogController',
+					'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
+					'message': 'Deduction type saved.',
+					'action' : 'create',
+					'url': '/deduction-type',
+					'label': 'Deduction',
 				},
 				'menu': [
 					{
@@ -489,15 +613,19 @@ settings
 						'icon': 'mdi-pencil',
 						'show': true,
 						action: function(data){
+							data.action = 'edit';
+							data.url = '/deduction-type';
+							data.label = 'Deduction';
+
 							Helper.set(data);
 
 							var dialog = {};
-							dialog.controller = 'editPositionDialogController';
-							dialog.template = '/app/components/settings/templates/dialogs/position-form-dialog.template.html';
+							dialog.controller = 'nameDescriptionDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
 
 							Helper.customDialog(dialog)
 								.then(function(){
-									Helper.notify('Position updated.');
+									Helper.notify('Deduction type updated.');
 									$scope.$emit('refresh');
 								}, function(){
 									return;
@@ -511,15 +639,15 @@ settings
 						action: function(data){
 							var dialog = {};
 							dialog.title = 'Delete';
-							dialog.message = 'Delete ' + data.name + ' position?'
+							dialog.message = 'Delete ' + data.name + ' deduction?'
 							dialog.ok = 'Delete';
 							dialog.cancel = 'Cancel';
 
 							Helper.confirm(dialog)
 								.then(function(){
-									Helper.delete('/position/' + data.id)
+									Helper.delete('/deduction-type/' + data.id)
 										.success(function(){
-											Helper.notify('Position deleted.');
+											Helper.notify('Deduction type deleted.');
 											$scope.$emit('refresh');
 										})
 										.error(function(){
@@ -548,24 +676,31 @@ settings
 						'sortReverse': false,
 					},
 				],
+				action: function(current){
+					setInit(current);
+				},
 			},
 			// Sanctions
 			{
 				'label':'Sanctions',
-				'url': '/job-category/enlist',
-				'request' : {
+				'url': '/sanction-type/enlist',
+				'request' : {		
 					'with': [
 						{
-							'relation':'positions',
+							'relation':'sanction_levels',
 							'withTrashed': false,
 						},
 					],
 					'paginate':20,
 				},
 				'fab': {
-					'controller':'createJobCategoryDialogController',
-					'template':'/app/components/settings/templates/dialogs/job-category-form-dialog.template.html',
-					'message': 'Job category saved.'
+					'fullscreen' : true,
+					'controller':'nameDescriptionDialogController',
+					'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
+					'message': 'Sanction type saved.',
+					'action' : 'create',
+					'url': '/sanction-type',
+					'label': 'Sanction',
 				},
 				'menu': [
 					{
@@ -573,15 +708,19 @@ settings
 						'icon': 'mdi-pencil',
 						'show': true,
 						action: function(data){
+							data.action = 'edit';
+							data.url = '/sanction-type';
+							data.label = 'Sanction';
+
 							Helper.set(data);
 
 							var dialog = {};
-							dialog.controller = 'editJobCategoryDialogController';
-							dialog.template = '/app/components/settings/templates/dialogs/job-category-form-dialog.template.html';
+							dialog.controller = 'nameDescriptionDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
 
 							Helper.customDialog(dialog)
 								.then(function(){
-									Helper.notify('Job category updated.');
+									Helper.notify('Sanction type updated.');
 									$scope.$emit('refresh');
 								}, function(){
 									return;
@@ -595,15 +734,15 @@ settings
 						action: function(data){
 							var dialog = {};
 							dialog.title = 'Delete';
-							dialog.message = 'Delete ' + data.name + ' job category?'
+							dialog.message = 'Delete ' + data.name + ' sanction type?'
 							dialog.ok = 'Delete';
 							dialog.cancel = 'Cancel';
 
 							Helper.confirm(dialog)
 								.then(function(){
-									Helper.delete('/job-category/' + data.id)
+									Helper.delete('/sanction-type/' + data.id)
 										.success(function(){
-											Helper.notify('Job category deleted.');
+											Helper.notify('Sanction type deleted.');
 											$scope.$emit('refresh');
 										})
 										.error(function(){
@@ -639,20 +778,24 @@ settings
 			// Sanction Levels
 			{
 				'label':'Sanction Levels',
-				'url': '/labor-type/enlist',
-				'request' : {
-					'with' : [
+				'url': '/sanction-level/enlist',
+				'request' : {		
+					'with': [
 						{
-							'relation':'positions',
+							'relation':'sanction',
 							'withTrashed': false,
-						}
+						},
 					],
 					'paginate':20,
 				},
 				'fab': {
-					'controller':'createLaborTypeDialogController',
-					'template':'/app/components/settings/templates/dialogs/labor-type-form-dialog.template.html',
-					'message': 'Labor type saved.'
+					'fullscreen' : true,
+					'controller':'sanctionLevelDialogController',
+					'template':'/app/components/settings/templates/dialogs/sanction-level-form-dialog.template.html',
+					'message': 'Sanction level saved.',
+					'action' : 'create',
+					'url': '/sanction-level',
+					'label': 'Sanction',
 				},
 				'menu': [
 					{
@@ -660,15 +803,19 @@ settings
 						'icon': 'mdi-pencil',
 						'show': true,
 						action: function(data){
+							data.action = 'edit';
+							data.url = '/sanction-level';
+							data.label = 'Sanction';
+
 							Helper.set(data);
 
 							var dialog = {};
-							dialog.controller = 'editLaborTypeDialogController';
-							dialog.template = '/app/components/settings/templates/dialogs/labor-type-form-dialog.template.html';
+							dialog.controller = 'sanctionLevelDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/sanction-level-form-dialog.template.html';
 
 							Helper.customDialog(dialog)
 								.then(function(){
-									Helper.notify('Labor type updated.');
+									Helper.notify('Sanction level updated.');
 									$scope.$emit('refresh');
 								}, function(){
 									return;
@@ -682,15 +829,15 @@ settings
 						action: function(data){
 							var dialog = {};
 							dialog.title = 'Delete';
-							dialog.message = 'Disable ' + data.name + ' labor type?'
+							dialog.message = 'Delete ' + data.name + ' sanction level?'
 							dialog.ok = 'Delete';
 							dialog.cancel = 'Cancel';
 
 							Helper.confirm(dialog)
 								.then(function(){
-									Helper.delete('/labor-type/' + data.id)
+									Helper.delete('/sanction-level/' + data.id)
 										.success(function(){
-											Helper.notify('Labor type deleted.');
+											Helper.notify('Sanction level deleted.');
 											$scope.$emit('refresh');
 										})
 										.error(function(){

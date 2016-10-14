@@ -6,14 +6,14 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 
-use App\SanctionLevel;
+use App\DeductionType;
 
 use Auth;
 use Carbon\Carbon;
 use DB;
 use Gate;
 
-class SanctionLevelController extends Controller
+class DeductionTypeController extends Controller
 {
     /**
      * Checks for duplicate entry.
@@ -22,7 +22,7 @@ class SanctionLevelController extends Controller
      */
     public function checkDuplicate(Request $request)
     {
-        $duplicate = $request->has('id') ? SanctionLevel::where('name', $request->name)->where('sanction_type_id', $request->sanction_type_id)->whereNotIn('id', [$request->id])->first() : SanctionLevel::where('name', $request->name)->where('sanction_type_id', $request->sanction_type_id)->first();
+        $duplicate = $request->has('id') ? DeductionType::where('name', $request->name)->whereNotIn('id', [$request->id])->first() : DeductionType::where('name', $request->name)->first();
 
         return response()->json($duplicate ? true : false);
     }
@@ -34,34 +34,39 @@ class SanctionLevelController extends Controller
      */
     public function enlist(Request $request)
     {
-        $sanction_levels = SanctionLevel::query();
+        $deduction_types = DeductionType::query();
+
+        if($request->has('withTrashed'))
+        {
+            $deduction_types->withTrashed();
+        }
 
         if($request->has('with'))
         {
             for ($i=0; $i < count($request->with); $i++) { 
                 if(!$request->input('with')[$i]['withTrashed'])
                 {
-                    $sanction_levels->with($request->input('with')[$i]['relation']);
+                    $deduction_types->with($request->input('with')[$i]['relation']);
                 }
             }
         }
 
         if($request->has('search'))
         {
-            $sanction_levels->where('name', 'like', '%'.$request->search.'%')->orWhere('description', 'like', '%'.$request->search.'%');
+            $deduction_types->where('name', 'like', '%'.$request->search.'%')->orWhere('description', 'like', '%'.$request->search.'%');
         }
 
         if($request->has('paginate'))
         {
-            return $sanction_levels->paginate($request->paginate);
+            return $deduction_types->paginate($request->paginate);
         }
 
         if($request->has('first'))
         {
-            return $sanction_levels->first();
+            return $deduction_types->first();
         }
 
-        return $sanction_levels->get();
+        return $deduction_types->get();
     }
 
     /**
@@ -71,7 +76,7 @@ class SanctionLevelController extends Controller
      */
     public function index()
     {
-        return SanctionLevel::all();
+        return DeductionType::all();
     }
 
     /**
@@ -97,7 +102,7 @@ class SanctionLevelController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $duplicate = SanctionLevel::where('name', $request->name)->where('sanction_type_id', $request->sanction_type_id)->first();
+        $duplicate = DeductionType::where('name', $request->name)->first();
 
         if($duplicate)
         {
@@ -107,17 +112,15 @@ class SanctionLevelController extends Controller
         $this->validate($request, [
             'name' => 'required',
             'description' => 'required',
-            'sanction_type_id' => 'required|numeric',
         ]);
 
         DB::transaction(function() use($request){
-            $sanction_level = new SanctionLevel;
+            $deduction_type = new DeductionType;
 
-            $sanction_level->name = $request->name;
-            $sanction_level->description = $request->description;
-            $sanction_level->sanction_type_id = $request->sanction_type_id;
+            $deduction_type->name = $request->name;
+            $deduction_type->description = $request->description;
 
-            $sanction_level->save();
+            $deduction_type->save();
         });
     }
 
@@ -129,7 +132,7 @@ class SanctionLevelController extends Controller
      */
     public function show($id)
     {
-        return SanctionLevel::where('id', $id)->first();
+        return DeductionType::withTrashed()->where('id', $id)->first();
     }
 
     /**
@@ -157,7 +160,7 @@ class SanctionLevelController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $duplicate = SanctionLevel::whereNotIn('id', [$id])->where('name', $request->name)->where('sanction_type_id', $request->sanction_type_id)->first();
+        $duplicate = DeductionType::whereNotIn('id', [$id])->where('name', $request->name)->first();
 
         if($duplicate)
         {
@@ -167,17 +170,15 @@ class SanctionLevelController extends Controller
         $this->validate($request, [
             'name' => 'required',
             'description' => 'required',
-            'sanction_type_id' => 'required|numeric',
         ]);
 
         DB::transaction(function() use($request, $id){
-            $sanction_level = SanctionLevel::where('id', $id)->first();
+            $deduction_type = DeductionType::where('id', $id)->first();
 
-            $sanction_level->name = $request->name;
-            $sanction_level->description = $request->description;
-            $sanction_level->sanction_type_id = $request->sanction_type_id;
+            $deduction_type->name = $request->name;
+            $deduction_type->description = $request->description;
 
-            $sanction_level->save();
+            $deduction_type->save();
         });
     }
 
@@ -194,11 +195,11 @@ class SanctionLevelController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $sanction_level = SanctionLevel::with('sanction')->where('id', $id)->first();
+        $deduction_types = DeductionType::with('employees')->where('id', $id)->first();
 
-        if(!count($sanction_level->sanction))
+        if(!count($deduction_types->employees))
         {
-            $sanction_level->delete();
+            $deduction_types->delete();
 
             return;
         }

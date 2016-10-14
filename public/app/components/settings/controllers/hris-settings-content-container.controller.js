@@ -34,7 +34,7 @@ settings
 			var current = Helper.fetch();
 
 			$scope.subheader.current = current;
-
+			$scope.isLoading = true;
 			$scope.init(current);
 			$scope.$broadcast('close');
 			$scope.showInactive = false;
@@ -59,14 +59,14 @@ settings
 			{
 				data.current = $scope.subheader.current;
 
-				// if the tab is in departments and the data clicked has positions under it
-				if((data.current.label == 'Departments' || data.current.label == 'Job Categories' || data.current.label == 'Labor Types') && data.positions.length)
+				// condition for checking if the delete button can be allowed
+				if( ((data.current.label == 'Departments' || data.current.label == 'Job Categories' || data.current.label == 'Labor Types') && data.positions.length) || (data.current.label == 'Positions' && data.deployments.length) || (data.current.label == 'Deductions' && data.employees.length) || (data.current.label == 'Sanctions' && data.sanction_levels) )
 				{
 					// disable the delete button
 					data.current.menu[1].show = false;
 				}
 				// otherwise
-				else if((data.current.label == 'Departments' || data.current.label == 'Job Categories' || data.current.label == 'Labor Types') && !data.positions.length)
+				else if( ((data.current.label == 'Departments' || data.current.label == 'Job Categories' || data.current.label == 'Labor Types') && !data.positions.length) || (data.current.label == 'Positions' && !data.deployments.length) || (data.current.label == 'Deductions' && !data.employees.length) || (data.current.label == 'Sanctions' && !data.sanction_levels) )
 				{
 					// enable the delete button
 					data.current.menu[1].show = true;
@@ -77,6 +77,7 @@ settings
 				var dialog = {};
 				dialog.controller = 'listItemActionsDialogController';
 				dialog.template = '/app/shared/templates/dialogs/list-item-actions-dialog.template.html';
+				dialog.fullScreen = false;
 
 				Helper.customDialog(dialog);
 			}
@@ -111,6 +112,8 @@ settings
 
 					$scope.fab.label = query.label;
 					$scope.fab.action = function(){
+						Helper.set(query.fab);
+
 						Helper.customDialog(query.fab)
 							.then(function(){
 								Helper.notify(query.fab.message);

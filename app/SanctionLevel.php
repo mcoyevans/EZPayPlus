@@ -4,10 +4,10 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class SantionLevel extends Model
+class SanctionLevel extends Model
 {
     public function sanction()
     {
-    	return $this->belongsTo('App\Sanction');
+    	return $this->belongsTo('App\SanctionType');
     }
 }
