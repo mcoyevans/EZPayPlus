@@ -1,5 +1,6 @@
 settings
 	.controller('hrisSettingsContentContainerController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.$emit('closeSidenav');
 		/*
 		 * Object for subheader
 		 *

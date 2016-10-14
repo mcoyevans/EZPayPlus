@@ -257,8 +257,8 @@ app
 				Helper.setAuthUser(data);
 			})
 
-		$scope.$on('fetchAuthenticatedUser', function(){
-			console.log($scope.user);
+		$scope.$on('closeSidenav', function(){
+			$mdSidenav('left').close();
 		});
 	}]);
 //# sourceMappingURL=app.js.map

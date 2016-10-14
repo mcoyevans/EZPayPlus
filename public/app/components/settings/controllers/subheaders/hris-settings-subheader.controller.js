@@ -782,7 +782,7 @@ settings
 				'request' : {		
 					'with': [
 						{
-							'relation':'sanction',
+							'relation':'sanction_type',
 							'withTrashed': false,
 						},
 					],

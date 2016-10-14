@@ -1,5 +1,8 @@
 settings
-	.controller('adminSettingsContentContainerController', ['$scope', 'Helper', function($scope, Helper){
+	.controller('adminSettingsContentContainerController', ['$scope', '$mdMedia', 'Helper', function($scope, $mdMedia, Helper){
+		if($mdMedia('xs') || $mdMedia('sm') || $mdMedia('md')){
+			$scope.$emit('closeSidenav');
+		}
 		/*
 		 * Object for subheader
 		 *
