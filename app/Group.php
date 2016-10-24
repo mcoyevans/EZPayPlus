@@ -15,4 +15,9 @@ class Group extends Model
     {
     	return $this->belongsToMany('App\Module')->withTimestamps();;
     }
+
+    public function group_module()
+    {
+    	return $this->hasMany('App\GroupModule');
+    }
 }

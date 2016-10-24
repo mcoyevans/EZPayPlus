@@ -155,7 +155,7 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        if(Gate::forUser($request->user())->allows('manage-user'))
+        if(Gate::forUser($request->user())->allows('settings-access'))
         {
             $duplicate = User::where('email', $request->email)->first();
 
@@ -179,6 +179,10 @@ class UserController extends Controller
             $user->group_id = $request->group_id;
 
             $user->save();
+        }
+        else
+        {
+            abort(403, 'Unauthorized action.');
         }
     }
 
@@ -213,7 +217,7 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if(Gate::forUser($request->user())->allows('manage-user'))
+        if(Gate::forUser($request->user())->allows('settings-access'))
         {
             $duplicate = User::whereNotIn('id', [$id])->where('email', $request->email)->first();
 
@@ -234,6 +238,10 @@ class UserController extends Controller
 
             $user->save();
         }
+        else
+        {
+            abort(403, 'Unauthorized action.');
+        }
     }
 
     /**
@@ -244,9 +252,13 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        if(Gate::forUser(Auth::user())->allows('manage-user'))
+        if(Gate::forUser(Auth::user())->allows('settings-access'))
         {
             User::where('id', $id)->delete();
+
+            return;
         }
+
+        abort(403, 'Unable to delete.');
     }
 }

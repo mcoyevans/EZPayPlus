@@ -12,7 +12,7 @@ sharedModule
 			      	controller: data.controller,
 			      	templateUrl: data.template,
 			      	parent: angular.element(document.body),
-			      	fullscreen: true,
+			      	fullscreen: data.fullscreen,
 			    });
 			},
 			prompt: function(data)

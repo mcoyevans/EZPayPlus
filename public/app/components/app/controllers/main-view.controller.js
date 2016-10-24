@@ -109,9 +109,9 @@ app
 									}, 
 								},
 								{
-									'label': 'Time Keeping',
+									'label': 'Timekeeping',
 									action: function(){
-										$state.go('main.time-keeping-settings');
+										$state.go('main.timekeeping-settings');
 									},
 								},
 							]
@@ -124,7 +124,7 @@ app
 				Helper.setAuthUser(data);
 			})
 
-		$scope.$on('fetchAuthenticatedUser', function(){
-			console.log($scope.user);
+		$scope.$on('closeSidenav', function(){
+			$mdSidenav('left').close();
 		});
 	}]);

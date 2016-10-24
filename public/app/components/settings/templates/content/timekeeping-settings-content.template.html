@@ -1,0 +1,30 @@
+<div infinite-scroll='type.paginateLoad()' infinite-scroll-distance="1" infinite-scroll-disabled="type.busy" infinite-scroll-parent ng-if="type.show">
+	<md-list>
+		<md-list-item class="md-3-line" ng-repeat="type in type.items | filter: toolbar.searchText | orderBy:sortType:sortReverse" ng-if="showInactive || !type.deleted_at" ng-click="listItemAction(type)">
+			<h2 class="md-avatar" ng-class="type.deleted_at ? 'accent-bg': 'primary-bg'" layout="row" layout-align="center center">
+				<span class="md-headline white-text">{{type.name.charAt(0).toUpperCase()}}</span>
+			</h2>
+			<div class="md-list-item-text">
+				<h3>{{type.name}}</h3>
+				<h4></span> {{type.description}} {{type.email}}</h4>
+				<p>
+					<span ng-if="type.paid">Paid</span>
+					<span ng-if="type.convertible"> | Convertible</span>
+					<span ng-if="type.department">Department: {{type.department.name}} - {{type.department.description}} |</span>
+					<span ng-if="type.department">Job Category: {{type.job_category.name}} - {{type.job_category.description}} |</span>
+					<span ng-if="type.department">Labor Type: {{type.labor_type.name}} - {{type.labor_type.description}}</span>
+					<span ng-if="type.sanction_type">Sanction: {{type.sanction_type.name}} - {{type.sanction_type.description}}</span>
+				</p>
+			</div>
+		</md-list-item>
+	</md-list>
+</div>
+<div layout="row" layout-align="center center" layout-padding layout-margin ng-if="isLoading">
+	<md-progress-circular class="md-primary" md-diameter="60"></md-progress-circular>
+</div>
+<div layout-padding layout-margin ng-if="!type.items.length && type.show && !type.no_matches">
+	Nothing to display.
+</div>
+<div layout-padding layout-margin ng-if="type.no_matches && type.show">
+	<p>No results matching <strong class="accent-text">"{{query.searchText}}"</strong> were found.</p>
+</div>

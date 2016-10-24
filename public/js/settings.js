@@ -1,6 +1,9 @@
 var settings = angular.module('settings', []);
 settings
-	.controller('adminSettingsContentContainerController', ['$scope', 'Helper', function($scope, Helper){
+	.controller('adminSettingsContentContainerController', ['$scope', '$mdMedia', 'Helper', function($scope, $mdMedia, Helper){
+		if($mdMedia('xs') || $mdMedia('sm') || $mdMedia('md')){
+			$scope.$emit('closeSidenav');
+		}
 		/*
 		 * Object for subheader
 		 *
@@ -37,6 +40,8 @@ settings
 			$scope.subheader.current = current;
 
 			$scope.init(current);
+			$scope.$broadcast('close');
+			$scope.showInactive = false;
 		});
 
 		/* Action originates from toolbar */
@@ -50,6 +55,7 @@ settings
 		$scope.$on('refresh', function(){
 			$scope.subheader.current.request.search = null;
 			$scope.refresh();
+			$scope.$broadcast('close');
 		});
 
 		$scope.listItemAction = function(data){
@@ -98,7 +104,177 @@ settings
 			$scope.type.items = [];
 			$scope.toolbar.items = [];
 
+			// 2 is default so the next page to be loaded will be page 2 
+			$scope.type.page = 2;
+
+			Helper.post(query.url, query.request)
+				.success(function(data){
+					$scope.type.details = data;
+					$scope.type.items = data.data;
+					$scope.type.show = true;
+
+					$scope.fab.label = query.label;
+					$scope.fab.action = function(){
+						Helper.customDialog(query.fab)
+							.then(function(){
+								Helper.notify(query.fab.message);
+								$scope.refresh();
+							}, function(){
+								return;
+							});
+					}
+					$scope.fab.show = true;
+
+					if(data.data.length){
+						// iterate over each record and set the format
+						angular.forEach(data.data, function(item){
+							pushItem(item);
+						});
+					}
+
+					$scope.type.paginateLoad = function(){
+						// kills the function if ajax is busy or pagination reaches last page
+						if($scope.type.busy || ($scope.type.page > $scope.type.details.last_page)){
+							$scope.isLoading = false;
+							return;
+						}
+						/**
+						 * Executes pagination call
+						 *
+						*/
+						// sets to true to disable pagination call if still busy.
+						$scope.type.busy = true;
+						$scope.isLoading = true;
+						// Calls the next page of pagination.
+						Helper.post(query.url + '?page=' + $scope.type.page, query.request)
+							.success(function(data){
+								// increment the page to set up next page for next AJAX Call
+								$scope.type.page++;
+
+								// iterate over each data then splice it to the data array
+								angular.forEach(data.data, function(item, key){
+									pushItem(item);
+									$scope.type.items.push(item);
+								});
+
+								// Enables again the pagination call for next call.
+								$scope.type.busy = false;
+								$scope.isLoading = false;
+							});
+					}
+				});
+		}
+
+		$scope.refresh = function(){
+			$scope.isLoading = true;
+  			$scope.type.show = false;
+
+  			$scope.init($scope.subheader.current);
+		};
+	}]);
+settings
+	.controller('hrisSettingsContentContainerController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.$emit('closeSidenav');
+		/*
+		 * Object for subheader
+		 *
+		*/
+		$scope.subheader = {};
+		$scope.subheader.show = true;
+
+		$scope.subheader.toggleActive = function(){
+			$scope.showInactive = !$scope.showInactive;
+		}
+		$scope.subheader.sortBy = function(filter){
+			filter.sortReverse = !filter.sortReverse;			
+			$scope.sortType = filter.type;
+			$scope.sortReverse = filter.sortReverse;
+		}
+
+		/*
+		 * Object for toolbar
+		 *
+		*/
+		$scope.toolbar = {};
+		
+		/*
+		 * Object for fab
+		 *
+		*/
+		$scope.fab = {};
+		$scope.fab.icon = 'mdi-plus';
+
+		/* Action originates from subheader */
+		$scope.$on('setInit', function(){
+			var current = Helper.fetch();
+
+			$scope.subheader.current = current;
+			$scope.isLoading = true;
+			$scope.init(current);
 			$scope.$broadcast('close');
+			$scope.showInactive = false;
+		});
+
+		/* Action originates from toolbar */
+		$scope.$on('search', function(){
+			$scope.subheader.current.request.search = $scope.toolbar.searchText;
+			$scope.refresh();
+			$scope.showInactive = true;
+		});
+
+		/* Listens for any request for refresh */
+		$scope.$on('refresh', function(){
+			$scope.subheader.current.request.search = null;
+			$scope.$broadcast('close');
+			$scope.refresh();
+		});
+
+		$scope.listItemAction = function(data){
+			if(!data.deleted_at)
+			{
+				data.current = $scope.subheader.current;
+
+				// condition for checking if the delete button can be allowed
+				if( ((data.current.label == 'Departments' || data.current.label == 'Job Categories' || data.current.label == 'Labor Types') && data.positions.length) || (data.current.label == 'Positions' && data.deployments.length) || (data.current.label == 'Deductions' && data.employees.length) || (data.current.label == 'Sanctions' && data.sanction_levels) )
+				{
+					// disable the delete button
+					data.current.menu[1].show = false;
+				}
+				// otherwise
+				else if( ((data.current.label == 'Departments' || data.current.label == 'Job Categories' || data.current.label == 'Labor Types') && !data.positions.length) || (data.current.label == 'Positions' && !data.deployments.length) || (data.current.label == 'Deductions' && !data.employees.length) || (data.current.label == 'Sanctions' && !data.sanction_levels) )
+				{
+					// enable the delete button
+					data.current.menu[1].show = true;
+				}
+
+				Helper.set(data);
+
+				var dialog = {};
+				dialog.controller = 'listItemActionsDialogController';
+				dialog.template = '/app/shared/templates/dialogs/list-item-actions-dialog.template.html';
+				dialog.fullScreen = false;
+
+				Helper.customDialog(dialog);
+			}
+		}
+
+		/* Formats every data in the paginated call */
+		var pushItem = function(data){
+			data.created_at = new Date(data.created_at);
+
+			var item = {};
+
+			item.display = data.name;
+			item.description = data.description;
+			item.gl_account = data.gl_account;
+
+			$scope.toolbar.items.push(item);
+		}
+
+		$scope.init = function(query, refresh){
+			$scope.type = {};
+			$scope.type.items = [];
+			$scope.toolbar.items = [];
 
 			// 2 is default so the next page to be loaded will be page 2 
 			$scope.type.page = 2;
@@ -111,6 +287,8 @@ settings
 
 					$scope.fab.label = query.label;
 					$scope.fab.action = function(){
+						Helper.set(query.fab);
+
 						Helper.customDialog(query.fab)
 							.then(function(){
 								Helper.notify(query.fab.message);
@@ -222,6 +400,180 @@ settings
 		}
 
 		$scope.init();
+	}]);
+settings
+	.controller('timekeepingSettingsContentContainerController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.$emit('closeSidenav');
+		/*
+		 * Object for subheader
+		 *
+		*/
+		$scope.subheader = {};
+		$scope.subheader.show = true;
+
+		$scope.subheader.toggleActive = function(){
+			$scope.showInactive = !$scope.showInactive;
+		}
+		$scope.subheader.sortBy = function(filter){
+			filter.sortReverse = !filter.sortReverse;			
+			$scope.sortType = filter.type;
+			$scope.sortReverse = filter.sortReverse;
+		}
+
+		/*
+		 * Object for toolbar
+		 *
+		*/
+		$scope.toolbar = {};
+		
+		/*
+		 * Object for fab
+		 *
+		*/
+		$scope.fab = {};
+		$scope.fab.icon = 'mdi-plus';
+
+		/* Action originates from subheader */
+		$scope.$on('setInit', function(){
+			var current = Helper.fetch();
+
+			$scope.subheader.current = current;
+			$scope.isLoading = true;
+			$scope.init(current);
+			$scope.$broadcast('close');
+			$scope.showInactive = false;
+		});
+
+		/* Action originates from toolbar */
+		$scope.$on('search', function(){
+			$scope.subheader.current.request.search = $scope.toolbar.searchText;
+			$scope.refresh();
+			$scope.showInactive = true;
+		});
+
+		/* Listens for any request for refresh */
+		$scope.$on('refresh', function(){
+			$scope.subheader.current.request.search = null;
+			$scope.$broadcast('close');
+			$scope.refresh();
+		});
+
+		$scope.listItemAction = function(data){
+			if(!data.deleted_at)
+			{
+				data.current = $scope.subheader.current;
+
+				// condition for checking if the delete button can be allowed
+				if(data.current.label == 'Time Interpretation')
+				{
+					// disable the delete button
+					data.current.menu[1].show = false;
+				}
+				// otherwise
+				else if(!data.current.label == 'Time Interpretation')
+				{
+					// enable the delete button
+					data.current.menu[1].show = true;
+				}
+
+				Helper.set(data);
+
+				var dialog = {};
+				dialog.controller = 'listItemActionsDialogController';
+				dialog.template = '/app/shared/templates/dialogs/list-item-actions-dialog.template.html';
+				dialog.fullScreen = false;
+
+				Helper.customDialog(dialog);
+			}
+		}
+
+		/* Formats every data in the paginated call */
+		var pushItem = function(data){
+			data.created_at = new Date(data.created_at);
+
+			var item = {};
+
+			item.display = data.name;
+			item.description = data.description;
+			item.gl_account = data.gl_account;
+
+			$scope.toolbar.items.push(item);
+		}
+
+		$scope.init = function(query, refresh){
+			$scope.type = {};
+			$scope.type.items = [];
+			$scope.toolbar.items = [];
+
+			// 2 is default so the next page to be loaded will be page 2 
+			$scope.type.page = 2;
+
+			Helper.post(query.url, query.request)
+				.success(function(data){
+					$scope.type.details = data;
+					$scope.type.items = data.data;
+					$scope.type.show = true;
+
+					$scope.fab.label = query.label;
+					$scope.fab.action = function(){
+						Helper.set(query.fab);
+
+						Helper.customDialog(query.fab)
+							.then(function(){
+								Helper.notify(query.fab.message);
+								$scope.refresh();
+							}, function(){
+								return;
+							});
+					}
+					$scope.fab.show = true;
+
+					if(data.data.length){
+						// iterate over each record and set the format
+						angular.forEach(data.data, function(item){
+							pushItem(item);
+						});
+					}
+
+					$scope.type.paginateLoad = function(){
+						// kills the function if ajax is busy or pagination reaches last page
+						if($scope.type.busy || ($scope.type.page > $scope.type.details.last_page)){
+							$scope.isLoading = false;
+							return;
+						}
+						/**
+						 * Executes pagination call
+						 *
+						*/
+						// sets to true to disable pagination call if still busy.
+						$scope.type.busy = true;
+						$scope.isLoading = true;
+						// Calls the next page of pagination.
+						Helper.post(query.url + '?page=' + $scope.type.page, query.request)
+							.success(function(data){
+								// increment the page to set up next page for next AJAX Call
+								$scope.type.page++;
+
+								// iterate over each data then splice it to the data array
+								angular.forEach(data.data, function(item, key){
+									pushItem(item);
+									$scope.type.items.push(item);
+								});
+
+								// Enables again the pagination call for next call.
+								$scope.type.busy = false;
+								$scope.isLoading = false;
+							});
+					}
+				});
+		}
+
+		$scope.refresh = function(){
+			$scope.isLoading = true;
+  			$scope.type.show = false;
+
+  			$scope.init($scope.subheader.current);
+		};
 	}]);
 settings
 	.controller('createBranchDialogController', ['$scope', 'Helper', function($scope, Helper){
@@ -904,6 +1256,352 @@ settings
 		}
 	}]);
 settings
+	.controller('leaveTypeDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.config = Helper.fetch();
+
+		if($scope.config.action == 'create')
+		{
+			$scope.leave = {};
+		}
+		else if($scope.config.action == 'edit')
+		{
+			Helper.get($scope.config.url + '/' + $scope.config.id)
+				.success(function(data){
+					$scope.leave = data;
+					$scope.leave.paid = data.paid ? true : false;
+					$scope.leave.convertible = data.convertible ? true : false;
+				})
+		}
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post($scope.config.url + '/check-duplicate', $scope.leave)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.leaveTypeForm.$invalid){
+				angular.forEach($scope.leaveTypeForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+
+				if($scope.config.action == 'create')
+				{
+					Helper.post($scope.config.url, $scope.leave)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+				else if($scope.config.action == 'edit')
+				{
+					Helper.put($scope.config.url + '/' + $scope.config.id, $scope.leave)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+			}
+		}
+	}]);
+settings
+	.controller('nameDescriptionDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.config = Helper.fetch();
+
+		if($scope.config.action == 'create')
+		{
+			$scope.model = {};
+		}
+		else if($scope.config.action == 'edit')
+		{
+			Helper.get($scope.config.url + '/' + $scope.config.id)
+				.success(function(data){
+					$scope.model = data;
+				})
+		}
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post($scope.config.url + '/check-duplicate', $scope.model)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.modelForm.$invalid){
+				angular.forEach($scope.modelForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+
+				if($scope.config.action == 'create')
+				{
+					Helper.post($scope.config.url, $scope.model)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+				else if($scope.config.action == 'edit')
+				{
+					Helper.put($scope.config.url + '/' + $scope.config.id, $scope.model)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+			}
+		}
+	}]);
+settings
+	.controller('positionDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.config = Helper.fetch();
+
+		Helper.get('/department')
+			.success(function(data){
+				$scope.departments = data;
+			})
+
+		Helper.get('/job-category')
+			.success(function(data){
+				$scope.job_categories = data;
+			})
+
+		Helper.get('/labor-type')
+			.success(function(data){
+				$scope.labor_types = data;
+			})		
+
+		if($scope.config.action == 'create')
+		{
+			$scope.position = {};
+		}
+		else if($scope.config.action == 'edit')
+		{
+			Helper.get($scope.config.url + '/' + $scope.config.id)
+				.success(function(data){
+					$scope.position = data;
+				})
+		}
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post($scope.config.url + '/check-duplicate', $scope.position)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.positionForm.$invalid){
+				angular.forEach($scope.positionForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+
+				if($scope.config.action == 'create')
+				{
+					Helper.post($scope.config.url, $scope.position)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+				else if($scope.config.action == 'edit')
+				{
+					Helper.put($scope.config.url + '/' + $scope.config.id, $scope.position)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+			}
+		}
+	}]);
+settings
+	.controller('sanctionLevelDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.config = Helper.fetch();
+
+		Helper.get('/sanction-type')
+			.success(function(data){
+				$scope.sanctions = data;
+			})
+
+		if($scope.config.action == 'create')
+		{
+			$scope.sanction_level = {};
+		}
+		else if($scope.config.action == 'edit')
+		{
+			Helper.get($scope.config.url + '/' + $scope.config.id)
+				.success(function(data){
+					$scope.sanction_level = data;
+				})
+		}
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post($scope.config.url + '/check-duplicate', $scope.sanction_level)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.sanctionLevelForm.$invalid){
+				angular.forEach($scope.sanctionLevelForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+
+				if($scope.config.action == 'create')
+				{
+					Helper.post($scope.config.url, $scope.sanction_level)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+				else if($scope.config.action == 'edit')
+				{
+					Helper.put($scope.config.url + '/' + $scope.config.id, $scope.sanction_level)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+			}
+		}
+	}]);
+settings
 	.controller('adminSettingsSubheaderController', ['$scope', 'Helper', function($scope, Helper){
 		var setInit = function(data){
 			Helper.set(data);
@@ -1046,7 +1744,7 @@ settings
 						'show':true,
 						action: function(data){
 							var dialog = {};
-							dialog.title = 'Delete House Bank';
+							dialog.title = 'Delete';
 							dialog.message = 'Delete ' + data.name + ' house bank?'
 							dialog.ok = 'Delete';
 							dialog.cancel = 'Cancel';
@@ -1148,7 +1846,7 @@ settings
 						'show':true,
 						action: function(data){
 							var dialog = {};
-							dialog.title = 'Delete Group';
+							dialog.title = 'Delete';
 							dialog.message = 'Delete ' + data.name + ' group?'
 							dialog.ok = 'Delete';
 							dialog.cancel = 'Cancel';
@@ -1289,6 +1987,1169 @@ settings
 		setInit($scope.subheader.navs[0]);
 	}]);
 settings
+	.controller('hrisSettingsSubheaderController', ['$scope', 'Helper', function($scope, Helper){
+		var setInit = function(data){
+			Helper.set(data);
+
+			$scope.$emit('setInit');
+		}
+
+		$scope.subheader.navs = [
+			// Departments
+			{
+				'label':'Departments',
+				'url': '/department/enlist',
+				'request': {
+					'with': [
+						{
+							'relation':'positions',
+							'withTrashed':false,
+						},
+					],
+					'withTrashed': true,
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'nameDescriptionDialogController',
+					'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
+					'message': 'Department saved.',
+					'action' : 'create',
+					'url': '/department',
+					'label': 'Department',
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/department';
+							data.label = 'Department';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'nameDescriptionDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Department updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' department?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/department/' + data.id)
+										.success(function(){
+											Helper.notify('Department deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+			// Positions
+			{
+				'label':'Positions',
+				'url': '/position/enlist',
+				'request': {
+					'withTrashed': true,
+					'with': [
+						{
+							'relation' : 'department',
+							'withTrashed': false,
+						},
+						{
+							'relation' : 'job_category',
+							'withTrashed': false,
+						},
+						{
+							'relation' : 'labor_type',
+							'withTrashed': false,
+						},
+						{
+							'relation' : 'deployments',
+							'withTrashed': false,	
+						},
+					],
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'positionDialogController',
+					'template':'/app/components/settings/templates/dialogs/position-form-dialog.template.html',
+					'message': 'Position saved.',
+					'action' : 'create',
+					'url': '/position',
+
+				},
+				action: function(current){
+					setInit(current);
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/position';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'positionDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/position-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Position updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' position?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/position/' + data.id)
+										.success(function(){
+											Helper.notify('Position deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+			},
+			// Job Categories
+			{
+				'label':'Job Categories',
+				'url': '/job-category/enlist',
+				'request' : {
+					'with': [
+						{
+							'relation':'positions',
+							'withTrashed': false,
+						},
+					],
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'nameDescriptionDialogController',
+					'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
+					'message': 'Job category saved.',
+					'action' : 'create',
+					'url': '/job-category',
+					'label': 'Job category',
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/job-category';
+							data.label = 'Job category';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'nameDescriptionDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Job category updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' job category?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/job-category/' + data.id)
+										.success(function(){
+											Helper.notify('Job category deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+			// Labor Types
+			{
+				'label':'Labor Types',
+				'url': '/labor-type/enlist',
+				'request' : {
+					'with' : [
+						{
+							'relation':'positions',
+							'withTrashed': false,
+						}
+					],
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'nameDescriptionDialogController',
+					'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
+					'message': 'Labor type saved.',
+					'action' : 'create',
+					'fullscreen' : true,
+					'url': '/labor-type',
+					'label': 'Labor type',
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/labor-type';
+							data.label = 'Labor type';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'nameDescriptionDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Labor type updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' labor type?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/labor-type/' + data.id)
+										.success(function(){
+											Helper.notify('Labor type deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+			// Leaves
+			{
+				'label':'Leaves',
+				'url': '/leave-type/enlist',
+				'request': {
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'leaveTypeDialogController',
+					'template':'/app/components/settings/templates/dialogs/leave-type-form-dialog.template.html',
+					'message': 'Leave saved.',
+					'action' : 'create',
+					'url': '/leave-type',
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/leave-type';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'leaveTypeDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/leave-type-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Leave updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' leave?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/leave-type/' + data.id)
+										.success(function(){
+											Helper.notify('Leave deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+			// Allowances
+			{
+				'label':'Allowances',
+				'url': '/allowance-type/enlist',
+				'request' : {
+					'withTrashed': true,
+					'with' : [
+						{
+							'relation':'employees',
+							'withTrashed': false,
+						}
+					],
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'nameDescriptionDialogController',
+					'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
+					'message': 'Allowance type saved.',
+					'action' : 'create',
+					'url': '/allowance-type',
+					'label': 'Allowance',
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/allowance-type';
+							data.label = 'Allowance';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'nameDescriptionDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Allowance type updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' allowance?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/allowance-type/' + data.id)
+										.success(function(){
+											Helper.notify('Allowance type deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+			// Deductions
+			{
+				'label':'Deductions',
+				'url': '/deduction-type/enlist',
+				'request' : {
+					'withTrashed': true,
+					'with' : [
+						{
+							'relation':'employees',
+							'withTrashed': false,
+						}
+					],
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'nameDescriptionDialogController',
+					'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
+					'message': 'Deduction type saved.',
+					'action' : 'create',
+					'url': '/deduction-type',
+					'label': 'Deduction',
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/deduction-type';
+							data.label = 'Deduction';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'nameDescriptionDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Deduction type updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' deduction?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/deduction-type/' + data.id)
+										.success(function(){
+											Helper.notify('Deduction type deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+			// Sanctions
+			{
+				'label':'Sanctions',
+				'url': '/sanction-type/enlist',
+				'request' : {		
+					'with': [
+						{
+							'relation':'sanction_levels',
+							'withTrashed': false,
+						},
+					],
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'nameDescriptionDialogController',
+					'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
+					'message': 'Sanction type saved.',
+					'action' : 'create',
+					'url': '/sanction-type',
+					'label': 'Sanction',
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/sanction-type';
+							data.label = 'Sanction';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'nameDescriptionDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Sanction type updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' sanction type?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/sanction-type/' + data.id)
+										.success(function(){
+											Helper.notify('Sanction type deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+			// Sanction Levels
+			{
+				'label':'Sanction Levels',
+				'url': '/sanction-level/enlist',
+				'request' : {		
+					'with': [
+						{
+							'relation':'sanction_type',
+							'withTrashed': false,
+						},
+					],
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'sanctionLevelDialogController',
+					'template':'/app/components/settings/templates/dialogs/sanction-level-form-dialog.template.html',
+					'message': 'Sanction level saved.',
+					'action' : 'create',
+					'url': '/sanction-level',
+					'label': 'Sanction',
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/sanction-level';
+							data.label = 'Sanction';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'sanctionLevelDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/sanction-level-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Sanction level updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' sanction level?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/sanction-level/' + data.id)
+										.success(function(){
+											Helper.notify('Sanction level deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+		];
+
+		setInit($scope.subheader.navs[0]);
+	}]);
+settings
+	.controller('timekeepingSettingsSubheaderController', ['$scope', 'Helper', function($scope, Helper){
+		var setInit = function(data){
+			Helper.set(data);
+
+			$scope.$emit('setInit');
+		}
+
+		$scope.subheader.navs = [
+			// Departments
+			{
+				'label':'Shift Schedule',
+				'url': '/shift-schedule/enlist',
+				'request': {
+					'withTrashed': false,
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'shiftScheduleDialogController',
+					'template':'/app/components/settings/templates/dialogs/shift-schedule-form-dialog.template.html',
+					'message': 'Shift schedule saved.',
+					'action' : 'create',
+					'url': '/shift-schedule',
+					'label': 'Shift Schedule',
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/shift-schedule';
+							data.label = 'Shift Schedule';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'shiftScheduleDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/shift-schedule-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Shift schedule updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete this shift schedule?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/shift-schedule/' + data.id)
+										.success(function(){
+											Helper.notify('Shift schedule deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Date Start',
+						'type': 'date_start',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Date End',
+						'type': 'date_end',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Shift Start',
+						'type': 'shift_start',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Shift End',
+						'type': 'shift_end',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Hours Break',
+						'type': 'hours_break',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+			// Biometrics
+			{
+				'label':'Biometrics',
+				'url': '/biometric/enlist',
+				'request' : {
+					'withTrashed': true,
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'nameDescriptionDialogController',
+					'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
+					'message': 'Biometric machine saved.',
+					'action' : 'create',
+					'url': '/biometric',
+					'label': 'Biometric',
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/biometric';
+							data.label = 'Biometric';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'nameDescriptionDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Biometric machine updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' biometric machine?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/biometric/' + data.id)
+										.success(function(){
+											Helper.notify('Biometric machine deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+			// Time Interpretations
+			{
+				'label':'Time Interpretations',
+				'url': '/time-interpretation/enlist',
+				'request' : {
+					'with' : [
+						{
+							'relation':'positions',
+							'withTrashed': false,
+						}
+					],
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'timeInterpretationDialogController',
+					'template':'/app/components/settings/templates/dialogs/time-interpretation-form-dialog.template.html',
+					'message': 'Time interpretation saved.',
+					'action' : 'create',
+					'fullscreen' : true,
+					'url': '/time-interpretation',
+					'label': 'Time interpretation',
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/time-interpretation';
+							data.label = 'Time interpretation';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'timeInterpretationDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/time-interpretation-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Time interpretation updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' time interpretation?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/time-interpretation/' + data.id)
+										.success(function(){
+											Helper.notify('Time interpretation deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+		];
+
+		setInit($scope.subheader.navs[0]);
+	}]);
+settings
 	.controller('adminSettingsToolbarController', ['$scope', '$filter', function($scope, $filter){
 		$scope.toolbar.parentState = 'Settings';
 		$scope.toolbar.childState = 'Admin';
@@ -1311,6 +3172,101 @@ settings
 			$scope.type.busy = true;
 			$scope.searchBar = true;
 			$scope.showInactive = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.searchBar = false;
+			$scope.toolbar.searchText = '';
+			$scope.toolbar.searchItem = '';
+			/* Cancels the paginate when the user sent a query */
+			if($scope.searched){
+				$scope.type.page = 1;
+				$scope.type.no_matches = false;
+				$scope.type.items = [];
+				$scope.searched = false;
+				$scope.$emit('refresh');
+			}
+		};
+
+		$scope.searchUserInput = function(){
+			$scope.$emit('search');
+			$scope.searched = true;
+		};
+	}]);
+settings
+	.controller('hrisSettingsToolbarController', ['$scope', '$filter', function($scope, $filter){
+		$scope.toolbar.parentState = 'Settings';
+		$scope.toolbar.childState = 'HRIS';
+
+		$scope.$on('close', function(){
+			$scope.hideSearchBar();
+		});
+
+		$scope.toolbar.getItems = function(query){
+			var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items;
+			return results;
+		}
+
+		$scope.toolbar.searchAll = true;
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.type.busy = true;
+			$scope.searchBar = true;
+			$scope.showInactive = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.searchBar = false;
+			$scope.toolbar.searchText = '';
+			$scope.toolbar.searchItem = '';
+			/* Cancels the paginate when the user sent a query */
+			if($scope.searched){
+				$scope.type.page = 1;
+				$scope.type.no_matches = false;
+				$scope.type.items = [];
+				$scope.searched = false;
+				$scope.$emit('refresh');
+			}
+		};
+
+		$scope.searchUserInput = function(){
+			$scope.$emit('search');
+			$scope.searched = true;
+		};
+	}]);
+settings
+	.controller('timekeepingSettingsToolbarController', ['$scope', '$filter', function($scope, $filter){
+		$scope.toolbar.parentState = 'Settings';
+		$scope.toolbar.childState = 'Timekeeping';
+
+		$scope.$on('close', function(){
+			$scope.hideSearchBar();
+		});
+
+		$scope.toolbar.getItems = function(query){
+			var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items;
+			return results;
+		}
+
+		$scope.toolbar.searchAll = true;
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.type.busy = true;
+			$scope.searchBar = true;
 		};
 
 		/**

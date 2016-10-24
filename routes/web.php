@@ -40,6 +40,7 @@ Route::resource('holiday', 'HolidayController');
 Route::resource('house-bank', 'HouseBankController');
 Route::resource('job-category', 'JobCategoryController');
 Route::resource('labor-type', 'LaborTypeController');
+Route::resource('leave-type', 'LeaveTypeController');
 Route::resource('module', 'ModuleController');
 Route::resource('pagibig', 'PagibigController');
 Route::resource('payroll', 'PayrollController');
@@ -100,7 +101,62 @@ Route::group(['prefix' => 'group'], function(){
 	Route::post('check-duplicate', 'GroupController@checkDuplicate');
 });
 
-/* Group Module Routes */
-Route::group(['prefix' => 'group-module'], function(){
-	Route::post('enlist', 'GroupModuleController@enlist');
+/* Department Routes */
+Route::group(['prefix' => 'department'], function(){
+	Route::post('enlist', 'DepartmentController@enlist');
+	Route::post('check-duplicate', 'DepartmentController@checkDuplicate');
+});
+
+/* Job Category Routes */
+Route::group(['prefix' => 'job-category'], function(){
+	Route::post('enlist', 'JobCategoryController@enlist');
+	Route::post('check-duplicate', 'JobCategoryController@checkDuplicate');
+});
+
+/* Labor Type Routes */
+Route::group(['prefix' => 'labor-type'], function(){
+	Route::post('enlist', 'LaborTypeController@enlist');
+	Route::post('check-duplicate', 'LaborTypeController@checkDuplicate');
+});
+
+/* Leave Type Routes */
+Route::group(['prefix' => 'leave-type'], function(){
+	Route::post('enlist', 'LeaveTypeController@enlist');
+	Route::post('check-duplicate', 'LeaveTypeController@checkDuplicate');
+});
+
+/* Position Routes */
+Route::group(['prefix' => 'position'], function(){
+	Route::post('enlist', 'PositionController@enlist');
+	Route::post('check-duplicate', 'PositionController@checkDuplicate');
+});
+
+/* Deduction Type Routes */
+Route::group(['prefix' => 'deduction-type'], function(){
+	Route::post('enlist', 'DeductionTypeController@enlist');
+	Route::post('check-duplicate', 'DeductionTypeController@checkDuplicate');
+});
+
+/* Allowance Type Routes */
+Route::group(['prefix' => 'allowance-type'], function(){
+	Route::post('enlist', 'AllowanceTypeController@enlist');
+	Route::post('check-duplicate', 'AllowanceTypeController@checkDuplicate');
+});
+
+/* Sanction Type Routes */
+Route::group(['prefix' => 'sanction-type'], function(){
+	Route::post('enlist', 'SanctionTypeController@enlist');
+	Route::post('check-duplicate', 'SanctionTypeController@checkDuplicate');
+});
+
+/* Sanction Level Routes */
+Route::group(['prefix' => 'sanction-level'], function(){
+	Route::post('enlist', 'SanctionLevelController@enlist');
+	Route::post('check-duplicate', 'SanctionLevelController@checkDuplicate');
+});
+
+/* Shift Schedule Routes */
+Route::group(['prefix' => 'shift-schedule'], function(){
+	Route::post('enlist', 'ShiftScheduleController@enlist');
+	Route::post('check-duplicate', 'ShiftScheduleController@checkDuplicate');
 });

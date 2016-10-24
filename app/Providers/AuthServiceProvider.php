@@ -2,17 +2,13 @@
 
 namespace App\Providers;
 
-use App\Branch;
-use App\Company;
 use App\Group;
-use App\HouseBank;
 use App\Module;
 use App\User;
-use App\Policies\BranchPolicy;
-use App\Policies\CompanyPolicy;
+
 use App\Policies\GroupPolicy;
-use App\Policies\HouseBankPolicy;
 use App\Policies\ModulePolicy;
+
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -25,10 +21,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         // 'App\Model' => 'App\Policies\ModelPolicy',
-        'App\Branch' => 'App\Policies\BranchPolicy',
-        'App\Company' => 'App\Policies\CompanyPolicy',
         'App\Group' => 'App\Policies\GroupPolicy',
-        'App\HouseBank' => 'App\Policies\HouseBankPolicy',
         'App\Module' => 'App\Policies\ModulePolicy',
     ];
 
@@ -41,7 +34,7 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        Gate::define('manage-user', function($user){
+        Gate::define('settings-access', function($user){
             $user = User::with('group.modules')->where('id', $user->id)->first();
 
             foreach ($user->group->modules as $module) {

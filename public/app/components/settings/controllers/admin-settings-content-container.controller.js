@@ -1,5 +1,8 @@
 settings
-	.controller('adminSettingsContentContainerController', ['$scope', 'Helper', function($scope, Helper){
+	.controller('adminSettingsContentContainerController', ['$scope', '$mdMedia', 'Helper', function($scope, $mdMedia, Helper){
+		if($mdMedia('xs') || $mdMedia('sm') || $mdMedia('md')){
+			$scope.$emit('closeSidenav');
+		}
 		/*
 		 * Object for subheader
 		 *
@@ -36,6 +39,8 @@ settings
 			$scope.subheader.current = current;
 
 			$scope.init(current);
+			$scope.$broadcast('close');
+			$scope.showInactive = false;
 		});
 
 		/* Action originates from toolbar */
@@ -49,6 +54,7 @@ settings
 		$scope.$on('refresh', function(){
 			$scope.subheader.current.request.search = null;
 			$scope.refresh();
+			$scope.$broadcast('close');
 		});
 
 		$scope.listItemAction = function(data){
@@ -96,8 +102,6 @@ settings
 			$scope.type = {};
 			$scope.type.items = [];
 			$scope.toolbar.items = [];
-
-			$scope.$broadcast('close');
 
 			// 2 is default so the next page to be loaded will be page 2 
 			$scope.type.page = 2;

@@ -24,7 +24,7 @@ class Employee extends Model
 
     public function deployments()
     {
-    	return $this->hasMany('App\Deployment')
+    	return $this->hasMany('App\Deployment');
     }
 
     public function tax_code()

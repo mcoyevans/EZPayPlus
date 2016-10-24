@@ -67,6 +67,74 @@ app
 					}
 				}
 			})
+			.state('main.hris-settings', {
+				url: 'settings/hris',
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/1')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'hrisSettingsContentContainerController',
+					},
+					'toolbar@main.hris-settings': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'hrisSettingsToolbarController',
+					},
+					'left-sidenav@main.hris-settings': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'subheader@main.hris-settings': {
+						templateUrl: '/app/components/settings/templates/subheaders/hris-settings-subheader.template.html',
+						controller: 'hrisSettingsSubheaderController',
+					},
+					'content@main.hris-settings':{
+						templateUrl: '/app/components/settings/templates/content/hris-settings-content.template.html',
+					}
+				}
+			})
+			.state('main.timekeeping-settings', {
+				url: 'settings/timekeeping',
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/4')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'timekeepingSettingsContentContainerController',
+					},
+					'toolbar@main.timekeeping-settings': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'timekeepingSettingsToolbarController',
+					},
+					'left-sidenav@main.timekeeping-settings': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'subheader@main.timekeeping-settings': {
+						templateUrl: '/app/components/settings/templates/subheaders/timekeeping-settings-subheader.template.html',
+						controller: 'timekeepingSettingsSubheaderController',
+					},
+					'content@main.timekeeping-settings':{
+						templateUrl: '/app/components/settings/templates/content/timekeeping-settings-content.template.html',
+					}
+				}
+			})
 			.state('main.profile-settings', {
 				url: 'settings/profile',
 				resolve:{
@@ -208,9 +276,9 @@ app
 									}, 
 								},
 								{
-									'label': 'Time Keeping',
+									'label': 'Timekeeping',
 									action: function(){
-										$state.go('main.time-keeping-settings');
+										$state.go('main.timekeeping-settings');
 									},
 								},
 							]
@@ -223,8 +291,8 @@ app
 				Helper.setAuthUser(data);
 			})
 
-		$scope.$on('fetchAuthenticatedUser', function(){
-			console.log($scope.user);
+		$scope.$on('closeSidenav', function(){
+			$mdSidenav('left').close();
 		});
 	}]);
 //# sourceMappingURL=app.js.map

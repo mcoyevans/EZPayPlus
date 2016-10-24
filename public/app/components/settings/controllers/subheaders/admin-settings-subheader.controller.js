@@ -141,7 +141,7 @@ settings
 						'show':true,
 						action: function(data){
 							var dialog = {};
-							dialog.title = 'Delete House Bank';
+							dialog.title = 'Delete';
 							dialog.message = 'Delete ' + data.name + ' house bank?'
 							dialog.ok = 'Delete';
 							dialog.cancel = 'Cancel';
@@ -243,7 +243,7 @@ settings
 						'show':true,
 						action: function(data){
 							var dialog = {};
-							dialog.title = 'Delete Group';
+							dialog.title = 'Delete';
 							dialog.message = 'Delete ' + data.name + ' group?'
 							dialog.ok = 'Delete';
 							dialog.cancel = 'Cancel';
