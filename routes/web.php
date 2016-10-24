@@ -154,3 +154,9 @@ Route::group(['prefix' => 'sanction-level'], function(){
 	Route::post('enlist', 'SanctionLevelController@enlist');
 	Route::post('check-duplicate', 'SanctionLevelController@checkDuplicate');
 });
+
+/* Shift Schedule Routes */
+Route::group(['prefix' => 'shift-schedule'], function(){
+	Route::post('enlist', 'ShiftScheduleController@enlist');
+	Route::post('check-duplicate', 'ShiftScheduleController@checkDuplicate');
+});

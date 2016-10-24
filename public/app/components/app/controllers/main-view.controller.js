@@ -109,9 +109,9 @@ app
 									}, 
 								},
 								{
-									'label': 'Time Keeping',
+									'label': 'Timekeeping',
 									action: function(){
-										$state.go('main.time-keeping-settings');
+										$state.go('main.timekeeping-settings');
 									},
 								},
 							]

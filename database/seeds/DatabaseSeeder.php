@@ -26,5 +26,6 @@ class DatabaseSeeder extends Seeder
         $this->call(CurrenciesTableSeeder::class);
         $this->call(CitiesTableSeeder::class);
         $this->call(ProvincesTableSeeder::class);
+        $this->call(TimeInterpretationsTableSeeder::class);
     }
 }

@@ -402,6 +402,180 @@ settings
 		$scope.init();
 	}]);
 settings
+	.controller('timekeepingSettingsContentContainerController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.$emit('closeSidenav');
+		/*
+		 * Object for subheader
+		 *
+		*/
+		$scope.subheader = {};
+		$scope.subheader.show = true;
+
+		$scope.subheader.toggleActive = function(){
+			$scope.showInactive = !$scope.showInactive;
+		}
+		$scope.subheader.sortBy = function(filter){
+			filter.sortReverse = !filter.sortReverse;			
+			$scope.sortType = filter.type;
+			$scope.sortReverse = filter.sortReverse;
+		}
+
+		/*
+		 * Object for toolbar
+		 *
+		*/
+		$scope.toolbar = {};
+		
+		/*
+		 * Object for fab
+		 *
+		*/
+		$scope.fab = {};
+		$scope.fab.icon = 'mdi-plus';
+
+		/* Action originates from subheader */
+		$scope.$on('setInit', function(){
+			var current = Helper.fetch();
+
+			$scope.subheader.current = current;
+			$scope.isLoading = true;
+			$scope.init(current);
+			$scope.$broadcast('close');
+			$scope.showInactive = false;
+		});
+
+		/* Action originates from toolbar */
+		$scope.$on('search', function(){
+			$scope.subheader.current.request.search = $scope.toolbar.searchText;
+			$scope.refresh();
+			$scope.showInactive = true;
+		});
+
+		/* Listens for any request for refresh */
+		$scope.$on('refresh', function(){
+			$scope.subheader.current.request.search = null;
+			$scope.$broadcast('close');
+			$scope.refresh();
+		});
+
+		$scope.listItemAction = function(data){
+			if(!data.deleted_at)
+			{
+				data.current = $scope.subheader.current;
+
+				// condition for checking if the delete button can be allowed
+				if(data.current.label == 'Time Interpretation')
+				{
+					// disable the delete button
+					data.current.menu[1].show = false;
+				}
+				// otherwise
+				else if(!data.current.label == 'Time Interpretation')
+				{
+					// enable the delete button
+					data.current.menu[1].show = true;
+				}
+
+				Helper.set(data);
+
+				var dialog = {};
+				dialog.controller = 'listItemActionsDialogController';
+				dialog.template = '/app/shared/templates/dialogs/list-item-actions-dialog.template.html';
+				dialog.fullScreen = false;
+
+				Helper.customDialog(dialog);
+			}
+		}
+
+		/* Formats every data in the paginated call */
+		var pushItem = function(data){
+			data.created_at = new Date(data.created_at);
+
+			var item = {};
+
+			item.display = data.name;
+			item.description = data.description;
+			item.gl_account = data.gl_account;
+
+			$scope.toolbar.items.push(item);
+		}
+
+		$scope.init = function(query, refresh){
+			$scope.type = {};
+			$scope.type.items = [];
+			$scope.toolbar.items = [];
+
+			// 2 is default so the next page to be loaded will be page 2 
+			$scope.type.page = 2;
+
+			Helper.post(query.url, query.request)
+				.success(function(data){
+					$scope.type.details = data;
+					$scope.type.items = data.data;
+					$scope.type.show = true;
+
+					$scope.fab.label = query.label;
+					$scope.fab.action = function(){
+						Helper.set(query.fab);
+
+						Helper.customDialog(query.fab)
+							.then(function(){
+								Helper.notify(query.fab.message);
+								$scope.refresh();
+							}, function(){
+								return;
+							});
+					}
+					$scope.fab.show = true;
+
+					if(data.data.length){
+						// iterate over each record and set the format
+						angular.forEach(data.data, function(item){
+							pushItem(item);
+						});
+					}
+
+					$scope.type.paginateLoad = function(){
+						// kills the function if ajax is busy or pagination reaches last page
+						if($scope.type.busy || ($scope.type.page > $scope.type.details.last_page)){
+							$scope.isLoading = false;
+							return;
+						}
+						/**
+						 * Executes pagination call
+						 *
+						*/
+						// sets to true to disable pagination call if still busy.
+						$scope.type.busy = true;
+						$scope.isLoading = true;
+						// Calls the next page of pagination.
+						Helper.post(query.url + '?page=' + $scope.type.page, query.request)
+							.success(function(data){
+								// increment the page to set up next page for next AJAX Call
+								$scope.type.page++;
+
+								// iterate over each data then splice it to the data array
+								angular.forEach(data.data, function(item, key){
+									pushItem(item);
+									$scope.type.items.push(item);
+								});
+
+								// Enables again the pagination call for next call.
+								$scope.type.busy = false;
+								$scope.isLoading = false;
+							});
+					}
+				});
+		}
+
+		$scope.refresh = function(){
+			$scope.isLoading = true;
+  			$scope.type.show = false;
+
+  			$scope.init($scope.subheader.current);
+		};
+	}]);
+settings
 	.controller('createBranchDialogController', ['$scope', 'Helper', function($scope, Helper){
 		$scope.branch = {};
 		$scope.duplicate = false;
@@ -2689,6 +2863,293 @@ settings
 		setInit($scope.subheader.navs[0]);
 	}]);
 settings
+	.controller('timekeepingSettingsSubheaderController', ['$scope', 'Helper', function($scope, Helper){
+		var setInit = function(data){
+			Helper.set(data);
+
+			$scope.$emit('setInit');
+		}
+
+		$scope.subheader.navs = [
+			// Departments
+			{
+				'label':'Shift Schedule',
+				'url': '/shift-schedule/enlist',
+				'request': {
+					'withTrashed': false,
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'shiftScheduleDialogController',
+					'template':'/app/components/settings/templates/dialogs/shift-schedule-form-dialog.template.html',
+					'message': 'Shift schedule saved.',
+					'action' : 'create',
+					'url': '/shift-schedule',
+					'label': 'Shift Schedule',
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/shift-schedule';
+							data.label = 'Shift Schedule';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'shiftScheduleDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/shift-schedule-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Shift schedule updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete this shift schedule?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/shift-schedule/' + data.id)
+										.success(function(){
+											Helper.notify('Shift schedule deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Date Start',
+						'type': 'date_start',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Date End',
+						'type': 'date_end',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Shift Start',
+						'type': 'shift_start',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Shift End',
+						'type': 'shift_end',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Hours Break',
+						'type': 'hours_break',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+			// Biometrics
+			{
+				'label':'Biometrics',
+				'url': '/biometric/enlist',
+				'request' : {
+					'withTrashed': true,
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'nameDescriptionDialogController',
+					'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
+					'message': 'Biometric machine saved.',
+					'action' : 'create',
+					'url': '/biometric',
+					'label': 'Biometric',
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/biometric';
+							data.label = 'Biometric';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'nameDescriptionDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Biometric machine updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' biometric machine?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/biometric/' + data.id)
+										.success(function(){
+											Helper.notify('Biometric machine deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+			// Time Interpretations
+			{
+				'label':'Time Interpretations',
+				'url': '/time-interpretation/enlist',
+				'request' : {
+					'with' : [
+						{
+							'relation':'positions',
+							'withTrashed': false,
+						}
+					],
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'timeInterpretationDialogController',
+					'template':'/app/components/settings/templates/dialogs/time-interpretation-form-dialog.template.html',
+					'message': 'Time interpretation saved.',
+					'action' : 'create',
+					'fullscreen' : true,
+					'url': '/time-interpretation',
+					'label': 'Time interpretation',
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/time-interpretation';
+							data.label = 'Time interpretation';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'timeInterpretationDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/time-interpretation-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Time interpretation updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' time interpretation?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/time-interpretation/' + data.id)
+										.success(function(){
+											Helper.notify('Time interpretation deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+		];
+
+		setInit($scope.subheader.navs[0]);
+	}]);
+settings
 	.controller('adminSettingsToolbarController', ['$scope', '$filter', function($scope, $filter){
 		$scope.toolbar.parentState = 'Settings';
 		$scope.toolbar.childState = 'Admin';
@@ -2759,6 +3220,53 @@ settings
 			$scope.type.busy = true;
 			$scope.searchBar = true;
 			$scope.showInactive = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.searchBar = false;
+			$scope.toolbar.searchText = '';
+			$scope.toolbar.searchItem = '';
+			/* Cancels the paginate when the user sent a query */
+			if($scope.searched){
+				$scope.type.page = 1;
+				$scope.type.no_matches = false;
+				$scope.type.items = [];
+				$scope.searched = false;
+				$scope.$emit('refresh');
+			}
+		};
+
+		$scope.searchUserInput = function(){
+			$scope.$emit('search');
+			$scope.searched = true;
+		};
+	}]);
+settings
+	.controller('timekeepingSettingsToolbarController', ['$scope', '$filter', function($scope, $filter){
+		$scope.toolbar.parentState = 'Settings';
+		$scope.toolbar.childState = 'Timekeeping';
+
+		$scope.$on('close', function(){
+			$scope.hideSearchBar();
+		});
+
+		$scope.toolbar.getItems = function(query){
+			var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items;
+			return results;
+		}
+
+		$scope.toolbar.searchAll = true;
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.type.busy = true;
+			$scope.searchBar = true;
 		};
 
 		/**
