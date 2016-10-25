@@ -1,0 +1,285 @@
+<md-dialog aria-label="Time Interpretation Form"  flex flex-gt-sm="80" ng-cloak>
+    <form name="timeInterpretationForm">
+        <md-toolbar >
+            <div class="md-toolbar-tools">
+                <h2 class="white-text">Time Interpretation</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <md-icon class="mdi mdi-close mdi-24px" aria-label="Close dialog"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content flex layout-padding layout-wrap>
+            <md-subheader class="md-accent" ng-if="error">Oops! Something went wrong! An error occured. Please try again.</md-subheader>
+            <div layout="row" layout-wrap flex>
+                <!-- Name -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Name</label>
+                    <input type="text" name="Name" required ng-model="time_interpretation.name" ng-disabled="busy" ng-blur="checkDuplicate()">
+                    <div class="pattern" ng-if="duplicate && timeInterpretationForm.Name.$valid">Leave already exists.</div>
+                    <div ng-messages="timeInterpretationForm.Name.$error" ng-if="timeInterpretationForm.Name.$touched">
+                        <div ng-message="required">Name is required.</div>
+                    </div>
+                </md-input-container>
+            </div>
+            <!-- Regular Days -->
+            <md-subheader class="md-no-sticky">Regular Days</md-subheader>
+            <div layout="row" layout-wrap flex>
+                <!-- Regular Working Hours -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>RWH</label>
+                    <input type="number" name="RegularWorkingHours" required ng-model="time_interpretation.regular_working_hours" min="{{regular_working_hours}}" max="9" ng-disabled="busy">
+                    <div ng-messages="timeInterpretationForm.RegularWorkingHours.$error" ng-if="timeInterpretationForm.RegularWorkingHours.$touched">
+                        <div ng-message="required">Regular working hours is required.</div>
+                        <div ng-message="min">Regular working hours cannot be less than {{regular_working_hours}}</div>
+                        <div ng-message="max">Regular working hours cannot be more than 9</div>
+                    </div>
+                </md-input-container>
+                <!-- Night Differential -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Night Diff.</label>
+                    <input type="number" name="NightDifferential" required ng-model="time_interpretation.night_differential" min="{{night_differential}}" max="9" ng-disabled="busy">
+                    <div ng-messages="timeInterpretationForm.NightDifferential.$error" ng-if="timeInterpretationForm.NightDifferential.$touched">
+                        <div ng-message="required">Night differential is required.</div>
+                        <div ng-message="min">Night differential cannot be less than {{night_differential}}</div>
+                        <div ng-message="max">Night differential cannot be more than 9</div>
+                    </div>
+                </md-input-container>
+                <!-- Overtime -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>OT Hr.</label>
+                    <input type="number" name="Overtime" required ng-model="time_interpretation.overtime" min="{{overtime}}" max="9" ng-disabled="busy">
+                    <div ng-messages="timeInterpretationForm.Overtime.$error" ng-if="timeInterpretationForm.Overtime.$touched">
+                        <div ng-message="required">Overtime is required.</div>
+                        <div ng-message="min">Overtime cannot be less than {{overtime}}</div>
+                        <div ng-message="max">Overtime cannot be more than 9</div>
+                    </div>
+                </md-input-container>
+                <!-- Overtime Night Differential -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>OT Night Diff.</label>
+                    <input type="number" name="OvertimeNightDifferential" required ng-model="time_interpretation.overtime_night_differential" min="{{overtime_night_differential}}" max="9" ng-disabled="busy">
+                    <div ng-messages="timeInterpretationForm.OvertimeNightDifferential.$error" ng-if="timeInterpretationForm.OvertimeNightDifferential.$touched">
+                        <div ng-message="required">Overtime night differential is required.</div>
+                        <div ng-message="min">Overtime night differential cannot be less than {{overtime_night_differential}}</div>
+                        <div ng-message="max">Overtime night differential cannot be more than 9</div>
+                    </div>
+                </md-input-container>
+                <!-- Rest Day Regular Working Hours -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>RD RWH</label>
+                    <input type="number" name="RestDayRegularWorkingHours" required ng-model="time_interpretation.rest_day_rate" min="{{rest_day_rate}}" max="9" ng-disabled="busy">
+                    <div ng-messages="timeInterpretationForm.RestDayRegularWorkingHours.$error" ng-if="timeInterpretationForm.RestDayRegularWorkingHours.$touched">
+                        <div ng-message="required">Rest day regular working hours is required.</div>
+                        <div ng-message="min">Rest day regular working hours cannot be less than {{rest_day_rate}}</div>
+                        <div ng-message="max">Rest day regular working hours cannot be more than 9</div>
+                    </div>
+                </md-input-container>
+                <!-- Rest Day Night Differential -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>RD Night Diff.</label>
+                    <input type="number" name="RestDayNightDifferential" required ng-model="time_interpretation.rest_day_night_differential" min="{{rest_day_night_differential}}" max="9" ng-disabled="busy">
+                    <div ng-messages="timeInterpretationForm.RestDayNightDifferential.$error" ng-if="timeInterpretationForm.RestDayNightDifferential.$touched">
+                        <div ng-message="required">Rest day night differential is required.</div>
+                        <div ng-message="min">Rest day night differential cannot be less than {{rest_day_night_differential}}</div>
+                        <div ng-message="max">Rest day night differential cannot be more than 9</div>
+                    </div>
+                </md-input-container>
+                <!-- Rest Day Overtime -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>RD OT Hr.</label>
+                    <input type="number" name="RestDayOvertime" required ng-model="time_interpretation.rest_day_overtime" min="{{rest_day_overtime}}" max="9" ng-disabled="busy">
+                    <div ng-messages="timeInterpretationForm.RestDayOvertime.$error" ng-if="timeInterpretationForm.RestDayOvertime.$touched">
+                        <div ng-message="required">Rest day overtime is required.</div>
+                        <div ng-message="min">Rest day overtime cannot be less than {{rest_day_overtime}}</div>
+                        <div ng-message="max">Rest day overtime cannot be more than 9</div>
+                    </div>
+                </md-input-container>
+                <!-- Rest Day Overtime Night Differential -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>RD OT Night Diff.</label>
+                    <input type="number" name="RestDayOvertimeNightDifferential" required ng-model="time_interpretation.rest_day_overtime_night_differential" min="{{rest_day_overtime_night_differential}}" max="9" ng-disabled="busy">
+                    <div ng-messages="timeInterpretationForm.RestDayOvertimeNightDifferential.$error" ng-if="timeInterpretationForm.RestDayOvertimeNightDifferential.$touched">
+                        <div ng-message="required">Rest day overtime night differential is required.</div>
+                        <div ng-message="min">Rest day overtime night differential cannot be less than {{rest_day_overtime_night_differential}}</div>
+                        <div ng-message="max">Rest day overtime night differential cannot be more than 9</div>
+                    </div>
+                </md-input-container>
+            </div>
+            <!-- Special Holiday -->
+            <md-subheader class="md-no-sticky">Special Holidays</md-subheader>
+            <div layout="row" layout-wrap flex>
+                <!-- Special Holiday Regular Working Hours -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>RWH</label>
+                    <input type="number" name="SpecialHolidayRegularWorkingHours" required ng-model="time_interpretation.special_holiday_rate" min="{{special_holiday_rate}}" max="9" ng-disabled="busy">
+                    <div ng-messages="timeInterpretationForm.SpecialHolidayRegularWorkingHours.$error" ng-if="timeInterpretationForm.SpecialHolidayRegularWorkingHours.$touched">
+                        <div ng-message="required">Special holiday regular working hours is required.</div>
+                        <div ng-message="min">Special holiday regular working hours cannot be less than {{special_holiday_rate}}</div>
+                        <div ng-message="max">Special holiday regular working hours cannot be more than 9</div>
+                    </div>
+                </md-input-container>
+                <!-- Special Holiday Night Differential -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Night Diff.</label>
+                    <input type="number" name="SpecialHolidayNightDifferential" required ng-model="time_interpretation.special_holiday_night_differential" min="{{special_holiday_night_differential}}" max="9" ng-disabled="busy">
+                    <div ng-messages="timeInterpretationForm.SpecialHolidayNightDifferential.$error" ng-if="timeInterpretationForm.SpecialHolidayNightDifferential.$touched">
+                        <div ng-message="required">Special holiday night differential is required.</div>
+                        <div ng-message="min">Special holiday night differential cannot be less than {{special_holiday_night_differential}}</div>
+                        <div ng-message="max">Special holiday night differential cannot be more than 9</div>
+                    </div>
+                </md-input-container>
+                <!-- Special Holiday Overtime -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>OT Hr.</label>
+                    <input type="number" name="SpecialHolidayOvertime" required ng-model="time_interpretation.special_holiday_overtime" min="{{special_holiday_overtime}}" max="9" ng-disabled="busy">
+                    <div ng-messages="timeInterpretationForm.SpecialHolidayOvertime.$error" ng-if="timeInterpretationForm.SpecialHolidayOvertime.$touched">
+                        <div ng-message="required">Special holiday overtime is required.</div>
+                        <div ng-message="min">Special holiday overtime cannot be less than {{special_holiday_overtime}}</div>
+                        <div ng-message="max">Special holiday overtime cannot be more than 9</div>
+                    </div>
+                </md-input-container>
+                <!-- Special Holiday Overtime Night Differential -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>OT Night Diff.</label>
+                    <input type="number" name="SpecialHolidayOvertimeNightDifferential" required ng-model="time_interpretation.special_holiday_overtime_night_differential" min="{{special_holiday_overtime_night_differential}}" max="9" ng-disabled="busy">
+                    <div ng-messages="timeInterpretationForm.SpecialHolidayOvertimeNightDifferential.$error" ng-if="timeInterpretationForm.SpecialHolidayOvertimeNightDifferential.$touched">
+                        <div ng-message="required">Special holiday overtime night differential is required.</div>
+                        <div ng-message="min">Special holiday overtime night differential cannot be less than {{special_holiday_overtime_night_differential}}</div>
+                        <div ng-message="max">Special holiday overtime night differential cannot be more than 9</div>
+                    </div>
+                </md-input-container>
+                <!-- Special Holiday Rest Day Regular Working Hours -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>RD RWH</label>
+                    <input type="number" name="SpecialHolidayRestDayRegularWorkingHours" required ng-model="time_interpretation.special_holiday_rest_day_rate" min="{{special_holiday_rest_day_rate}}" max="9" ng-disabled="busy">
+                    <div ng-messages="timeInterpretationForm.SpecialHolidayRestDayRegularWorkingHours.$error" ng-if="timeInterpretationForm.SpecialHolidayRestDayRegularWorkingHours.$touched">
+                        <div ng-message="required">Special holiday rest day regular working hours is required.</div>
+                        <div ng-message="min">Special holiday rest day regular working hours cannot be less than {{special_holiday_rest_day_rate}}</div>
+                        <div ng-message="max">Special holiday rest day regular working hours cannot be more than 9</div>
+                    </div>
+                </md-input-container>
+                <!-- Special Holiday Rest Day Night Differential -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>RD Night Diff.</label>
+                    <input type="number" name="SpecialHolidayRestDayNightDifferential" required ng-model="time_interpretation.special_holiday_rest_day_night_differential" min="{{special_holiday_rest_day_night_differential}}" max="9" ng-disabled="busy">
+                    <div ng-messages="timeInterpretationForm.SpecialHolidayRestDayNightDifferential.$error" ng-if="timeInterpretationForm.SpecialHolidayRestDayNightDifferential.$touched">
+                        <div ng-message="required">Special holiday rest day night differential is required.</div>
+                        <div ng-message="min">Special holiday rest day night differential cannot be less than {{special_holiday_rest_day_night_differential}}</div>
+                        <div ng-message="max">Special holiday rest day night differential cannot be more than 9</div>
+                    </div>
+                </md-input-container>
+                <!-- Special Holiday Rest Day Overtime -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>RD OT Hr.</label>
+                    <input type="number" name="SpecialHolidayRestDayOvertime" required ng-model="time_interpretation.special_holiday_rest_day_overtime" min="{{special_holiday_rest_day_overtime}}" max="9" ng-disabled="busy">
+                    <div ng-messages="timeInterpretationForm.SpecialHolidayRestDayOvertime.$error" ng-if="timeInterpretationForm.SpecialHolidayRestDayOvertime.$touched">
+                        <div ng-message="required">Special holiday rest day overtime is required.</div>
+                        <div ng-message="min">Special holiday rest day overtime cannot be less than {{special_holiday_rest_day_overtime}}</div>
+                        <div ng-message="max">Special holiday rest day overtime cannot be more than 9</div>
+                    </div>
+                </md-input-container>
+                <!-- Special Holiday Rest Day Overtime Night Differential -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>RD OT Night Diff.</label>
+                    <input type="number" name="SpecialHolidayRestDayOvertimeNightDifferential" required ng-model="time_interpretation.special_holiday_rest_day_overtime_night_differential" min="{{special_holiday_rest_day_overtime_night_differential}}" max="9" ng-disabled="busy">
+                    <div ng-messages="timeInterpretationForm.SpecialHolidayRestDayOvertimeNightDifferential.$error" ng-if="timeInterpretationForm.SpecialHolidayRestDayOvertimeNightDifferential.$touched">
+                        <div ng-message="required">Special holiday rest day overtime night differential is required.</div>
+                        <div ng-message="min">Special holiday rest day overtime night differential cannot be less than {{special_holiday_rest_day_overtime_night_differential}}</div>
+                        <div ng-message="max">Special holiday rest day overtime night differential cannot be more than 9</div>
+                    </div>
+                </md-input-container>
+            </div>
+            <!-- Regular Holiday -->
+            <md-subheader class="md-no-sticky">Regular Holidays</md-subheader>
+            <div layout="row" layout-wrap flex>
+                <!-- Regular Holiday Regular Working Hours -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>RWH</label>
+                    <input type="number" name="RegularHolidayRegularWorkingHours" required ng-model="time_interpretation.regular_holiday_rate" min="{{regular_holiday_rate}}" max="9" ng-disabled="busy">
+                    <div ng-messages="timeInterpretationForm.RegularHolidayRegularWorkingHours.$error" ng-if="timeInterpretationForm.RegularHolidayRegularWorkingHours.$touched">
+                        <div ng-message="required">Regular holiday regular working hours is required.</div>
+                        <div ng-message="min">Regular holiday regular working hours cannot be less than {{regular_holiday_rate}}</div>
+                        <div ng-message="max">Regular holiday regular working hours cannot be more than 9</div>
+                    </div>
+                </md-input-container>
+                <!-- Regular Holiday Night Differential -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Night Diff.</label>
+                    <input type="number" name="RegularHolidayNightDifferential" required ng-model="time_interpretation.regular_holiday_night_differential" min="{{regular_holiday_night_differential}}" max="9" ng-disabled="busy">
+                    <div ng-messages="timeInterpretationForm.RegularHolidayNightDifferential.$error" ng-if="timeInterpretationForm.RegularHolidayNightDifferential.$touched">
+                        <div ng-message="required">Regular holiday night differential is required.</div>
+                        <div ng-message="min">Regular holiday night differential cannot be less than {{regular_holiday_night_differential}}</div>
+                        <div ng-message="max">Regular holiday night differential cannot be more than 9</div>
+                    </div>
+                </md-input-container>
+                <!-- Regular Holiday Overtime -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>OT Hr.</label>
+                    <input type="number" name="RegularHolidayOvertime" required ng-model="time_interpretation.regular_holiday_overtime" min="{{regular_holiday_overtime}}" max="9" ng-disabled="busy">
+                    <div ng-messages="timeInterpretationForm.RegularHolidayOvertime.$error" ng-if="timeInterpretationForm.RegularHolidayOvertime.$touched">
+                        <div ng-message="required">Regular holiday overtime is required.</div>
+                        <div ng-message="min">Regular holiday overtime cannot be less than {{regular_holiday_overtime}}</div>
+                        <div ng-message="max">Regular holiday overtime cannot be more than 9</div>
+                    </div>
+                </md-input-container>
+                <!-- Regular Holiday Overtime Night Differential -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>OT Night Diff.</label>
+                    <input type="number" name="RegularHolidayOvertimeNightDifferential" required ng-model="time_interpretation.regular_holiday_overtime_night_differential" min="{{regular_holiday_overtime_night_differential}}" max="9" ng-disabled="busy">
+                    <div ng-messages="timeInterpretationForm.RegularHolidayOvertimeNightDifferential.$error" ng-if="timeInterpretationForm.RegularHolidayOvertimeNightDifferential.$touched">
+                        <div ng-message="required">Regular holiday overtime night differential is required.</div>
+                        <div ng-message="min">Regular holiday overtime night differential cannot be less than {{regular_holiday_overtime_night_differential}}</div>
+                        <div ng-message="max">Regular holiday overtime night differential cannot be more than 9</div>
+                    </div>
+                </md-input-container>
+                <!-- Regular Holiday Rest Day Regular Working Hours -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>RD RWH</label>
+                    <input type="number" name="RegularHolidayRestDayRegularWorkingHours" required ng-model="time_interpretation.regular_holiday_rest_day_rate" min="{{regular_holiday_rest_day_rate}}" max="9" ng-disabled="busy">
+                    <div ng-messages="timeInterpretationForm.RegularHolidayRestDayRegularWorkingHours.$error" ng-if="timeInterpretationForm.RegularHolidayRestDayRegularWorkingHours.$touched">
+                        <div ng-message="required">Regular holiday rest day regular working hours is required.</div>
+                        <div ng-message="min">Regular holiday rest day regular working hours cannot be less than {{regular_holiday_rest_day_rate}}</div>
+                        <div ng-message="max">Regular holiday rest day regular working hours cannot be more than 9</div>
+                    </div>
+                </md-input-container>
+                <!-- Regular Holiday Rest Day Night Differential -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>RD Night Diff.</label>
+                    <input type="number" name="RegularHolidayRestDayNightDifferential" required ng-model="time_interpretation.regular_holiday_rest_day_night_differential" min="{{regular_holiday_rest_day_night_differential}}" max="9" ng-disabled="busy">
+                    <div ng-messages="timeInterpretationForm.RegularHolidayRestDayNightDifferential.$error" ng-if="timeInterpretationForm.RegularHolidayRestDayNightDifferential.$touched">
+                        <div ng-message="required">Regular holiday rest day night differential is required.</div>
+                        <div ng-message="min">Regular holiday rest day night differential cannot be less than {{regular_holiday_rest_day_night_differential}}</div>
+                        <div ng-message="max">Regular holiday rest day night differential cannot be more than 9</div>
+                    </div>
+                </md-input-container>
+                <!-- Regular Holiday Rest Day Overtime -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>RD OT Hr.</label>
+                    <input type="number" name="RegularHolidayRestDayOvertime" required ng-model="time_interpretation.regular_holiday_rest_day_overtime" min="{{regular_holiday_rest_day_overtime}}" max="9" ng-disabled="busy">
+                    <div ng-messages="timeInterpretationForm.RegularHolidayRestDayOvertime.$error" ng-if="timeInterpretationForm.RegularHolidayRestDayOvertime.$touched">
+                        <div ng-message="required">Regular holiday rest day overtime is required.</div>
+                        <div ng-message="min">Regular holiday rest day overtime cannot be less than {{regular_holiday_rest_day_overtime}}</div>
+                        <div ng-message="max">Regular holiday rest day overtime cannot be more than 9</div>
+                    </div>
+                </md-input-container>
+                <!-- Regular Holiday Rest Day Overtime Night Differential -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>RD OT Night Diff.</label>
+                    <input type="number" name="RegularHolidayRestDayOvertimeNightDifferential" required ng-model="time_interpretation.regular_holiday_rest_day_overtime_night_differential" min="{{regular_holiday_rest_day_overtime_night_differential}}" max="9" ng-disabled="busy">
+                    <div ng-messages="timeInterpretationForm.RegularHolidayRestDayOvertimeNightDifferential.$error" ng-if="timeInterpretationForm.RegularHolidayRestDayOvertimeNightDifferential.$touched">
+                        <div ng-message="required">Regular holiday rest day overtime night differential is required.</div>
+                        <div ng-message="min">Regular holiday rest day overtime night differential cannot be less than {{regular_holiday_rest_day_overtime_night_differential}}</div>
+                        <div ng-message="max">Regular holiday rest day overtime night differential cannot be more than 9</div>
+                    </div>
+                </md-input-container>
+            </div>
+        </md-dialog-content>
+    </form>
+    <div layout="row" layout-align="end center">   
+        <md-button ng-if="!busy" class="md-primary" aria-label="Submit" ng-click="submit()">
+            Save
+        </md-button>
+        <md-progress-circular ng-if="busy" md-mode="indeterminate" class="md-primary" md-diameter="60"></md-progress-circular>
+    </div>
+</md-dialog>

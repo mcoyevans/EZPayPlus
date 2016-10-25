@@ -160,3 +160,15 @@ Route::group(['prefix' => 'shift-schedule'], function(){
 	Route::post('enlist', 'ShiftScheduleController@enlist');
 	Route::post('check-duplicate', 'ShiftScheduleController@checkDuplicate');
 });
+
+/* Biometrics Routes */
+Route::group(['prefix' => 'biometric'], function(){
+	Route::post('enlist', 'BiometricController@enlist');
+	Route::post('check-duplicate', 'BiometricController@checkDuplicate');
+});
+
+/* Time Interpretation Routes */
+Route::group(['prefix' => 'time-interpretation'], function(){
+	Route::post('enlist', 'TimeInterpretationController@enlist');
+	Route::post('check-duplicate', 'TimeInterpretationController@checkDuplicate');
+});
