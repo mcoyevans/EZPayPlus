@@ -101,6 +101,12 @@ Route::group(['prefix' => 'group'], function(){
 	Route::post('check-duplicate', 'GroupController@checkDuplicate');
 });
 
+/* Group Routes */
+Route::group(['prefix' => 'group-module'], function(){
+	Route::post('enlist', 'GroupModuleController@enlist');
+	Route::post('check-duplicate', 'GroupModuleController@checkDuplicate');
+});
+
 /* Department Routes */
 Route::group(['prefix' => 'department'], function(){
 	Route::post('enlist', 'DepartmentController@enlist');

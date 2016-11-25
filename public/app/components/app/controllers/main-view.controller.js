@@ -63,16 +63,16 @@ app
 
 						$scope.menu.static.push(payroll);
 					}
-					else if(module.name == 'Timekeeping')
-					{
-						var payroll = {
-							'state': 'main.timekeeping',
-							'icon': 'mdi-calendar-clock',
-							'label': 'Timekeeping',
-						}
+					// else if(module.name == 'Timekeeping')
+					// {
+					// 	var payroll = {
+					// 		'state': 'main.timekeeping',
+					// 		'icon': 'mdi-calendar-clock',
+					// 		'label': 'Timekeeping',
+					// 	}
 
-						$scope.menu.static.push(payroll);
-					}
+					// 	$scope.menu.static.push(payroll);
+					// }
 					else if(module.name == 'Settings')
 					{
 						$scope.menu.section = [
@@ -108,12 +108,12 @@ app
 										$state.go('main.profile-settings');
 									}, 
 								},
-								{
-									'label': 'Timekeeping',
-									action: function(){
-										$state.go('main.timekeeping-settings');
-									},
-								},
+								// {
+								// 	'label': 'Timekeeping',
+								// 	action: function(){
+								// 		$state.go('main.timekeeping-settings');
+								// 	},
+								// },
 							]
 						];
 					}

@@ -19,6 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->integer('group_id');
+            $table->boolean('super_user');
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
