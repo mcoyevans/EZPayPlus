@@ -101,40 +101,40 @@ app
 					}
 				}
 			})
-			.state('main.timekeeping-settings', {
-				url: 'settings/timekeeping',
-				resolve:{
-					authorization: ['Helper', '$state', function(Helper, $state){
-						Helper.get('/module/4')
-							.success(function(data){
-								return;
-							})
-							.error(function(){
-								return $state.go('page-not-found');
-							});
-					}],
-				},
-				views: {
-					'content-container': {
-						templateUrl: '/app/shared/views/content-container.view.html',
-						controller: 'timekeepingSettingsContentContainerController',
-					},
-					'toolbar@main.timekeeping-settings': {
-						templateUrl: '/app/shared/templates/toolbar.template.html',
-						controller: 'timekeepingSettingsToolbarController',
-					},
-					'left-sidenav@main.timekeeping-settings': {
-						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
-					},
-					'subheader@main.timekeeping-settings': {
-						templateUrl: '/app/components/settings/templates/subheaders/timekeeping-settings-subheader.template.html',
-						controller: 'timekeepingSettingsSubheaderController',
-					},
-					'content@main.timekeeping-settings':{
-						templateUrl: '/app/components/settings/templates/content/timekeeping-settings-content.template.html',
-					}
-				}
-			})
+			// .state('main.timekeeping-settings', {
+			// 	url: 'settings/timekeeping',
+			// 	resolve:{
+			// 		authorization: ['Helper', '$state', function(Helper, $state){
+			// 			Helper.get('/module/4')
+			// 				.success(function(data){
+			// 					return;
+			// 				})
+			// 				.error(function(){
+			// 					return $state.go('page-not-found');
+			// 				});
+			// 		}],
+			// 	},
+			// 	views: {
+			// 		'content-container': {
+			// 			templateUrl: '/app/shared/views/content-container.view.html',
+			// 			controller: 'timekeepingSettingsContentContainerController',
+			// 		},
+			// 		'toolbar@main.timekeeping-settings': {
+			// 			templateUrl: '/app/shared/templates/toolbar.template.html',
+			// 			controller: 'timekeepingSettingsToolbarController',
+			// 		},
+			// 		'left-sidenav@main.timekeeping-settings': {
+			// 			templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+			// 		},
+			// 		'subheader@main.timekeeping-settings': {
+			// 			templateUrl: '/app/components/settings/templates/subheaders/timekeeping-settings-subheader.template.html',
+			// 			controller: 'timekeepingSettingsSubheaderController',
+			// 		},
+			// 		'content@main.timekeeping-settings':{
+			// 			templateUrl: '/app/components/settings/templates/content/timekeeping-settings-content.template.html',
+			// 		}
+			// 	}
+			// })
 			.state('main.profile-settings', {
 				url: 'settings/profile',
 				resolve:{
@@ -230,16 +230,16 @@ app
 
 						$scope.menu.static.push(payroll);
 					}
-					else if(module.name == 'Timekeeping')
-					{
-						var payroll = {
-							'state': 'main.timekeeping',
-							'icon': 'mdi-calendar-clock',
-							'label': 'Timekeeping',
-						}
+					// else if(module.name == 'Timekeeping')
+					// {
+					// 	var payroll = {
+					// 		'state': 'main.timekeeping',
+					// 		'icon': 'mdi-calendar-clock',
+					// 		'label': 'Timekeeping',
+					// 	}
 
-						$scope.menu.static.push(payroll);
-					}
+					// 	$scope.menu.static.push(payroll);
+					// }
 					else if(module.name == 'Settings')
 					{
 						$scope.menu.section = [
@@ -275,12 +275,12 @@ app
 										$state.go('main.profile-settings');
 									}, 
 								},
-								{
-									'label': 'Timekeeping',
-									action: function(){
-										$state.go('main.timekeeping-settings');
-									},
-								},
+								// {
+								// 	'label': 'Timekeeping',
+								// 	action: function(){
+								// 		$state.go('main.timekeeping-settings');
+								// 	},
+								// },
 							]
 						];
 					}

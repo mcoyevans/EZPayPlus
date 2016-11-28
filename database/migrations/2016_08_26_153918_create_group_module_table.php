@@ -17,7 +17,6 @@ class CreateGroupModuleTable extends Migration
             $table->increments('id');
             $table->integer('group_id')->unsigned();
             $table->integer('module_id')->unsigned();
-            $table->timestamps();
         });
     }
 

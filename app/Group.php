@@ -13,11 +13,6 @@ class Group extends Model
 
     public function modules()
     {
-    	return $this->belongsToMany('App\Module')->withTimestamps();;
-    }
-
-    public function group_module()
-    {
-    	return $this->hasMany('App\GroupModule');
+    	return $this->belongsToMany('App\Module');
     }
 }

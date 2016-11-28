@@ -19,3 +19,7 @@ a{
 md-nav-bar{
     overflow: auto;
 }
+
+td, th{
+    @extend .center-text;
+}
