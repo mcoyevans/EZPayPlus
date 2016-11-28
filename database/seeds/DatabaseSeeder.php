@@ -22,5 +22,9 @@ class DatabaseSeeder extends Seeder
         $this->call(TimeInterpretationsTableSeeder::class);
         $this->call(UsersTableSeeder::class);
         $this->call(SSSTableSeeder::class);
+        $this->call(PhilhealthTableSeeder::class);
+        $this->call(PagibigTableSeeder::class);
+        $this->call(TaxCodesTableSeeder::class);
+        $this->call(TaxesTableSeeder::class);
     }
 }

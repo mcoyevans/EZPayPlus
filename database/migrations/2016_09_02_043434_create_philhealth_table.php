@@ -15,13 +15,12 @@ class CreatePhilhealthTable extends Migration
         Schema::create('philhealth', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
-            $table->float('minimum_range');
-            $table->float('maximum_range');
+            $table->float('from');
+            $table->float('to')->nullable();
             $table->float('salary_base');
+            $table->float('total_monthly_premium');
             $table->float('employee_share');
             $table->float('employer_share');
-            $table->float('total_monthly_premium');
-            $table->timestamps();
         });
     }
 
