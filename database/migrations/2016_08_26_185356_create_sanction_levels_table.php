@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSantionTypesTable extends Migration
+class CreateSanctionLevelsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,11 +12,12 @@ class CreateSantionTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create('santion_types', function (Blueprint $table) {
+        Schema::create('sanction_levels', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string('name');
             $table->text('description');
+            $table->integer('sanction_id')->unsigned();
             $table->timestamps();
         });
     }
@@ -28,6 +29,6 @@ class CreateSantionTypesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('santion_types');
+        Schema::drop('sanction_levels');
     }
 }
