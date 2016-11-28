@@ -110,7 +110,6 @@ class BranchController extends Controller
         {
             abort(403, 'Unauthorized action.');
         }
-
     }
 
     /**

@@ -89,6 +89,12 @@ Route::group(['prefix' => 'branch'], function(){
 	Route::post('check-duplicate', 'BranchController@checkDuplicate');
 });
 
+/* Cost Center Routes */
+Route::group(['prefix' => 'cost-center'], function(){
+	Route::post('enlist', 'CostCenterController@enlist');
+	Route::post('check-duplicate', 'CostCenterController@checkDuplicate');
+});
+
 /* House Bank Routes */
 Route::group(['prefix' => 'house-bank'], function(){
 	Route::post('enlist', 'HouseBankController@enlist');

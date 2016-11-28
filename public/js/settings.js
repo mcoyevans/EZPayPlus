@@ -623,6 +623,53 @@ settings
 		}
 	}]);
 settings
+	.controller('createCostCenterDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.cost_center = {};
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post('/cost-center/check-duplicate', $scope.cost_center)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.costCenterForm.$invalid){
+				angular.forEach($scope.costCenterForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+				Helper.post('/cost-center', $scope.cost_center)
+					.success(function(duplicate){
+						if(duplicate){
+							$scope.busy = false;
+							return;
+						}
+
+						Helper.stop();
+					})
+					.error(function(){
+						$scope.busy = false;
+						$scope.error = true;
+					});
+			}
+		}
+	}]);
+settings
 	.controller('createGroupDialogController', ['$scope', 'Helper', function($scope, Helper){
 		$scope.group = {};
 		$scope.group.modules = [];
@@ -839,6 +886,62 @@ settings
 			{
 				$scope.busy = true;
 				Helper.put('/branch/' + $scope.branch.id, $scope.branch)
+					.success(function(duplicate){
+						if(duplicate){
+							$scope.busy = false;
+							return;
+						}
+
+						Helper.stop();
+					})
+					.error(function(){
+						$scope.busy = false;
+						$scope.error = true;
+					});
+			}
+		}
+	}]);
+settings
+	.controller('editCostCenterDialogController', ['$scope', 'Helper', function($scope, Helper){
+		var cost_center = Helper.fetch();
+
+		Helper.get('/cost-center/' + cost_center.id)
+			.success(function(data){
+				$scope.cost_center = data;
+			})
+			.error(function(){
+				Preloader.error();
+			});
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post('/cost-center/check-duplicate', $scope.cost_center)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.costCenterForm.$invalid){
+				angular.forEach($scope.costCenterForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+				Helper.put('/cost-center/' + $scope.cost_center.id, $scope.cost_center)
 					.success(function(duplicate){
 						if(duplicate){
 							$scope.busy = false;
@@ -2186,48 +2289,34 @@ settings
 		}
 
 		$scope.subheader.navs = [
-			// Departments
+			// Branches
 			{
-				'label':'Departments',
-				'url': '/department/enlist',
+				'label':'Branches',
+				'url': '/branch/enlist',
 				'request': {
-					'with': [
-						{
-							'relation':'positions',
-							'withTrashed':false,
-						},
-					],
 					'withTrashed': true,
 					'paginate':20,
 				},
 				'fab': {
-					'fullscreen' : true,
-					'controller':'nameDescriptionDialogController',
-					'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
-					'message': 'Department saved.',
-					'action' : 'create',
-					'url': '/department',
-					'label': 'Department',
+					'controller':'createBranchDialogController',
+					'template':'/app/components/settings/templates/dialogs/branch-form-dialog.template.html',
+					'message': 'Branch saved.'
 				},
 				'menu': [
 					{
 						'label': 'Edit',
 						'icon': 'mdi-pencil',
-						'show': true,
+						'show':true,
 						action: function(data){
-							data.action = 'edit';
-							data.url = '/department';
-							data.label = 'Department';
-
 							Helper.set(data);
 
 							var dialog = {};
-							dialog.controller = 'nameDescriptionDialogController';
-							dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
+							dialog.controller = 'editBranchDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/branch-form-dialog.template.html';
 
 							Helper.customDialog(dialog)
 								.then(function(){
-									Helper.notify('Department updated.');
+									Helper.notify('Branch updated.');
 									$scope.$emit('refresh');
 								}, function(){
 									return;
@@ -2237,19 +2326,19 @@ settings
 					{
 						'label': 'Delete',
 						'icon': 'mdi-delete',
-						'show': true,
+						'show':true,
 						action: function(data){
 							var dialog = {};
 							dialog.title = 'Delete';
-							dialog.message = 'Delete ' + data.name + ' department?'
+							dialog.message = 'Delete ' + data.name + ' branch?'
 							dialog.ok = 'Delete';
 							dialog.cancel = 'Cancel';
 
 							Helper.confirm(dialog)
 								.then(function(){
-									Helper.delete('/department/' + data.id)
+									Helper.delete('/branch/' + data.id)
 										.success(function(){
-											Helper.notify('Department deleted.');
+											Helper.notify('Branch deleted.');
 											$scope.$emit('refresh');
 										})
 										.error(function(){
@@ -2273,6 +2362,11 @@ settings
 						'sortReverse': false,
 					},
 					{
+						'label': 'GL Account',
+						'type': 'gl_account',
+						'sortReverse': false,
+					},
+					{
 						'label': 'Recently added',
 						'type': 'created_at',
 						'sortReverse': false,
@@ -2282,6 +2376,189 @@ settings
 					setInit(current);
 				},
 			},
+			// Cost Centers
+			{
+				'label':'Cost Centers',
+				'url': '/cost-center/enlist',
+				'request': {
+					'withTrashed': true,
+					'paginate':20,
+				},
+				'fab': {
+					'controller':'createCostCenterDialogController',
+					'template':'/app/components/settings/templates/dialogs/cost-center-form-dialog.template.html',
+					'message': 'Cost center saved.'
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show':true,
+						action: function(data){
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'editCostCenterDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/cost-center-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Cost center updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show':true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' cost center?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/cost-center/' + data.id)
+										.success(function(){
+											Helper.notify('Cost center deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'GL Account',
+						'type': 'gl_account',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+			// Departments
+			// {
+			// 	'label':'Departments',
+			// 	'url': '/department/enlist',
+			// 	'request': {
+			// 		'with': [
+			// 			{
+			// 				'relation':'positions',
+			// 				'withTrashed':false,
+			// 			},
+			// 		],
+			// 		'withTrashed': true,
+			// 		'paginate':20,
+			// 	},
+			// 	'fab': {
+			// 		'fullscreen' : true,
+			// 		'controller':'nameDescriptionDialogController',
+			// 		'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
+			// 		'message': 'Department saved.',
+			// 		'action' : 'create',
+			// 		'url': '/department',
+			// 		'label': 'Department',
+			// 	},
+			// 	'menu': [
+			// 		{
+			// 			'label': 'Edit',
+			// 			'icon': 'mdi-pencil',
+			// 			'show': true,
+			// 			action: function(data){
+			// 				data.action = 'edit';
+			// 				data.url = '/department';
+			// 				data.label = 'Department';
+
+			// 				Helper.set(data);
+
+			// 				var dialog = {};
+			// 				dialog.controller = 'nameDescriptionDialogController';
+			// 				dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
+
+			// 				Helper.customDialog(dialog)
+			// 					.then(function(){
+			// 						Helper.notify('Department updated.');
+			// 						$scope.$emit('refresh');
+			// 					}, function(){
+			// 						return;
+			// 					})
+			// 			},
+			// 		},
+			// 		{
+			// 			'label': 'Delete',
+			// 			'icon': 'mdi-delete',
+			// 			'show': true,
+			// 			action: function(data){
+			// 				var dialog = {};
+			// 				dialog.title = 'Delete';
+			// 				dialog.message = 'Delete ' + data.name + ' department?'
+			// 				dialog.ok = 'Delete';
+			// 				dialog.cancel = 'Cancel';
+
+			// 				Helper.confirm(dialog)
+			// 					.then(function(){
+			// 						Helper.delete('/department/' + data.id)
+			// 							.success(function(){
+			// 								Helper.notify('Department deleted.');
+			// 								$scope.$emit('refresh');
+			// 							})
+			// 							.error(function(){
+			// 								Helper.error();
+			// 							});
+			// 					}, function(){
+			// 						return;
+			// 					})
+			// 			},
+			// 		},
+			// 	],
+			// 	'sort': [
+			// 		{
+			// 			'label': 'Name',
+			// 			'type': 'name',
+			// 			'sortReverse': false,
+			// 		},
+			// 		{
+			// 			'label': 'Description',
+			// 			'type': 'description',
+			// 			'sortReverse': false,
+			// 		},
+			// 		{
+			// 			'label': 'Recently added',
+			// 			'type': 'created_at',
+			// 			'sortReverse': false,
+			// 		},
+			// 	],
+			// 	action: function(current){
+			// 		setInit(current);
+			// 	},
+			// },
 			// Positions
 			{
 				'label':'Positions',
@@ -2390,7 +2667,7 @@ settings
 				],
 			},
 			// Job Categories
-			{
+			/*{
 				'label':'Job Categories',
 				'url': '/job-category/enlist',
 				'request' : {
@@ -2483,9 +2760,9 @@ settings
 				action: function(current){
 					setInit(current);
 				},
-			},
+			},*/
 			// Labor Types
-			{
+			/*{
 				'label':'Labor Types',
 				'url': '/labor-type/enlist',
 				'request' : {
@@ -2579,9 +2856,9 @@ settings
 				action: function(current){
 					setInit(current);
 				},
-			},
+			},*/
 			// Leaves
-			{
+			/*{
 				'label':'Leaves',
 				'url': '/leave-type/enlist',
 				'request': {
@@ -2666,7 +2943,7 @@ settings
 				action: function(current){
 					setInit(current);
 				},
-			},
+			},*/
 			// Allowances
 			{
 				'label':'Allowances',
@@ -2860,195 +3137,195 @@ settings
 				},
 			},
 			// Sanctions
-			{
-				'label':'Sanctions',
-				'url': '/sanction-type/enlist',
-				'request' : {		
-					'with': [
-						{
-							'relation':'sanction_levels',
-							'withTrashed': false,
-						},
-					],
-					'paginate':20,
-				},
-				'fab': {
-					'fullscreen' : true,
-					'controller':'nameDescriptionDialogController',
-					'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
-					'message': 'Sanction type saved.',
-					'action' : 'create',
-					'url': '/sanction-type',
-					'label': 'Sanction',
-				},
-				'menu': [
-					{
-						'label': 'Edit',
-						'icon': 'mdi-pencil',
-						'show': true,
-						action: function(data){
-							data.action = 'edit';
-							data.url = '/sanction-type';
-							data.label = 'Sanction';
+			// {
+			// 	'label':'Sanctions',
+			// 	'url': '/sanction-type/enlist',
+			// 	'request' : {		
+			// 		'with': [
+			// 			{
+			// 				'relation':'sanction_levels',
+			// 				'withTrashed': false,
+			// 			},
+			// 		],
+			// 		'paginate':20,
+			// 	},
+			// 	'fab': {
+			// 		'fullscreen' : true,
+			// 		'controller':'nameDescriptionDialogController',
+			// 		'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
+			// 		'message': 'Sanction type saved.',
+			// 		'action' : 'create',
+			// 		'url': '/sanction-type',
+			// 		'label': 'Sanction',
+			// 	},
+			// 	'menu': [
+			// 		{
+			// 			'label': 'Edit',
+			// 			'icon': 'mdi-pencil',
+			// 			'show': true,
+			// 			action: function(data){
+			// 				data.action = 'edit';
+			// 				data.url = '/sanction-type';
+			// 				data.label = 'Sanction';
 
-							Helper.set(data);
+			// 				Helper.set(data);
 
-							var dialog = {};
-							dialog.controller = 'nameDescriptionDialogController';
-							dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
+			// 				var dialog = {};
+			// 				dialog.controller = 'nameDescriptionDialogController';
+			// 				dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
 
-							Helper.customDialog(dialog)
-								.then(function(){
-									Helper.notify('Sanction type updated.');
-									$scope.$emit('refresh');
-								}, function(){
-									return;
-								})
-						},
-					},
-					{
-						'label': 'Delete',
-						'icon': 'mdi-delete',
-						'show': true,
-						action: function(data){
-							var dialog = {};
-							dialog.title = 'Delete';
-							dialog.message = 'Delete ' + data.name + ' sanction type?'
-							dialog.ok = 'Delete';
-							dialog.cancel = 'Cancel';
+			// 				Helper.customDialog(dialog)
+			// 					.then(function(){
+			// 						Helper.notify('Sanction type updated.');
+			// 						$scope.$emit('refresh');
+			// 					}, function(){
+			// 						return;
+			// 					})
+			// 			},
+			// 		},
+			// 		{
+			// 			'label': 'Delete',
+			// 			'icon': 'mdi-delete',
+			// 			'show': true,
+			// 			action: function(data){
+			// 				var dialog = {};
+			// 				dialog.title = 'Delete';
+			// 				dialog.message = 'Delete ' + data.name + ' sanction type?'
+			// 				dialog.ok = 'Delete';
+			// 				dialog.cancel = 'Cancel';
 
-							Helper.confirm(dialog)
-								.then(function(){
-									Helper.delete('/sanction-type/' + data.id)
-										.success(function(){
-											Helper.notify('Sanction type deleted.');
-											$scope.$emit('refresh');
-										})
-										.error(function(){
-											Helper.error();
-										});
-								}, function(){
-									return;
-								})
-						},
-					},
-				],
-				'sort': [
-					{
-						'label': 'Name',
-						'type': 'name',
-						'sortReverse': false,
-					},
-					{
-						'label': 'Description',
-						'type': 'description',
-						'sortReverse': false,
-					},
-					{
-						'label': 'Recently added',
-						'type': 'created_at',
-						'sortReverse': false,
-					},
-				],
-				action: function(current){
-					setInit(current);
-				},
-			},
+			// 				Helper.confirm(dialog)
+			// 					.then(function(){
+			// 						Helper.delete('/sanction-type/' + data.id)
+			// 							.success(function(){
+			// 								Helper.notify('Sanction type deleted.');
+			// 								$scope.$emit('refresh');
+			// 							})
+			// 							.error(function(){
+			// 								Helper.error();
+			// 							});
+			// 					}, function(){
+			// 						return;
+			// 					})
+			// 			},
+			// 		},
+			// 	],
+			// 	'sort': [
+			// 		{
+			// 			'label': 'Name',
+			// 			'type': 'name',
+			// 			'sortReverse': false,
+			// 		},
+			// 		{
+			// 			'label': 'Description',
+			// 			'type': 'description',
+			// 			'sortReverse': false,
+			// 		},
+			// 		{
+			// 			'label': 'Recently added',
+			// 			'type': 'created_at',
+			// 			'sortReverse': false,
+			// 		},
+			// 	],
+			// 	action: function(current){
+			// 		setInit(current);
+			// 	},
+			// },
 			// Sanction Levels
-			{
-				'label':'Sanction Levels',
-				'url': '/sanction-level/enlist',
-				'request' : {		
-					'with': [
-						{
-							'relation':'sanction_type',
-							'withTrashed': false,
-						},
-					],
-					'paginate':20,
-				},
-				'fab': {
-					'fullscreen' : true,
-					'controller':'sanctionLevelDialogController',
-					'template':'/app/components/settings/templates/dialogs/sanction-level-form-dialog.template.html',
-					'message': 'Sanction level saved.',
-					'action' : 'create',
-					'url': '/sanction-level',
-					'label': 'Sanction',
-				},
-				'menu': [
-					{
-						'label': 'Edit',
-						'icon': 'mdi-pencil',
-						'show': true,
-						action: function(data){
-							data.action = 'edit';
-							data.url = '/sanction-level';
-							data.label = 'Sanction';
+			// {
+			// 	'label':'Sanction Levels',
+			// 	'url': '/sanction-level/enlist',
+			// 	'request' : {		
+			// 		'with': [
+			// 			{
+			// 				'relation':'sanction_type',
+			// 				'withTrashed': false,
+			// 			},
+			// 		],
+			// 		'paginate':20,
+			// 	},
+			// 	'fab': {
+			// 		'fullscreen' : true,
+			// 		'controller':'sanctionLevelDialogController',
+			// 		'template':'/app/components/settings/templates/dialogs/sanction-level-form-dialog.template.html',
+			// 		'message': 'Sanction level saved.',
+			// 		'action' : 'create',
+			// 		'url': '/sanction-level',
+			// 		'label': 'Sanction',
+			// 	},
+			// 	'menu': [
+			// 		{
+			// 			'label': 'Edit',
+			// 			'icon': 'mdi-pencil',
+			// 			'show': true,
+			// 			action: function(data){
+			// 				data.action = 'edit';
+			// 				data.url = '/sanction-level';
+			// 				data.label = 'Sanction';
 
-							Helper.set(data);
+			// 				Helper.set(data);
 
-							var dialog = {};
-							dialog.controller = 'sanctionLevelDialogController';
-							dialog.template = '/app/components/settings/templates/dialogs/sanction-level-form-dialog.template.html';
+			// 				var dialog = {};
+			// 				dialog.controller = 'sanctionLevelDialogController';
+			// 				dialog.template = '/app/components/settings/templates/dialogs/sanction-level-form-dialog.template.html';
 
-							Helper.customDialog(dialog)
-								.then(function(){
-									Helper.notify('Sanction level updated.');
-									$scope.$emit('refresh');
-								}, function(){
-									return;
-								})
-						},
-					},
-					{
-						'label': 'Delete',
-						'icon': 'mdi-delete',
-						'show': true,
-						action: function(data){
-							var dialog = {};
-							dialog.title = 'Delete';
-							dialog.message = 'Delete ' + data.name + ' sanction level?'
-							dialog.ok = 'Delete';
-							dialog.cancel = 'Cancel';
+			// 				Helper.customDialog(dialog)
+			// 					.then(function(){
+			// 						Helper.notify('Sanction level updated.');
+			// 						$scope.$emit('refresh');
+			// 					}, function(){
+			// 						return;
+			// 					})
+			// 			},
+			// 		},
+			// 		{
+			// 			'label': 'Delete',
+			// 			'icon': 'mdi-delete',
+			// 			'show': true,
+			// 			action: function(data){
+			// 				var dialog = {};
+			// 				dialog.title = 'Delete';
+			// 				dialog.message = 'Delete ' + data.name + ' sanction level?'
+			// 				dialog.ok = 'Delete';
+			// 				dialog.cancel = 'Cancel';
 
-							Helper.confirm(dialog)
-								.then(function(){
-									Helper.delete('/sanction-level/' + data.id)
-										.success(function(){
-											Helper.notify('Sanction level deleted.');
-											$scope.$emit('refresh');
-										})
-										.error(function(){
-											Helper.error();
-										});
-								}, function(){
-									return;
-								})
-						},
-					},
-				],
-				'sort': [
-					{
-						'label': 'Name',
-						'type': 'name',
-						'sortReverse': false,
-					},
-					{
-						'label': 'Description',
-						'type': 'description',
-						'sortReverse': false,
-					},
-					{
-						'label': 'Recently added',
-						'type': 'created_at',
-						'sortReverse': false,
-					},
-				],
-				action: function(current){
-					setInit(current);
-				},
-			},
+			// 				Helper.confirm(dialog)
+			// 					.then(function(){
+			// 						Helper.delete('/sanction-level/' + data.id)
+			// 							.success(function(){
+			// 								Helper.notify('Sanction level deleted.');
+			// 								$scope.$emit('refresh');
+			// 							})
+			// 							.error(function(){
+			// 								Helper.error();
+			// 							});
+			// 					}, function(){
+			// 						return;
+			// 					})
+			// 			},
+			// 		},
+			// 	],
+			// 	'sort': [
+			// 		{
+			// 			'label': 'Name',
+			// 			'type': 'name',
+			// 			'sortReverse': false,
+			// 		},
+			// 		{
+			// 			'label': 'Description',
+			// 			'type': 'description',
+			// 			'sortReverse': false,
+			// 		},
+			// 		{
+			// 			'label': 'Recently added',
+			// 			'type': 'created_at',
+			// 			'sortReverse': false,
+			// 		},
+			// 	],
+			// 	action: function(current){
+			// 		setInit(current);
+			// 	},
+			// },
 		];
 
 		setInit($scope.subheader.navs[0]);
