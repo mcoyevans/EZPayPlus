@@ -2102,7 +2102,7 @@ settings
 							'withTrashed': false,
 						},
 					],
-					'paginate':50,
+					'paginate':200
 				},
 				action: function(current){
 					setInit(current);

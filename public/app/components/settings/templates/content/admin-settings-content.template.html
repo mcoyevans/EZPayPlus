@@ -15,36 +15,7 @@
 			</div>
 		</md-list-item>
 	</md-list>
-	<table class="table" ng-if="subheader.current.table == 'tax'">
-		<tr>
-			<th>Daily</th>
-			<th>1</th>
-			<th>2</th>
-			<th>3</th>
-			<th>4</th>
-			<th>5</th>
-			<th>6</th>
-			<th>7</th>
-			<th>8</th>
-		</tr>
-		<tr>
-			<td>Exemption</td>
-			<td>0.00</td>
-			<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:1}:true">{{tax.tax}}</td>
-		</tr>
-		<tr>
-			<td>Status</td>
-			<td>+0% over</td>
-			<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:1}:true">+{{tax.excess * 100}}% over</td>
-		</tr>
-		<tr>
-			<th>A. Table for employees without qualified dependent</th>
-		</tr>
-		<tr>
-			<td>1. Z</td>
-			<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:1}:true | orderBy:'salary'">{{tax.salary}}</td>
-		</tr>
-	</table>
+	<div class="container" ng-include="'/app/components/app/templates/bir-tax-table.template.html'" ng-if="subheader.current.table == 'tax'"></div>
 </div>
 <div layout="row" layout-align="center center" layout-padding layout-margin ng-if="isLoading">
 	<md-progress-circular class="md-primary" md-diameter="60"></md-progress-circular>
