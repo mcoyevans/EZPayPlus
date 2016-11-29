@@ -1,5 +1,5 @@
 <div infinite-scroll='type.paginateLoad()' infinite-scroll-distance="1" infinite-scroll-disabled="type.busy" infinite-scroll-parent ng-if="type.show">
-	<md-list>
+	<md-list ng-if="!subheader.current.table">
 		<md-list-item class="md-3-line" ng-repeat="type in type.items | filter: toolbar.searchText | orderBy:sortType:sortReverse" ng-if="showInactive || !type.deleted_at" ng-click="listItemAction(type)">
 			<h2 class="md-avatar" ng-class="type.deleted_at ? 'accent-bg': 'primary-bg'" layout="row" layout-align="center center">
 				<span class="md-headline white-text">{{type.name.charAt(0).toUpperCase()}}</span>
@@ -15,6 +15,36 @@
 			</div>
 		</md-list-item>
 	</md-list>
+	<table class="table" ng-if="subheader.current.table == 'tax'">
+		<tr>
+			<th>Daily</th>
+			<th>1</th>
+			<th>2</th>
+			<th>3</th>
+			<th>4</th>
+			<th>5</th>
+			<th>6</th>
+			<th>7</th>
+			<th>8</th>
+		</tr>
+		<tr>
+			<td>Exemption</td>
+			<td>0.00</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:1}:true">{{tax.tax}}</td>
+		</tr>
+		<tr>
+			<td>Status</td>
+			<td>+0% over</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:1}:true">+{{tax.excess * 100}}% over</td>
+		</tr>
+		<tr>
+			<th>A. Table for employees without qualified dependent</th>
+		</tr>
+		<tr>
+			<td>1. Z</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:1}:true | orderBy:'salary'">{{tax.salary}}</td>
+		</tr>
+	</table>
 </div>
 <div layout="row" layout-align="center center" layout-padding layout-margin ng-if="isLoading">
 	<md-progress-circular class="md-primary" md-diameter="60"></md-progress-circular>

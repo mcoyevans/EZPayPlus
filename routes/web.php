@@ -184,3 +184,8 @@ Route::group(['prefix' => 'time-interpretation'], function(){
 	Route::post('enlist', 'TimeInterpretationController@enlist');
 	Route::post('check-duplicate', 'TimeInterpretationController@checkDuplicate');
 });
+
+/* Tax Routes */
+Route::group(['prefix' => 'tax'], function(){
+	Route::post('enlist', 'TaxController@enlist');
+});

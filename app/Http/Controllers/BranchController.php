@@ -26,6 +26,7 @@ class BranchController extends Controller
 
         return response()->json($duplicate ? true : false);
     }
+    
     /**
      * Display a listing of the resource with parameters.
      *
