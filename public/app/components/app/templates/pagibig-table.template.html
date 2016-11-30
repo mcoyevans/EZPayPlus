@@ -1,0 +1,10 @@
+<table class="table" flex flex-gt-md="70">
+	<tr>
+		<th>Monthly Savings</th>
+		<th>Savings in 20 years</th>
+	</tr>
+	<tr ng-repeat="pagibig in type.items">
+		<td>{{pagibig.monthly_savings | number: 2}}</td>
+		<td>{{pagibig.savings_in_20_years | number: 2}}</td>
+	</tr>
+</table>

@@ -26,6 +26,36 @@ app
 					}
 				}
 			})
+			.state('main.hris', {
+				url: 'hris',
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/2')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'hrisContentContainerController',
+					},
+					'toolbar@main.hris': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'hrisToolbarController',
+					},
+					'left-sidenav@main.hris': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'content@main.hris':{
+						templateUrl: '/app/components/hris/templates/content/hris-content.template.html',
+					}
+				}
+			})
 			.state('main.admin-settings', {
 				url: 'settings/admin',
 				resolve:{

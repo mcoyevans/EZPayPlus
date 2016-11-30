@@ -31,7 +31,7 @@ class SSSTableSeeder extends Seeder
         	['from' => 8750, 'to' => 9249.99, 'monthly_salary_credit' => 9000, 'ER' => 663.00, 'EE' => 327.00, 'EC' => 10.00, 'total' => 1000.00],
         	['from' => 9250, 'to' => 9749.99, 'monthly_salary_credit' => 9500, 'ER' => 699.80, 'EE' => 345.20, 'EC' => 10.00, 'total' => 1055.00],
         	['from' => 9750, 'to' => 10249.99, 'monthly_salary_credit' => 10000, 'ER' => 736.70, 'EE' => 363.30, 'EC' => 10.00, 'total' => 1110.00],
-        	['from' => 10250, 'to' => 10749.99, 'monthly_salary_credit' => 10500, 'ER' => 773.50, 'EE' => 318.50, 'EC' => 10.00, 'total' => 1165.00],
+        	['from' => 10250, 'to' => 10749.99, 'monthly_salary_credit' => 10500, 'ER' => 773.50, 'EE' => 381.50, 'EC' => 10.00, 'total' => 1165.00],
         	['from' => 10750, 'to' => 11249.99, 'monthly_salary_credit' => 11000, 'ER' => 810.30, 'EE' => 399.70, 'EC' => 10.00, 'total' => 1220.00],
         	['from' => 11250, 'to' => 11749.99, 'monthly_salary_credit' => 11500, 'ER' => 847.20, 'EE' => 417.80, 'EC' => 10.00, 'total' => 1275.00],
         	['from' => 11750, 'to' => 12249.99, 'monthly_salary_credit' => 12000, 'ER' => 884.00, 'EE' => 436.00, 'EC' => 10.00, 'total' => 1330.00],

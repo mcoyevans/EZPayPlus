@@ -22,6 +22,7 @@ Route::get('/home', 'HomeController@index');
 /* Resource routes */
 Route::resource('allowance-type', 'AllowanceTypeController');
 Route::resource('biometric', 'BiometricController');
+Route::resource('batch', 'BatchController');
 Route::resource('branch', 'BranchController');
 Route::resource('city', 'CityController');
 Route::resource('company', 'CompanyController');
@@ -30,6 +31,7 @@ Route::resource('country', 'CountryController');
 Route::resource('currency', 'CurrencyController');
 Route::resource('deduction-type', 'DeductionTypeController');
 Route::resource('department', 'DepartmentController');
+Route::resource('de-minimis', 'DeMinimisController');
 Route::resource('employee', 'EmployeeController');
 Route::resource('employee-allowance-type', 'EmployeeAllowanceTypeController');
 Route::resource('employee-deduction-type', 'EmployeeDeductionTypeController');
@@ -188,4 +190,25 @@ Route::group(['prefix' => 'time-interpretation'], function(){
 /* Tax Routes */
 Route::group(['prefix' => 'tax'], function(){
 	Route::post('enlist', 'TaxController@enlist');
+});
+
+/* SSS Routes */
+Route::group(['prefix' => 'sss'], function(){
+	Route::post('enlist', 'SSSController@enlist');
+});
+
+/* Pagibig Routes */
+Route::group(['prefix' => 'pagibig'], function(){
+	Route::post('enlist', 'PagibigController@enlist');
+});
+
+/* Philhealth Routes */
+Route::group(['prefix' => 'philhealth'], function(){
+	Route::post('enlist', 'PhilhealthController@enlist');
+});
+
+/* Batch Routes */
+Route::group(['prefix' => 'batch'], function(){
+	Route::post('enlist', 'BatchController@enlist');
+	Route::post('check-duplicate', 'BatchController@checkDuplicate');
 });

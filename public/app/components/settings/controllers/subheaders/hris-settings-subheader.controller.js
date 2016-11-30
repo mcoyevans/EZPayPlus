@@ -277,113 +277,6 @@ settings
 			// 		setInit(current);
 			// 	},
 			// },
-			// Positions
-			{
-				'label':'Positions',
-				'url': '/position/enlist',
-				'request': {
-					'withTrashed': true,
-					'with': [
-						{
-							'relation' : 'department',
-							'withTrashed': false,
-						},
-						{
-							'relation' : 'job_category',
-							'withTrashed': false,
-						},
-						{
-							'relation' : 'labor_type',
-							'withTrashed': false,
-						},
-						{
-							'relation' : 'deployments',
-							'withTrashed': false,	
-						},
-					],
-					'paginate':20,
-				},
-				'fab': {
-					'fullscreen' : true,
-					'controller':'positionDialogController',
-					'template':'/app/components/settings/templates/dialogs/position-form-dialog.template.html',
-					'message': 'Position saved.',
-					'action' : 'create',
-					'url': '/position',
-
-				},
-				action: function(current){
-					setInit(current);
-				},
-				'menu': [
-					{
-						'label': 'Edit',
-						'icon': 'mdi-pencil',
-						'show': true,
-						action: function(data){
-							data.action = 'edit';
-							data.url = '/position';
-
-							Helper.set(data);
-
-							var dialog = {};
-							dialog.controller = 'positionDialogController';
-							dialog.template = '/app/components/settings/templates/dialogs/position-form-dialog.template.html';
-
-							Helper.customDialog(dialog)
-								.then(function(){
-									Helper.notify('Position updated.');
-									$scope.$emit('refresh');
-								}, function(){
-									return;
-								})
-						},
-					},
-					{
-						'label': 'Delete',
-						'icon': 'mdi-delete',
-						'show': true,
-						action: function(data){
-							var dialog = {};
-							dialog.title = 'Delete';
-							dialog.message = 'Delete ' + data.name + ' position?'
-							dialog.ok = 'Delete';
-							dialog.cancel = 'Cancel';
-
-							Helper.confirm(dialog)
-								.then(function(){
-									Helper.delete('/position/' + data.id)
-										.success(function(){
-											Helper.notify('Position deleted.');
-											$scope.$emit('refresh');
-										})
-										.error(function(){
-											Helper.error();
-										});
-								}, function(){
-									return;
-								})
-						},
-					},
-				],
-				'sort': [
-					{
-						'label': 'Name',
-						'type': 'name',
-						'sortReverse': false,
-					},
-					{
-						'label': 'Description',
-						'type': 'description',
-						'sortReverse': false,
-					},
-					{
-						'label': 'Recently added',
-						'type': 'created_at',
-						'sortReverse': false,
-					},
-				],
-			},
 			// Job Categories
 			/*{
 				'label':'Job Categories',
@@ -662,9 +555,9 @@ settings
 					setInit(current);
 				},
 			},*/
-			// Allowances
+			// Earnings
 			{
-				'label':'Allowances',
+				'label':'Earnings',
 				'url': '/allowance-type/enlist',
 				'request' : {
 					'withTrashed': true,
@@ -672,18 +565,21 @@ settings
 						{
 							'relation':'employees',
 							'withTrashed': false,
+						},
+						{
+							'relation':'de_minimis',
+							'withTrashed': false,
 						}
 					],
 					'paginate':20,
 				},
 				'fab': {
 					'fullscreen' : true,
-					'controller':'nameDescriptionDialogController',
-					'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
-					'message': 'Allowance type saved.',
+					'controller':'earningsDialogController',
+					'template':'/app/components/settings/templates/dialogs/earnings-dialog.template.html',
+					'message': 'Earnings saved.',
 					'action' : 'create',
 					'url': '/allowance-type',
-					'label': 'Allowance',
 				},
 				'menu': [
 					{
@@ -693,17 +589,16 @@ settings
 						action: function(data){
 							data.action = 'edit';
 							data.url = '/allowance-type';
-							data.label = 'Allowance';
 
 							Helper.set(data);
 
 							var dialog = {};
-							dialog.controller = 'nameDescriptionDialogController';
-							dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
+							dialog.controller = 'earningsDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/earnings-dialog.template.html';
 
 							Helper.customDialog(dialog)
 								.then(function(){
-									Helper.notify('Allowance type updated.');
+									Helper.notify('Earnings updated.');
 									$scope.$emit('refresh');
 								}, function(){
 									return;
@@ -717,7 +612,7 @@ settings
 						action: function(data){
 							var dialog = {};
 							dialog.title = 'Delete';
-							dialog.message = 'Delete ' + data.name + ' allowance?'
+							dialog.message = 'Delete ' + data.name + '?'
 							dialog.ok = 'Delete';
 							dialog.cancel = 'Cancel';
 
@@ -725,7 +620,7 @@ settings
 								.then(function(){
 									Helper.delete('/allowance-type/' + data.id)
 										.success(function(){
-											Helper.notify('Allowance type deleted.');
+											Helper.notify('Earnings deleted.');
 											$scope.$emit('refresh');
 										})
 										.error(function(){
@@ -768,6 +663,13 @@ settings
 						{
 							'relation':'employees',
 							'withTrashed': false,
+						}
+					],
+					'where': [
+						{
+							'label':'government_deduction',
+							'condition': '=',
+							'value': false
 						}
 					],
 					'paginate':20,
@@ -853,6 +755,214 @@ settings
 				action: function(current){
 					setInit(current);
 				},
+			},
+			// Positions
+			{
+				'label':'Positions',
+				'url': '/position/enlist',
+				'request': {
+					'withTrashed': true,
+					'with': [
+					// 	{
+					// 		'relation' : 'department',
+					// 		'withTrashed': false,
+					// 	},
+					// 	{
+					// 		'relation' : 'job_category',
+					// 		'withTrashed': false,
+					// 	},
+					// 	{
+					// 		'relation' : 'labor_type',
+					// 		'withTrashed': false,
+					// 	},
+					// 	{
+					// 		'relation' : 'deployments',
+					// 		'withTrashed': false,	
+					// 	},
+						{
+							'relation' : 'employees',
+							'withTrashed': true,	
+						},
+					],
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'nameDescriptionDialogController',
+					'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
+					'message': 'Position saved.',
+					'action' : 'create',
+					'url': '/position',
+					'label': 'Position',
+				},
+				action: function(current){
+					setInit(current);
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/position';
+							data.label = 'Position';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'nameDescriptionDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Position updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' position?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/position/' + data.id)
+										.success(function(){
+											Helper.notify('Position deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+			},
+			// Batches
+			{
+				'label':'Batches',
+				'url': '/batch/enlist',
+				'request': {
+					'withTrashed': true,
+					'with': [
+						{
+							'relation' : 'employees',
+							'withTrashed': true,	
+						},
+					],
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'nameDescriptionDialogController',
+					'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
+					'message': 'Batch saved.',
+					'action' : 'create',
+					'url': '/batch',
+					'label': 'Batch',
+				},
+				action: function(current){
+					setInit(current);
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/batch';
+							data.label = 'Batch';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'nameDescriptionDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Batch updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' batch?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/batch/' + data.id)
+										.success(function(){
+											Helper.notify('Batch deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
 			},
 			// Sanctions
 			// {

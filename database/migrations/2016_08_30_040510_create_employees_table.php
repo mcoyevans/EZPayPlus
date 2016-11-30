@@ -28,7 +28,12 @@ class CreateEmployeesTable extends Migration
             $table->string('phic', 14);
             $table->string('hdmf', 14);
             $table->string('payment_type');
-            $table->integer('house_bank_id')->unsigned();
+            $table->integer('batch_id')->unsigned();
+            $table->integer('branch_id')->unsigned();
+            $table->integer('cost_center_id')->unsigned();
+            $table->integer('position_id')->unsigned();
+            $table->dateTime('date_hired');
+            $table->string('employee_status');
             $table->integer('tax_code_id')->unsigned();
             $table->smallInteger('dependents')->unsigned();
             $table->integer('account_number');
@@ -49,6 +54,7 @@ class CreateEmployeesTable extends Migration
             $table->integer('payroll_id')->unsigned();
             $table->float('basic_pay');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

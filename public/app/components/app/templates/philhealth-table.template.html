@@ -1,0 +1,20 @@
+<table class="table" flex flex-gt-md="70">
+	<tr>
+		<th>Salary Range</th>
+		<th>Salary Base</th>
+		<th>Total Monthly Premium</th>
+		<th>Employee Share</th>
+		<th>Employer Share</th>
+	</tr>
+	<tr ng-repeat="philhealth in type.items"> 
+		<td>
+			<span>{{philhealth.from | number: 2}}</span>
+			<span> - {{philhealth.to | number: 2}}</span>
+			<span ng-if="$last">and above</span>
+		</td>
+		<td>{{philhealth.salary_base | number: 2}}</td>
+		<td>{{philhealth.total_monthly_premium | number: 2}}</td>
+		<td>{{philhealth.employee_share | number: 2}}</td>
+		<td>{{philhealth.employer_share | number: 2}}</td>
+	</tr>
+</table>

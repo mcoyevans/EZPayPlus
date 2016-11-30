@@ -122,7 +122,7 @@ settings
 								return;
 							});
 					}
-					$scope.fab.show = true;
+					$scope.fab.show = query.fab ? true : false;
 
 					if(data.data.length){
 						// iterate over each record and set the format

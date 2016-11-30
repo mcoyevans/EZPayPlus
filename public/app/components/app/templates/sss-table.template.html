@@ -1,0 +1,32 @@
+<table class="table" flex flex-gt-md="70">
+	<tr>
+		<th colspan="2"></th>
+		<th colspan="3">Social Security</th>
+		<th>EC</th>
+		<th colspan="3">Total Contribution</th>
+	</tr>
+	<tr>
+		<th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">Range of Compensation</th>
+		<th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">Monthly Salary Credit*</th>
+		<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">ER</th>
+		<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">EE</th>
+		<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">Total</th>
+		<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">ER</th>
+		<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">ER</th>
+		<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">EE</th>
+		<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">Total</th>
+	</tr>
+	<tr ng-repeat="sss in type.items">
+		<td class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+			<span>{{sss.from}} - {{sss.to}} <span ng-if="$last">over</span></span>
+		</td>
+		<td class="col-xs-2 col-sm-2 col-md-2 col-lg-2">{{sss.monthly_salary_credit}}</td>
+		<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{sss.ER | number: 2}}</td>
+		<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{sss.EE | number: 2}}</td>
+		<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{sss.ER + sss.EE | number: 2}}</td>
+		<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{sss.EC | number: 2}}</td>
+		<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{sss.ER + sss.EC | number: 2}}</td>
+		<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{sss.EE | number: 2}}</td>
+		<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{sss.total | number: 2}}</td>
+	</tr>
+</table>

@@ -51,6 +51,13 @@ class DeductionTypeController extends Controller
             }
         }
 
+        if($request->has('where'))
+        {
+            for ($i=0; $i < count($request->where); $i++) { 
+                $deduction_types->where($request->input('where')[$i]['label'], $request->input('where')[$i]['condition'], $request->input('where')[$i]['value']);
+            }
+        }
+
         if($request->has('search'))
         {
             $deduction_types->where('name', 'like', '%'.$request->search.'%')->orWhere('description', 'like', '%'.$request->search.'%');
@@ -119,6 +126,7 @@ class DeductionTypeController extends Controller
 
             $deduction_type->name = $request->name;
             $deduction_type->description = $request->description;
+            $deduction_type->government_deduction = $request->government_deduction ? true : false;
 
             $deduction_type->save();
         });
@@ -177,6 +185,7 @@ class DeductionTypeController extends Controller
 
             $deduction_type->name = $request->name;
             $deduction_type->description = $request->description;
+            $deduction_type->government_deduction = $request->government_deduction ? true : false;
 
             $deduction_type->save();
         });

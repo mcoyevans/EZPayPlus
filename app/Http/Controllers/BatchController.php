@@ -6,14 +6,14 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 
-use App\AllowanceType;
+use App\Batch;
 
 use Auth;
-use Carbon\Carbon;
+use Catbon\Carbon;
 use DB;
 use Gate;
 
-class AllowanceTypeController extends Controller
+class BatchController extends Controller
 {
     /**
      * Checks for duplicate entry.
@@ -22,7 +22,8 @@ class AllowanceTypeController extends Controller
      */
     public function checkDuplicate(Request $request)
     {
-        $duplicate = $request->has('id') ? AllowanceType::where('name', $request->name)->whereNotIn('id', [$request->id])->first() : AllowanceType::where('name', $request->name)->first();
+
+        $duplicate = $request->has('id') ? Batch::where('name', $request->name)->whereNotIn('id', [$request->id])->first() : Batch::where('name', $request->name)->first();
 
         return response()->json($duplicate ? true : false);
     }
@@ -34,11 +35,11 @@ class AllowanceTypeController extends Controller
      */
     public function enlist(Request $request)
     {
-        $allowance_types = AllowanceType::query();
+        $batches = Batch::query();
 
         if($request->has('withTrashed'))
         {
-            $allowance_types->withTrashed();
+            $batches->withTrashed();
         }
 
         if($request->has('with'))
@@ -46,27 +47,32 @@ class AllowanceTypeController extends Controller
             for ($i=0; $i < count($request->with); $i++) { 
                 if(!$request->input('with')[$i]['withTrashed'])
                 {
-                    $allowance_types->with($request->input('with')[$i]['relation']);
+                    $batches->with($request->input('with')[$i]['relation']);
+                }
+                else{
+                    $batches->with([$request->input('with')[$i]['relation'] => function($query){
+                        $query->withTrashed();
+                    }]);
                 }
             }
         }
 
         if($request->has('search'))
         {
-            $allowance_types->where('name', 'like', '%'.$request->search.'%')->orWhere('description', 'like', '%'.$request->search.'%');
+            $batches->where('name', 'like', '%'.$request->search.'%')->orWhere('description', 'like', '%'.$request->search.'%');
         }
 
         if($request->has('paginate'))
         {
-            return $allowance_types->paginate($request->paginate);
+            return $batches->paginate($request->paginate);
         }
 
         if($request->has('first'))
         {
-            return $allowance_types->first();
+            return $batches->first();
         }
 
-        return $allowance_types->get();
+        return $batches->get();
     }
 
     /**
@@ -76,7 +82,7 @@ class AllowanceTypeController extends Controller
      */
     public function index()
     {
-        return AllowanceType::all();
+        return Batch::all();
     }
 
     /**
@@ -102,7 +108,7 @@ class AllowanceTypeController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $duplicate = AllowanceType::where('name', $request->name)->first();
+        $duplicate = Batch::where('name', $request->name)->first();
 
         if($duplicate)
         {
@@ -115,13 +121,12 @@ class AllowanceTypeController extends Controller
         ]);
 
         DB::transaction(function() use($request){
-            $allowance_type = new AllowanceType;
+            $batch = new Batch;
 
-            $allowance_type->name = $request->name;
-            $allowance_type->description = $request->description;
-            $allowance_type->de_minimis_id = $request->de_minimis_id;
+            $batch->name = $request->name;
+            $batch->description = $request->description;
 
-            $allowance_type->save();
+            $batch->save();
         });
     }
 
@@ -133,7 +138,7 @@ class AllowanceTypeController extends Controller
      */
     public function show($id)
     {
-        return AllowanceType::withTrashed()->where('id', $id)->first();
+        return Batch::withTrashed()->where('id', $id)->first();
     }
 
     /**
@@ -161,7 +166,7 @@ class AllowanceTypeController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $duplicate = AllowanceType::whereNotIn('id', [$id])->where('name', $request->name)->first();
+        $duplicate = Batch::whereNotIn('id', [$id])->where('name', $request->name)->first();
 
         if($duplicate)
         {
@@ -174,13 +179,12 @@ class AllowanceTypeController extends Controller
         ]);
 
         DB::transaction(function() use($request, $id){
-            $allowance_type = AllowanceType::where('id', $id)->first();
+            $batch = Batch::where('id', $id)->first();
 
-            $allowance_type->name = $request->name;
-            $allowance_type->description = $request->description;
-            $allowance_type->de_minimis_id = $request->de_minimis_id;
+            $batch->name = $request->name;
+            $batch->description = $request->description;
 
-            $allowance_type->save();
+            $batch->save();
         });
     }
 
@@ -197,11 +201,11 @@ class AllowanceTypeController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $allowance_types = AllowanceType::with('employees')->where('id', $id)->first();
+        $batch = Batch::with('employees')->where('id', $id)->first();
 
-        if(!count($allowance_types->employees))
+        if(!count($batch->employees))
         {
-            $allowance_types->delete();
+            $batch->delete();
 
             return;
         }

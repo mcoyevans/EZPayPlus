@@ -15,10 +15,8 @@ class CreatePagibigTable extends Migration
         Schema::create('pagibig', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
-            $table->float('from');
-            $table->float('to')->nullable();
-            $table->float('employee_share');
-            $table->float('employer_share');
+            $table->float('monthly_savings');
+            $table->float('savings_in_20_years');
         });
     }
 

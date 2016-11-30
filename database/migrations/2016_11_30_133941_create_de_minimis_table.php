@@ -1,9 +1,10 @@
 <?php
 
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateDeductionTypesTable extends Migration
+class CreateDeMinimisTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,14 +13,12 @@ class CreateDeductionTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create('deduction_types', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
+        Schema::create('de_minimis', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
-            $table->string('description');
-            $table->boolean('government_deduction');
-            $table->timestamps();
-            $table->softDeletes();
+            $table->text('description');
+            $table->float('maximum_amount_per_month')->nullable();
+            $table->float('percentage_of_basic_minimum_wage')->nullable();
         });
     }
 
@@ -30,6 +29,6 @@ class CreateDeductionTypesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('deduction_types');
+        Schema::dropIfExists('de_minimis');
     }
 }

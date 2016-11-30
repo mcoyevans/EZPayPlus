@@ -26,5 +26,7 @@ class DatabaseSeeder extends Seeder
         $this->call(PagibigTableSeeder::class);
         $this->call(TaxCodesTableSeeder::class);
         $this->call(TaxesTableSeeder::class);
+        $this->call(DeMinimisTableSeeder::class);
+        $this->call(DeductionTypesTableSeeder::class);
     }
 }

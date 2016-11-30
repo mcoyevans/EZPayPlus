@@ -15,7 +15,10 @@
 			</div>
 		</md-list-item>
 	</md-list>
-	<div class="container" ng-include="'/app/components/app/templates/bir-tax-table.template.html'" ng-if="subheader.current.table == 'tax'"></div>
+	<div layout="row" flex layout-align="center center" ng-include="'/app/components/app/templates/bir-tax-table.template.html'" ng-if="subheader.current.table == 'tax'"></div>
+	<div layout="row" flex layout-align="center center" ng-include="'/app/components/app/templates/sss-table.template.html'" ng-if="subheader.current.table == 'sss'"></div>
+	<div layout="row" flex layout-align="center center" ng-include="'/app/components/app/templates/pagibig-table.template.html'" ng-if="subheader.current.table == 'pagibig'"></div>
+	<div layout="row" flex layout-align="center center" ng-include="'/app/components/app/templates/philhealth-table.template.html'" ng-if="subheader.current.table == 'philhealth'"></div>
 </div>
 <div layout="row" layout-align="center center" layout-padding layout-margin ng-if="isLoading">
 	<md-progress-circular class="md-primary" md-diameter="60"></md-progress-circular>

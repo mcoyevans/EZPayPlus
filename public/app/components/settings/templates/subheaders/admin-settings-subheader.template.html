@@ -10,7 +10,7 @@
         <md-tooltip hide-xs hide-sm hide-md>Refresh</md-tooltip>
     </md-button>
 	<!-- Filter / Sort By -->
-	<md-menu>
+	<md-menu ng-if="subheader.current.sort || subheader.current.request.withTrashed">
         <md-button aria-label="Open filters" class="md-icon-button" ng-click="$mdOpenMenu($event)">
             <md-icon class="mdi mdi-sort-variant grey"></md-icon>
             <md-tooltip hide-xs hide-sm hide-md>Sort By</md-tooltip>

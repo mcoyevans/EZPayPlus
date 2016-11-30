@@ -1,276 +1,278 @@
-<table class="table">
-	<tr>
-		<th>Daily</th>
-		<th></th>
-		<th>1</th>
-		<th>2</th>
-		<th>3</th>
-		<th>4</th>
-		<th>5</th>
-		<th>6</th>
-		<th>7</th>
-		<th>8</th>
-	</tr>
-	<tr>
-		<td>Status</td>
-		<td>Exemption</td>
-		<td>0.00</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:1}:true">{{tax.tax | number: 2}}</td>
-	</tr>
-	<tr>
-		<td colspan="2"></td>
-		<td>+0% over</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:1}:true">+{{tax.excess * 100}}% over</td>
-	</tr>
-	<tr>
-		<th>A. Table for employees without qualified dependent</th>
-		<th colspan="9"></th>
-	</tr>
-	<tr>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:1}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:1}:true | limitTo:1">{{tax.tax_code.exemption + tax.tax_code.dependent / 1000 | number:1}}</td>
-		<td>1</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:1}:true | orderBy:'salary'">{{tax.salary}}</td>
-	</tr>
-	<tr>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:2}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:2}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
-		<td>1</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:2}:true | orderBy:'salary'">{{tax.salary}}</td>
-	</tr>
-	<tr>
-		<th>B. Table for single/married employee with qualified dependent child(ren)</th>
-		<th colspan="9"></th>
-	</tr>
-	<tr>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:3}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:3}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
-		<td>1</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:3}:true | orderBy:'salary'">{{tax.salary}}</td>
-	</tr>
-	<tr>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:4}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:4}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
-		<td>1</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:4}:true | orderBy:'salary'">{{tax.salary}}</td>
-	</tr>
-	<tr>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:5}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:5}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
-		<td>1</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:5}:true | orderBy:'salary'">{{tax.salary}}</td>
-	</tr>
-	<tr>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:6}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:6}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
-		<td>1</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:6}:true | orderBy:'salary'">{{tax.salary}}</td>
-	</tr>
-</table>
-<table class="table">
-	<tr>
-		<th>Weekly</th>
-		<th></th>
-		<th>1</th>
-		<th>2</th>
-		<th>3</th>
-		<th>4</th>
-		<th>5</th>
-		<th>6</th>
-		<th>7</th>
-		<th>8</th>
-	</tr>
-	<tr>
-		<td>Status</td>
-		<td>Exemption</td>
-		<td>0.00</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:1}:true">{{tax.tax | number: 2}}</td>
-	</tr>
-	<tr>
-		<td colspan="2"></td>
-		<td>+0% over</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:1}:true">+{{tax.excess * 100}}% over</td>
-	</tr>
-	<tr>
-		<th>A. Table for employees without qualified dependent</th>
-		<th colspan="9"></th>
-	</tr>
-	<tr>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:1}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:1}:true | limitTo:1">{{tax.tax_code.exemption + tax.tax_code.dependent / 1000 | number:1}}</td>
-		<td>1</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:1}:true | orderBy:'salary'">{{tax.salary}}</td>
-	</tr>
-	<tr>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:2}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:2}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
-		<td>1</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:2}:true | orderBy:'salary'">{{tax.salary}}</td>
-	</tr>
-	<tr>
-		<th>B. Table for single/married employee with qualified dependent child(ren)</th>
-		<th colspan="9"></th>
-	</tr>
-	<tr>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:3}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:3}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
-		<td>1</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:3}:true | orderBy:'salary'">{{tax.salary}}</td>
-	</tr>
-	<tr>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:4}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:4}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
-		<td>1</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:4}:true | orderBy:'salary'">{{tax.salary}}</td>
-	</tr>
-	<tr>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:5}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:5}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
-		<td>1</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:5}:true | orderBy:'salary'">{{tax.salary}}</td>
-	</tr>
-	<tr>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:6}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:6}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
-		<td>1</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:6}:true | orderBy:'salary'">{{tax.salary}}</td>
-	</tr>
-</table>
-<table class="table">
-	<tr>
-		<th>Semi-Monthly</th>
-		<th></th>
-		<th>1</th>
-		<th>2</th>
-		<th>3</th>
-		<th>4</th>
-		<th>5</th>
-		<th>6</th>
-		<th>7</th>
-		<th>8</th>
-	</tr>
-	<tr>
-		<td>Status</td>
-		<td>Exemption</td>
-		<td>0.00</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:1}:true">{{tax.tax | number: 2}}</td>
-	</tr>
-	<tr>
-		<td colspan="2"></td>
-		<td>+0% over</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:1}:true">+{{tax.excess * 100}}% over</td>
-	</tr>
-	<tr>
-		<th>A. Table for employees without qualified dependent</th>
-		<th colspan="9"></th>
-	</tr>
-	<tr>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:1}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:1}:true | limitTo:1">{{tax.tax_code.exemption + tax.tax_code.dependent / 1000 | number:1}}</td>
-		<td>1</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:1}:true | orderBy:'salary'">{{tax.salary}}</td>
-	</tr>
-	<tr>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:2}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:2}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
-		<td>1</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:2}:true | orderBy:'salary'">{{tax.salary}}</td>
-	</tr>
-	<tr>
-		<th>B. Table for single/married employee with qualified dependent child(ren)</th>
-		<th colspan="9"></th>
-	</tr>
-	<tr>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:3}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:3}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
-		<td>1</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:3}:true | orderBy:'salary'">{{tax.salary}}</td>
-	</tr>
-	<tr>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:4}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:4}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
-		<td>1</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:4}:true | orderBy:'salary'">{{tax.salary}}</td>
-	</tr>
-	<tr>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:5}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:5}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
-		<td>1</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:5}:true | orderBy:'salary'">{{tax.salary}}</td>
-	</tr>
-	<tr>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:6}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:6}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
-		<td>1</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:6}:true | orderBy:'salary'">{{tax.salary}}</td>
-	</tr>
-</table>
-<table class="table">
-	<tr>
-		<th>Monthly</th>
-		<th></th>
-		<th>1</th>
-		<th>2</th>
-		<th>3</th>
-		<th>4</th>
-		<th>5</th>
-		<th>6</th>
-		<th>7</th>
-		<th>8</th>
-	</tr>
-	<tr>
-		<td>Status</td>
-		<td>Exemption</td>
-		<td>0.00</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:1}:true">{{tax.tax | number: 2}}</td>
-	</tr>
-	<tr>
-		<td colspan="2"></td>
-		<td>+0% over</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:1}:true">+{{tax.excess * 100}}% over</td>
-	</tr>
-	<tr>
-		<th>A. Table for employees without qualified dependent</th>
-		<th colspan="9"></th>
-	</tr>
-	<tr>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:1}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:1}:true | limitTo:1">{{tax.tax_code.exemption + tax.tax_code.dependent / 1000 | number:1}}</td>
-		<td>1</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:1}:true | orderBy:'salary'">{{tax.salary}}</td>
-	</tr>
-	<tr>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:2}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:2}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
-		<td>1</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:2}:true | orderBy:'salary'">{{tax.salary}}</td>
-	</tr>
-	<tr>
-		<th>B. Table for single/married employee with qualified dependent child(ren)</th>
-		<th colspan="9"></th>
-	</tr>
-	<tr>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:3}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:3}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
-		<td>1</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:3}:true | orderBy:'salary'">{{tax.salary}}</td>
-	</tr>
-	<tr>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:4}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:4}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
-		<td>1</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:4}:true | orderBy:'salary'">{{tax.salary}}</td>
-	</tr>
-	<tr>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:5}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:5}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
-		<td>1</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:5}:true | orderBy:'salary'">{{tax.salary}}</td>
-	</tr>
-	<tr>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:6}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:6}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
-		<td>1</td>
-		<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:6}:true | orderBy:'salary'">{{tax.salary}}</td>
-	</tr>
-</table>
+<div layout="column" flex flex-gt-md="70">
+	<table class="table">
+		<tr>
+			<th>Daily</th>
+			<th></th>
+			<th>1</th>
+			<th>2</th>
+			<th>3</th>
+			<th>4</th>
+			<th>5</th>
+			<th>6</th>
+			<th>7</th>
+			<th>8</th>
+		</tr>
+		<tr>
+			<td>Status</td>
+			<td>Exemption</td>
+			<td>0.00</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:1}:true">{{tax.tax | number: 2}}</td>
+		</tr>
+		<tr>
+			<td colspan="2"></td>
+			<td>+0% over</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:1}:true">+{{tax.excess * 100}}% over</td>
+		</tr>
+		<tr>
+			<th>A. Table for employees without qualified dependent</th>
+			<th colspan="9"></th>
+		</tr>
+		<tr>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:1}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:1}:true | limitTo:1">{{tax.tax_code.exemption + tax.tax_code.dependent / 1000 | number:1}}</td>
+			<td>1</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:1}:true | orderBy:'salary'">{{tax.salary}}</td>
+		</tr>
+		<tr>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:2}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:2}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
+			<td>1</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:2}:true | orderBy:'salary'">{{tax.salary}}</td>
+		</tr>
+		<tr>
+			<th>B. Table for single/married employee with qualified dependent child(ren)</th>
+			<th colspan="9"></th>
+		</tr>
+		<tr>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:3}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:3}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
+			<td>1</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:3}:true | orderBy:'salary'">{{tax.salary}}</td>
+		</tr>
+		<tr>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:4}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:4}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
+			<td>1</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:4}:true | orderBy:'salary'">{{tax.salary}}</td>
+		</tr>
+		<tr>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:5}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:5}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
+			<td>1</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:5}:true | orderBy:'salary'">{{tax.salary}}</td>
+		</tr>
+		<tr>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:6}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:6}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
+			<td>1</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'daily'}:true | filter: {tax_code_id:6}:true | orderBy:'salary'">{{tax.salary}}</td>
+		</tr>
+	</table>
+	<table class="table">
+		<tr>
+			<th>Weekly</th>
+			<th></th>
+			<th>1</th>
+			<th>2</th>
+			<th>3</th>
+			<th>4</th>
+			<th>5</th>
+			<th>6</th>
+			<th>7</th>
+			<th>8</th>
+		</tr>
+		<tr>
+			<td>Status</td>
+			<td>Exemption</td>
+			<td>0.00</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:1}:true">{{tax.tax | number: 2}}</td>
+		</tr>
+		<tr>
+			<td colspan="2"></td>
+			<td>+0% over</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:1}:true">+{{tax.excess * 100}}% over</td>
+		</tr>
+		<tr>
+			<th>A. Table for employees without qualified dependent</th>
+			<th colspan="9"></th>
+		</tr>
+		<tr>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:1}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:1}:true | limitTo:1">{{tax.tax_code.exemption + tax.tax_code.dependent / 1000 | number:1}}</td>
+			<td>1</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:1}:true | orderBy:'salary'">{{tax.salary}}</td>
+		</tr>
+		<tr>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:2}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:2}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
+			<td>1</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:2}:true | orderBy:'salary'">{{tax.salary}}</td>
+		</tr>
+		<tr>
+			<th>B. Table for single/married employee with qualified dependent child(ren)</th>
+			<th colspan="9"></th>
+		</tr>
+		<tr>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:3}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:3}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
+			<td>1</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:3}:true | orderBy:'salary'">{{tax.salary}}</td>
+		</tr>
+		<tr>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:4}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:4}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
+			<td>1</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:4}:true | orderBy:'salary'">{{tax.salary}}</td>
+		</tr>
+		<tr>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:5}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:5}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
+			<td>1</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:5}:true | orderBy:'salary'">{{tax.salary}}</td>
+		</tr>
+		<tr>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:6}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:6}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
+			<td>1</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'weekly'}:true | filter: {tax_code_id:6}:true | orderBy:'salary'">{{tax.salary}}</td>
+		</tr>
+	</table>
+	<table class="table">
+		<tr>
+			<th>Semi-Monthly</th>
+			<th></th>
+			<th>1</th>
+			<th>2</th>
+			<th>3</th>
+			<th>4</th>
+			<th>5</th>
+			<th>6</th>
+			<th>7</th>
+			<th>8</th>
+		</tr>
+		<tr>
+			<td>Status</td>
+			<td>Exemption</td>
+			<td>0.00</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:1}:true">{{tax.tax | number: 2}}</td>
+		</tr>
+		<tr>
+			<td colspan="2"></td>
+			<td>+0% over</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:1}:true">+{{tax.excess * 100}}% over</td>
+		</tr>
+		<tr>
+			<th>A. Table for employees without qualified dependent</th>
+			<th colspan="9"></th>
+		</tr>
+		<tr>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:1}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:1}:true | limitTo:1">{{tax.tax_code.exemption + tax.tax_code.dependent / 1000 | number:1}}</td>
+			<td>1</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:1}:true | orderBy:'salary'">{{tax.salary}}</td>
+		</tr>
+		<tr>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:2}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:2}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
+			<td>1</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:2}:true | orderBy:'salary'">{{tax.salary}}</td>
+		</tr>
+		<tr>
+			<th>B. Table for single/married employee with qualified dependent child(ren)</th>
+			<th colspan="9"></th>
+		</tr>
+		<tr>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:3}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:3}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
+			<td>1</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:3}:true | orderBy:'salary'">{{tax.salary}}</td>
+		</tr>
+		<tr>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:4}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:4}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
+			<td>1</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:4}:true | orderBy:'salary'">{{tax.salary}}</td>
+		</tr>
+		<tr>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:5}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:5}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
+			<td>1</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:5}:true | orderBy:'salary'">{{tax.salary}}</td>
+		</tr>
+		<tr>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:6}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:6}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
+			<td>1</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'semi-monthly'}:true | filter: {tax_code_id:6}:true | orderBy:'salary'">{{tax.salary}}</td>
+		</tr>
+	</table>
+	<table class="table">
+		<tr>
+			<th>Monthly</th>
+			<th></th>
+			<th>1</th>
+			<th>2</th>
+			<th>3</th>
+			<th>4</th>
+			<th>5</th>
+			<th>6</th>
+			<th>7</th>
+			<th>8</th>
+		</tr>
+		<tr>
+			<td>Status</td>
+			<td>Exemption</td>
+			<td>0.00</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:1}:true">{{tax.tax | number: 2}}</td>
+		</tr>
+		<tr>
+			<td colspan="2"></td>
+			<td>+0% over</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:1}:true">+{{tax.excess * 100}}% over</td>
+		</tr>
+		<tr>
+			<th>A. Table for employees without qualified dependent</th>
+			<th colspan="9"></th>
+		</tr>
+		<tr>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:1}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:1}:true | limitTo:1">{{tax.tax_code.exemption + tax.tax_code.dependent / 1000 | number:1}}</td>
+			<td>1</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:1}:true | orderBy:'salary'">{{tax.salary}}</td>
+		</tr>
+		<tr>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:2}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:2}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
+			<td>1</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:2}:true | orderBy:'salary'">{{tax.salary}}</td>
+		</tr>
+		<tr>
+			<th>B. Table for single/married employee with qualified dependent child(ren)</th>
+			<th colspan="9"></th>
+		</tr>
+		<tr>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:3}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:3}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
+			<td>1</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:3}:true | orderBy:'salary'">{{tax.salary}}</td>
+		</tr>
+		<tr>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:4}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:4}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
+			<td>1</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:4}:true | orderBy:'salary'">{{tax.salary}}</td>
+		</tr>
+		<tr>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:5}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:5}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
+			<td>1</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:5}:true | orderBy:'salary'">{{tax.salary}}</td>
+		</tr>
+		<tr>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:6}:true | limitTo:1">{{tax.tax_code.code}} - {{tax.tax_code.description}}</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:6}:true | limitTo:1">{{(tax.tax_code.exemption + tax.tax_code.dependent) / 1000 | number:1}}</td>
+			<td>1</td>
+			<td ng-repeat="tax in type.items | filter: {pay_frequency:'monthly'}:true | filter: {tax_code_id:6}:true | orderBy:'salary'">{{tax.salary}}</td>
+		</tr>
+	</table>
+</div>

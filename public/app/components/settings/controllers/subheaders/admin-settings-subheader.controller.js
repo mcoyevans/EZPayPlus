@@ -195,6 +195,7 @@ settings
 					},
 				],
 			},
+			// Bir Tax Table
 			{
 				'label':'BIR Tax Table',
 				'url': '/tax/enlist',
@@ -212,6 +213,40 @@ settings
 				},
 				'table': 'tax',
 			},
+			{
+				'label':'SSS Table',
+				'url': '/sss/enlist',
+				'request': {
+					'paginate':20,
+				},
+				action: function(current){
+					setInit(current);
+				},
+				'table': 'sss',
+			},
+			{
+				'label':'HDMF Table',
+				'url': '/pagibig/enlist',
+				'request': {
+					'paginate':20,
+				},
+				action: function(current){
+					setInit(current);
+				},
+				'table': 'pagibig',
+			},
+			{
+				'label':'Philhealth Table',
+				'url': '/philhealth/enlist',
+				'request': {
+					'paginate':20,
+				},
+				action: function(current){
+					setInit(current);
+				},
+				'table': 'philhealth',
+			},
+			// User Groups
 			{
 				'label':'User Groups',
 				'url': '/group/enlist',
@@ -302,6 +337,7 @@ settings
 					setInit(current);
 				},
 			},
+			// Users
 			{
 				'label':'Users',
 				'url': '/user/enlist',
