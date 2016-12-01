@@ -17,13 +17,15 @@ class CreateEmployeeAllowanceTypeTable extends Migration
             $table->increments('id');
             $table->integer('employee_id')->unsigned();
             $table->integer('allowance_type_id')->unsigned();
-            $table->decimal('amount', 8,2);
-            $table->date('date_start');
+            $table->float('amount');
+            // $table->date('date_start');
             $table->boolean('first_cut_off');
             $table->boolean('second_cut_off');
+            $table->boolean('third_cut_off');
+            $table->boolean('fourth_cut_off');
             $table->boolean('on_hold');
-            $table->boolean('tax_shield');
-            $table->boolean('taxable');
+            // $table->boolean('tax_shield');
+            // $table->boolean('taxable');
             $table->timestamps();
         });
     }

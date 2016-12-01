@@ -61,7 +61,7 @@ class CostCenterController extends Controller
      */
     public function index()
     {
-        //
+        return CostCenter::all();
     }
 
     /**

@@ -1,0 +1,220 @@
+<form name="form.employeeForm" flex>
+	<md-subheader class="md-primary">Primary Information</md-subheader>
+	<div layout="row" flex layout-align="center center">
+		<md-card layout="column" flex-gt-md="60">
+			<md-card-content>
+				<div layout="row" layout-wrap flex>					
+					<!-- Employee ID -->
+					<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+						<label>Employee ID</label>
+						<input type="number" name="EmployeeID" ng-model="employee.employee_number" min="0" required ng-change="checkDuplicate()" ng-disabled="busy">
+						<div class="pattern" ng-if="duplicate">Employee ID already in use.</div>
+						<div ng-messages="form.employeeForm.EmployeeID.$error" ng-if="form.employeeForm.EmployeeID.$touched">
+							<div ng-message="required">Employee ID is required.</div>
+							<div ng-message="min">Employee ID cannot accept negative numbers.</div>
+						</div>
+					</md-input-container>
+				</div>
+				<div layout="row" layout-wrap flex>
+					<!-- First Name -->
+					<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+						<label>First Name</label>
+						<input type="text" name="FirstName" ng-model="employee.first_name" required ng-disabled="busy">
+						<div ng-messages="form.employeeForm.FirstName.$error" ng-if="form.employeeForm.FirstName.$touched">
+							<div ng-message="required">First name is required.</div>
+						</div>
+					</md-input-container>
+					<!-- Middle Name -->
+					<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+						<label>Middle Name</label>
+						<input type="text" name="MiddleName" ng-model="employee.middle_name" required ng-disabled="busy">
+						<div ng-messages="form.employeeForm.MiddleName.$error" ng-if="form.employeeForm.MiddleName.$touched">
+							<div ng-message="required">Middle name is required.</div>
+						</div>
+					</md-input-container>
+					<!-- Last Name -->
+					<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+						<label>Last Name</label>
+						<input type="text" name="LastName" ng-model="employee.last_name" required ng-disabled="busy">
+						<div ng-messages="form.employeeForm.LastName.$error" ng-if="form.employeeForm.LastName.$touched">
+							<div ng-message="required">Last name is required.</div>
+						</div>
+					</md-input-container>
+					<!-- Suffix -->
+					<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+						<label>Suffix</label>
+						<input type="text" name="Suffix" ng-model="employee.suffix" ng-disabled="busy">
+					</md-input-container>					
+				</div>
+				<div layout="row" layout-wrap>
+					<!-- Birthdate -->
+					<div flex-xs="100" flex-sm="100" flex-gt-sm>
+				        <h4>Birthdate</h4>
+				        <md-datepicker name="Birthdate" ng-model="employee.birthdate" md-placeholder="Birthdate" required md-max-date="today" ng-change="calculateAge(employee.birthdate)" ng-disabled="busy"></md-datepicker>
+				        <div class="secondary-text" ng-if="employee.age > 1">{{employee.age}} years old.</div>
+				        <div class="validation-messages" ng-messages="form.employeeForm.Birthdate.$error" ng-if="form.employeeForm.Birthdate.$touched">
+				          	<div ng-message="valid">The entered value is not a date.</div>
+				          	<div ng-message="required">Birthdate is required.</div>
+				          	<div ng-message="maxdate">Birthdate cannot be later than today.</div>
+				        </div>
+				    </div>
+					<div layout="row" layout-align="center center" layout-margin flex-xs="100" flex-sm="100" flex-gt-sm>
+						<!-- Sex -->
+						<md-radio-group name="Sex" ng-model="employee.sex" layout="row" layout-align="start center" ng-disabled="busy">
+							<md-radio-button value="Male" class="md-primary" flex>Male</md-radio-button>
+							<md-radio-button value="Female" class="md-primary" flex>Female</md-radio-button>
+						</md-radio-group>
+					</div>
+				</div>
+				<div layout="row" layout-wrap>
+					<!-- Civil Status -->
+			    	<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+			    		<label>Civil Status</label>
+			    		<md-select name="CivilStatus" ng-model="employee.civil_status" required ng-disabled="busy">
+			    			<md-option ng-repeat="item in civil_status" value="{{item}}">{{item}}</md-option>
+			    		</md-select>
+			    		<div ng-messages="form.employeeForm.CivilStatus.$error" ng-if="form.employeeForm.CivilStatus.$touched">
+			    			<div ng-message="required">Civil Status is required.</div>
+			    		</div>
+			    	</md-input-container>
+			    	<!-- Batch -->
+			    	<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm ng-if="batches.length">
+			    		<label>Batch</label>
+			    		<md-select name="Batch" ng-model="employee.batch_id" required ng-disabled="busy">
+			    			<md-option ng-repeat="batch in batches" value="{{batch.id}}">{{batch.name}}</md-option>
+			    		</md-select>
+			    		<div ng-messages="form.employeeForm.Batch.$error" ng-if="form.employeeForm.Batch.$touched">
+			    			<div ng-message="required">Batch is required.</div>
+			    		</div>
+			    	</md-input-container>
+				</div>
+			</md-card-content>
+		</md-card>
+	</div>
+	<md-subheader class="md-primary">Employment Information</md-subheader>
+	<div layout="row" flex layout-align="center center">
+		<md-card layout="column" flex-gt-md="60">
+			<md-card-content>
+				<div layout="row" layout-wrap>
+					<!-- Branch -->
+			    	<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm ng-if="branches.length">
+			    		<label>Branch</label>
+			    		<md-select name="Branch" ng-model="employee.branch_id" required ng-disabled="busy">
+			    			<md-option ng-repeat="branch in branches" value="{{branch.id}}">{{branch.name}}</md-option>
+			    		</md-select>
+			    		<div ng-messages="form.employeeForm.Branch.$error" ng-if="form.employeeForm.Branch.$touched">
+			    			<div ng-message="required">Branch is required.</div>
+			    		</div>
+			    	</md-input-container>
+			    	<!-- Cost Center -->
+			    	<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm ng-if="cost_centers.length">
+			    		<label>Cost Center</label>
+			    		<md-select name="CostCenter" ng-model="employee.cost_center_id" required ng-disabled="busy">
+			    			<md-option ng-repeat="cost_center in cost_centers" value="{{cost_center.id}}">{{cost_center.name}}</md-option>
+			    		</md-select>
+			    		<div ng-messages="form.employeeForm.CostCenter.$error" ng-if="form.employeeForm.CostCenter.$touched">
+			    			<div ng-message="required">Cost Center is required.</div>
+			    		</div>
+			    	</md-input-container>
+				</div>
+				<div layout="row" layout-wrap>
+					<!-- Position -->
+			    	<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm ng-if="positions.length">
+			    		<label>Position</label>
+			    		<md-select name="Position" ng-model="employee.position_id" required ng-disabled="busy">
+			    			<md-option ng-repeat="position in positions" value="{{position.id}}">{{position.name}}</md-option>
+			    		</md-select>
+			    		<div ng-messages="form.employeeForm.Position.$error" ng-if="form.employeeForm.Position.$touched">
+			    			<div ng-message="required">Position is required.</div>
+			    		</div>
+			    	</md-input-container>
+			    	<!-- Employment Status -->
+			    	<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm ng-if="employment_status.length">
+			    		<label>Employment Status</label>
+			    		<md-select name="EmploymentStatus" ng-model="employee.employment_status" required ng-disabled="busy">
+			    			<md-option ng-repeat="item in employment_status" value="{{item}}">{{item}}</md-option>
+			    		</md-select>
+			    		<div ng-messages="form.employeeForm.EmploymentStatus.$error" ng-if="form.employeeForm.EmploymentStatus.$touched">
+			    			<div ng-message="required">Employment Status is required.</div>
+			    		</div>
+			    	</md-input-container>
+				</div>
+		    	<!-- Date Started -->
+				<div flex-xs="100" flex-sm="100" flex-gt-sm>
+			        <h4>Date Started</h4>
+			        <md-datepicker name="DateStarted" ng-model="employee.date_started" md-placeholder="Date Started" required md-max-date="today" ng-disabled="busy"></md-datepicker>
+			        <div class="validation-messages" ng-messages="form.employeeForm.DateStarted.$error" ng-if="form.employeeForm.DateStarted.$touched">
+			          	<div ng-message="valid">The entered value is not a date.</div>
+			          	<div ng-message="required">Date Started is required.</div>
+			          	<div ng-message="maxdate">Date Started cannot be later than today.</div>
+			        </div>
+			    </div>
+			</md-card-content>
+		</md-card>
+	</div>
+	<md-subheader class="md-primary">Personal Information</md-subheader>
+	<div layout="row" flex layout-align="center center">
+		<md-card layout="column" flex-gt-md="60">
+			<md-card-content>
+				<div layout="row" layout-wrap flex>
+					<!-- Street Address -->
+	                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+	                    <label>Street Address</label>
+	                    <input type="text" name="StreetAddress" required ng-model="company.street_address">
+	                    <div ng-messages="form.employeeForm.StreetAddress.$error" ng-if="form.employeeForm.StreetAddress.$touched">
+	                        <div ng-message="required">Street Address is required.</div>
+	                    </div>
+	                </md-input-container>
+				</div>
+				<div layout="row" layout-wrap flex>
+	                <!-- City -->
+	                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+	                    <label>City</label>
+	                    <input type="text" name="City" required ng-model="employee.city" ng-blur="checkCity()" ng-disabled="busy">
+	                    <div class="pattern" ng-if="!cities.length && showError">No cities or municipalities matching "{{employee.city}}" were found.</div>
+	                    <div ng-messages="form.employeeForm.City.$error" ng-if="form.employeeForm.City.$touched">
+	                        <div ng-message="required">City is required.</div>
+	                    </div>
+	                </md-input-container>
+	                <!-- Province -->
+	                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+	                    <label>Province</label>
+	                    <md-select name="Province" ng-model="employee.province_id" md-on-open="fetchProvinces()" ng-change="checkProvince()" required ng-disabled="!cities.length" ng-disabled="busy">
+	                        <md-option ng-value="province.id" ng-repeat="province in provinces" ng-if="province.cities.length">
+	                            {{province.name}}
+	                        </md-option>
+	                    </md-select>
+	                    <div class="pattern" ng-if="noMatches">No cities or municipalities matching "{{employee.city}}" were found in this province.</div>
+	                    <div ng-messages="form.employeeForm.Province.$error" ng-if="form.employeeForm.Province.$touched">
+	                        <div ng-message="required">Province is required.</div>
+	                    </div>
+	                </md-input-container>
+	                <!-- Postal Code -->
+	                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+	                    <label>Postal Code</label>
+	                    <input type="text" name="PostalCode" required ng-model="employee.postal_code" ng-pattern="/^\d+$/" ng-disabled="busy">
+	                    <div ng-messages="form.employeeForm.PostalCode.$error" ng-if="form.employeeForm.PostalCode.$touched">                    
+	                        <div ng-message-exp="['required', 'pattern']">
+	                            Postal code is required and must be numeric.
+	                        </div>
+	                    </div>
+	                </md-input-container>
+	            </div>
+	            <div layout="row" layout-wrap flex>
+	            	<!-- Mobile Number -->
+	                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+	                    <label>Mobile Number</label>
+	                    <input type="text" name="MobileNumber" required ng-model="employee.mobile_number" ng-disabled="busy" minlength="11" maxlength="11" ng-pattern="/^\d+$/">
+	                    <div class="hint" ng-if="form.employeeForm.MobileNumber.$untouched">11 digit number</div>
+	                    <div ng-messages="form.employeeForm.MobileNumber.$error" ng-if="form.employeeForm.MobileNumber.$touched">
+	                        <div ng-message-exp="['required', 'minlength', 'maxlength', 'pattern']">
+						        Mobile phone number is required, numeric, and must be 11 characters long.
+						    </div>
+	                    </div>
+	                </md-input-container>
+	            </div>
+			</md-card-content>
+		</md-card>
+	</div>
+</form>
+

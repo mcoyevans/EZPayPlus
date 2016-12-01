@@ -212,3 +212,9 @@ Route::group(['prefix' => 'batch'], function(){
 	Route::post('enlist', 'BatchController@enlist');
 	Route::post('check-duplicate', 'BatchController@checkDuplicate');
 });
+
+/* Employee */
+Route::group(['prefix' => 'employee'], function(){
+	Route::post('enlist', 'EmployeeController@enlist');
+	Route::post('check-duplicate', 'EmployeeController@checkDuplicate');
+});

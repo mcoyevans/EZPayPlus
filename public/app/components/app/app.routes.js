@@ -51,8 +51,43 @@ app
 					'left-sidenav@main.hris': {
 						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
 					},
+					'subheader@main.hris': {
+						templateUrl: '/app/components/hris/templates/subheaders/hris-subheader.template.html',
+						controller: 'hrisSubheaderController',
+					},
 					'content@main.hris':{
 						templateUrl: '/app/components/hris/templates/content/hris-content.template.html',
+					}
+				}
+			})
+			.state('main.manage-employee', {
+				url: 'employee/{employeeID}',
+				params: {'employeeID':null},
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/2')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'manageEmployeeContentContainerController',
+					},
+					'toolbar@main.manage-employee': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'manageEmployeeToolbarController',
+					},
+					'left-sidenav@main.manage-employee': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'content@main.manage-employee':{
+						templateUrl: '/app/components/hris/templates/content/manage-employee-content.template.html',
 					}
 				}
 			})
