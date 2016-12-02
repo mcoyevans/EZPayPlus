@@ -91,45 +91,45 @@ hris
 				})
 		}
 		
-		$scope.formatPagIBIG = function(){
-			if($scope.employeeForm.PagIBIG.$valid)
+		$scope.formatPagIBIG = function(pagibig){
+			if($scope.form.employeeForm.PagIBIG.$valid)
 			{
-				var first = $scope.pagibig.slice(0,4);
-				var second = $scope.pagibig.slice(4,8);
-				var third = $scope.pagibig.slice(8,12);
+				var first = pagibig.slice(0,4);
+				var second = pagibig.slice(4,8);
+				var third = pagibig.slice(8,12);
 
 				$scope.employee.pagibig = first + '-' + second + '-' + third;
 			}
 		}
 
-		$scope.formatPhilHealth = function(){
-			if($scope.employeeForm.PhilHealth.$valid)
+		$scope.formatPhilHealth = function(philhealth){
+			if($scope.form.employeeForm.PhilHealth.$valid)
 			{
-				var first = $scope.philhealth.slice(0,2);
-				var second = $scope.philhealth.slice(2,11);
-				var third = $scope.philhealth.slice(11,12);
+				var first = philhealth.slice(0,2);
+				var second = philhealth.slice(2,11);
+				var third = philhealth.slice(11,12);
 
 				$scope.employee.philhealth = first + '-' + second + '-' + third;
 			}
 		}
 
-		$scope.formatSSS = function(){
-			if($scope.employeeForm.SSS.$valid)
+		$scope.formatSSS = function(sss){
+			if($scope.form.employeeForm.SSS.$valid)
 			{
-				var first = $scope.sss.slice(0,2);
-				var second = $scope.sss.slice(2,9);
-				var third = $scope.sss.slice(9,10);
+				var first = sss.slice(0,2);
+				var second = sss.slice(2,9);
+				var third = sss.slice(9,10);
 
 				$scope.employee.sss = first + '-' + second + '-' + third;
 			}
 		}	
 
-		$scope.formatTIN = function(){
-			if($scope.employeeForm.TIN.$valid)
+		$scope.formatTIN = function(tin){
+			if($scope.form.employeeForm.TIN.$valid)
 			{
-				var first = $scope.tin.slice(0,3);
-				var second = $scope.tin.slice(3,6);
-				var third = $scope.tin.slice(6,9);
+				var first = tin.slice(0,3);
+				var second = tin.slice(3,6);
+				var third = tin.slice(6,9);
 
 				$scope.employee.tin = first + '-' + second + '-' + third;
 			}
@@ -213,6 +213,11 @@ hris
 			Helper.get('/position')
 				.success(function(data){
 					$scope.positions = data;
+				})
+
+			Helper.get('/tax-code')
+				.success(function(data){
+					$scope.tax_codes = data;
 				})
 
 			$scope.checkCity();

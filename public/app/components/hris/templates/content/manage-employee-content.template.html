@@ -1,7 +1,7 @@
 <form name="form.employeeForm" flex>
 	<md-subheader class="md-primary">Primary Information</md-subheader>
 	<div layout="row" flex layout-align="center center">
-		<md-card layout="column" flex-gt-md="60">
+		<md-card layout="column" flex flex-gt-md="70">
 			<md-card-content>
 				<div layout="row" layout-wrap flex>					
 					<!-- Employee ID -->
@@ -93,7 +93,7 @@
 	</div>
 	<md-subheader class="md-primary">Employment Information</md-subheader>
 	<div layout="row" flex layout-align="center center">
-		<md-card layout="column" flex-gt-md="60">
+		<md-card layout="column" flex flex-gt-md="70">
 			<md-card-content>
 				<div layout="row" layout-wrap>
 					<!-- Branch -->
@@ -154,7 +154,7 @@
 	</div>
 	<md-subheader class="md-primary">Personal Information</md-subheader>
 	<div layout="row" flex layout-align="center center">
-		<md-card layout="column" flex-gt-md="60">
+		<md-card layout="column" flex flex-gt-md="70">
 			<md-card-content>
 				<div layout="row" layout-wrap flex>
 					<!-- Street Address -->
@@ -210,6 +210,65 @@
 	                        <div ng-message-exp="['required', 'minlength', 'maxlength', 'pattern']">
 						        Mobile phone number is required, numeric, and must be 11 characters long.
 						    </div>
+	                    </div>
+	                </md-input-container>
+	                <!-- Phone Number -->
+	                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+	                	<label>Phone Number</label>
+	                	<input type="text" name="PhoneNumber" ng-model="employee.phone_number" ng-disabled="busy">
+	                </md-input-container>
+	            </div>
+	            <div layout="row" layout-wrap flex>
+	            	<!-- Tax Code -->
+			    	<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm ng-if="tax_codes.length">
+			    		<label>Tax Code</label>
+			    		<md-select name="TaxCode" ng-model="employee.tax_code" required ng-disabled="busy">
+			    			<md-option ng-repeat="item in tax_codes" value="{{item.id}}">{{item.code}} - {{item.description}}</md-option>
+			    		</md-select>
+			    		<div ng-messages="form.employeeForm.TaxCode.$error" ng-if="form.employeeForm.TaxCode.$touched">
+			    			<div ng-message="required">Tax Code is required.</div>
+			    		</div>
+			    	</md-input-container>
+			    	<!-- TIN -->
+	                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+	                    <label>TIN</label>
+	                    <input type="text" name="TIN" required ng-model="tin" minlength="9" maxlength="9" ng-pattern="/^\d+$/" ng-change="formatTIN(tin)" ng-disabled="busy">
+	                    <div class="hint" ng-if="!form.employeeForm.TIN.$touched && !tin">9 digit number</div>
+	                    <div class="hint" ng-if="form.employeeForm.TIN.$valid">{{employee.tin}}</div>
+	                    <div ng-messages="form.employeeForm.TIN.$error" ng-if="form.employeeForm.TIN.$touched">
+	                        <div ng-message-exp="['required', 'pattern', 'minlength', 'maxlength']">TIN is required, 9 characters long, and must be numeric.</div>
+	                    </div>
+	                </md-input-container>
+	            </div>
+	            <div layout="row" layout-wrap flex>
+	            	<!-- SSS -->
+	                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+	                    <label>SSS</label>
+	                    <input type="text" name="SSS" required ng-model="sss" minlength="10" maxlength="10" ng-pattern="/^\d+$/" ng-change="formatSSS(sss)" ng-disabled="busy">
+	                    <div class="hint" ng-if="!form.employeeForm.SSS.$touched && !sss">10 digit number</div>
+	                    <div class="hint" ng-if="form.employeeForm.SSS.$valid">{{employee.sss}}</div>
+	                    <div ng-messages="form.employeeForm.SSS.$error" ng-if="form.employeeForm.SSS.$touched">
+	                        <div ng-message-exp="['required', 'pattern', 'minlength', 'maxlength']">SSS is required, 10 characters long, and must be numeric.</div>
+	                    </div>
+	                </md-input-container>
+	                <!-- Pag-IBIG -->
+	                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+	                    <label>Pag-IBIG</label>
+	                    <input type="text" name="PagIBIG" required ng-model="pagibig" minlength="12" maxlength="12" ng-pattern="/^\d+$/" ng-change="formatPagIBIG(pagibig)" ng-disabled="busy">
+	                    <div class="hint" ng-if="!form.employeeForm.PagIBIG.$touched && !pagibig">12 digit number</div>
+	                    <div class="hint" ng-if="form.employeeForm.PagIBIG.$valid">{{employee.pagibig}}</div>
+	                    <div ng-messages="form.employeeForm.PagIBIG.$error" ng-if="form.employeeForm.PagIBIG.$touched">
+	                        <div ng-message-exp="['required', 'pattern', 'minlength', 'maxlength']">Pag-IBIG is required, 12 characters long, and must be numeric.</div>
+	                    </div>
+	                </md-input-container>
+	                <!-- PhilHealth -->
+	                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+	                    <label>PhilHealth</label>
+	                    <input type="text" name="PhilHealth" required ng-model="philhealth" minlength="12" maxlength="12" ng-pattern="/^\d+$/" ng-change="formatPhilHealth(philhealth)" ng-disabled="busy">
+	                    <div class="hint" ng-if="!form.employeeForm.PhilHealth.$touched && !philhealth">12 digit number</div>
+	                    <div class="hint" ng-if="form.employeeForm.PhilHealth.$valid">{{employee.philhealth}}</div>
+	                    <div ng-messages="form.employeeForm.PhilHealth.$error" ng-if="form.employeeForm.PhilHealth.$touched">
+	                        <div ng-message-exp="['required', 'pattern', 'minlength', 'maxlength']">PhilHealth is required, 12 characters long, and must be numeric.</div>
 	                    </div>
 	                </md-input-container>
 	            </div>
