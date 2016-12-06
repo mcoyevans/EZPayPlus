@@ -22,7 +22,7 @@ app
 					// 	templateUrl: '/app/shared/templates/subheaders/dashboard-subheader.template.html',
 					// },
 					'content@main':{
-						// templateUrl: '/app/shared/templates/content/dashboard-content.template.html',
+						// templateUrl: '/app/components/app/templates/content/dashboard-content.template.html',
 					}
 				}
 			})

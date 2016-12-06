@@ -33,14 +33,14 @@ class CreateEmployeesTable extends Migration
             $table->text('street_address');
             $table->integer('city_id')->unsigned();
             $table->integer('province_id')->unsigned();
-            $table->integer('country_id')->unsigned();
+            // $table->integer('country_id')->unsigned();
             $table->string('postal_code')->nullable();
             $table->string('telephone_number')->nullable();
             $table->string('mobile_number')->nullable();
             $table->string('tin', 11);
             $table->string('sss', 12);
-            $table->string('phic', 14);
-            $table->string('hdmf', 14);
+            $table->string('philhealth', 14);
+            $table->string('pagibig', 14);
             $table->integer('tax_code_id')->unsigned();
             $table->smallInteger('dependents')->unsigned();
             $table->string('email')->nullable();

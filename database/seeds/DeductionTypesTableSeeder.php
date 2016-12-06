@@ -15,7 +15,8 @@ class DeductionTypesTableSeeder extends Seeder
         	['name' => 'HDMFEE', 'description' => 'Home Development Mutual Fund', 'government_deduction' => true],
         	['name' => 'PHICEE', 'description' => 'Philhealth', 'government_deduction' => true],
         	['name' => 'SSSEE', 'description' => 'Social Security System', 'government_deduction' => true],
-        	['name' => 'WTAX', 'description' => 'Withholding Tax', 'government_deduction' => true],
+            ['name' => 'WTAX', 'description' => 'Withholding Tax', 'government_deduction' => true],
+        	['name' => 'BOND', 'description' => 'Training Bond', 'government_deduction' => false],
         ]);
     }
 }

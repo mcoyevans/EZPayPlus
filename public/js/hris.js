@@ -149,7 +149,7 @@ hris
 		$scope.init();
 	}]);
 hris
-	.controller('manageEmployeeContentContainerController', ['$scope', '$stateParams', '$mdMedia', 'Helper', function($scope, $stateParams, $mdMedia, Helper){
+	.controller('manageEmployeeContentContainerController', ['$scope', '$filter', '$stateParams', '$mdMedia', 'Helper', function($scope, $filter, $stateParams, $mdMedia, Helper){
 		if($mdMedia('xs') || $mdMedia('sm') || $mdMedia('md')){
 			$scope.$emit('closeSidenav');
 		}
@@ -182,15 +182,39 @@ hris
 
 			$scope.employee.sex = 'Male';
 
-			$scope.employee.date_started = new Date();
+			$scope.employee.date_hired = new Date();
 
 			$scope.calculateAge(new Date());
+
+			$scope.employee.allowance_types = [];
+			$scope.employee.deduction_types = [];
 		}
 
 		$scope.today = new Date();
 
 		$scope.civil_status = ['Single', 'Married', 'Widowed'];
 		$scope.employment_status = ['Probationary', 'Project Based', 'Regular'];
+
+		$scope.addEarnings = function(){
+			$scope.employee.allowance_types.push({});
+		}
+
+		$scope.addDeductions = function(){
+			$scope.employee.deduction_types.push({});
+		}
+
+		$scope.removeEarnings = function(item){
+			var index = $scope.employee.allowance_types.indexOf(item);
+
+			$scope.employee.allowance_types.splice(index, 1);
+		}
+
+		$scope.removeDeduction = function(item){
+			var index = $scope.employee.deduction_types.indexOf(item);
+
+			$scope.employee.deduction_types.splice(index, 1);
+		}
+
 
 		$scope.checkDuplicate = function(){
 			Helper.post('/employee/check-duplicate', $scope.employee)
@@ -285,6 +309,34 @@ hris
 			}
 		}
 
+		$scope.checkDeMinimis = function(data){
+			var allowance_type = $filter('filter')($scope.allowance_types, {'id': data.allowance_type_id})[0];
+
+			data.de_minimis = allowance_type.de_minimis_id ? allowance_type.de_minimis : null;
+		}
+
+		$scope.checkLimit = function(data){
+			var total = data.checked ? (data.first_cut_off ? data.amount : 0) + (data.second_cut_off ? data.amount : 0) + (data.third_cut_off ? data.amount : 0) + (data.fourth_cut_off ? data.amount : 0) : 0;
+
+			var de_minimis = $filter('filter')($scope.de_minimis, {'id': data.de_minimis.id})[0]
+
+			var index = $scope.de_minimis.indexOf(de_minimis);
+
+			console.log(de_minimis, index)
+
+			$scope.de_minimis[index].maximum_amount_per_month = data.de_minimis.maximum_amount_per_month - total;
+
+			data.limit = $scope.de_minimis[index].maximum_amount_per_month - data.amount < 0 ? true : false;
+
+			console.log(total, $scope.de_minimis[index].maximum_amount_per_month, data);
+		}
+
+		$scope.checkFrequency = function(data, hold){
+			data.checked = data.first_cut_off || data.second_cut_off || data.third_cut_off || data.fourth_cut_off || data.on_hold ? true : false;
+
+			$scope.checkLimit(data);
+		}
+
 		/*
 		 * Object for fab
 		 *
@@ -308,35 +360,51 @@ hris
 			if(!$scope.duplicate)
 			{
 				$scope.busy = true;
+				Helper.preload();
+
+				$scope.employee.birthdate = $scope.employee.birthdate.toLocaleDateString();
+				$scope.employee.date_hired = $scope.employee.date_hired.toDateString();
 
 				if(!$stateParams.employeeID)
 				{
-					Helper.post('/employee', $scope.model)
+					Helper.post('/employee', $scope.employee)
 						.success(function(duplicate){
+							Helper.stop();
+
 							if(duplicate){
+								$scope.duplicate = duplicate;
 								$scope.busy = false;
 								return;
 							}
 
-							Helper.stop();
+							$state.go('main.hris');
 						})
 						.error(function(){
+							$scope.employee.birthdate = new Date($scope.employee.birthdate);
+							$scope.employee.date_hired = new Date($scope.employee.date_hired);
+
 							$scope.busy = false;
 							$scope.error = true;
 						});
 				}
 				else
 				{
-					Helper.put('/employee/' + $scope.config.id, $scope.model)
+					Helper.put('/employee/' + $stateParams.employeeID, $scope.employee)
 						.success(function(duplicate){
+							Helper.stop();
+
 							if(duplicate){
+								$scope.duplicate = duplicate;
 								$scope.busy = false;
 								return;
 							}
 
-							Helper.stop();
+							$state.go('main.hris');
 						})
 						.error(function(){
+							$scope.employee.birthdate = new Date($scope.employee.birthdate);
+							$scope.employee.date_hired = new Date($scope.employee.date_hired);
+
 							$scope.busy = false;
 							$scope.error = true;
 						});
@@ -368,6 +436,45 @@ hris
 			Helper.get('/tax-code')
 				.success(function(data){
 					$scope.tax_codes = data;
+				})
+
+			Helper.get('/de-minimis')
+				.success(function(data){
+					$scope.de_minimis = data;
+				})
+
+			var allowance_type_request = {
+				'with': [
+					{
+						'relation': 'de_minimis',
+						'withTrashed': false,
+					}
+				]
+			}
+
+			Helper.post('/allowance-type/enlist', allowance_type_request)
+				.success(function(data){
+					$scope.allowance_types = data;
+				})
+
+			var deduction_type_request = {
+				'where': [
+					{
+						'label': 'government_deduction',
+						'condition': '=',
+						'value': false,
+					}
+				]
+			}
+
+			Helper.post('/deduction-type/enlist', deduction_type_request)
+				.success(function(data){
+					$scope.deduction_types = data;
+				})
+
+			Helper.get('/time-interpretation')
+				.success(function(data){
+					$scope.time_interpretations = data;
 				})
 
 			$scope.checkCity();
