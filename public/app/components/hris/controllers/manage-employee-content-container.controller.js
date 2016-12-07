@@ -1,5 +1,5 @@
 hris
-	.controller('manageEmployeeContentContainerController', ['$scope', '$filter', '$stateParams', '$mdMedia', 'Helper', function($scope, $filter, $stateParams, $mdMedia, Helper){
+	.controller('manageEmployeeContentContainerController', ['$scope', '$filter', '$state', '$stateParams', '$mdMedia', 'Helper', function($scope, $filter, $state, $stateParams, $mdMedia, Helper){
 		if($mdMedia('xs') || $mdMedia('sm') || $mdMedia('md')){
 			$scope.$emit('closeSidenav');
 		}
@@ -7,6 +7,9 @@ hris
 		$scope.form = {}
 
 		$scope.employee = {};
+
+		$scope.employee.allowance_types = [];
+		$scope.employee.deduction_types = [];
 
 		/*
 		 * Object for toolbar
@@ -22,10 +25,81 @@ hris
 
 		if($stateParams.employeeID)
 		{
-			Helper.get('/employee/' + $stateParams.employeeID)
+			var request = {}
+
+			request.with = [
+				{
+					'relation': 'allowance_types',
+					'withTrashed': false,
+				},
+				{
+					'relation': 'deduction_types',
+					'withTrashed': false,
+				},
+				{
+					'relation': 'batch',
+					'withTrashed': true,
+				},
+				{
+					'relation': 'branch',
+					'withTrashed': true,
+				},
+				{
+					'relation': 'cost_center',
+					'withTrashed': true,
+				},
+				{
+					'relation': 'position',
+					'withTrashed': true,
+				},
+				{
+					'relation': 'city',
+					'withTrashed': false,
+				},
+				{
+					'relation': 'province',
+					'withTrashed': false,
+				},
+				{
+					'relation': 'tax_code',
+					'withTrashed': false,
+				},
+				{
+					'relation': 'time_interpretation',
+					'withTrashed': false,
+				},
+			]
+
+			request.withTrashed = true;
+
+			request.first = true;
+
+			Helper.post('/employee/enlist', request)
 				.success(function(data){
 					$scope.employee = data;
+					$scope.employee.birthdate = new Date(data.birthdate);
+					$scope.employee.date_hired = new Date(data.date_hired);
+					$scope.employee.city = data.city.name;
+					$scope.employee.province = data.province.name;
+
+					$scope.tin = data.tin.replace(/-/g, '');
+					$scope.sss = data.sss.replace(/-/g, '');
+					$scope.pagibig = data.pagibig.replace(/-/g, '');
+					$scope.philhealth = data.philhealth.replace(/-/g, '');
+
+					angular.forEach($scope.employee.allowance_types, function(item, key){
+						$scope.employee.allowance_types[key] = item.pivot;
+					})
+
+					angular.forEach($scope.employee.deduction_types, function(item, key){
+						$scope.employee.deduction_types[key] = item.pivot;
+					})
+
+					$scope.toolbar.childState = data.last_name + ', ' + data.first_name;
 				})
+				.error(function(){
+					Helper.error();
+				});
 		}
 		else{
 			$scope.toolbar.childState = 'Employee';
@@ -35,9 +109,6 @@ hris
 			$scope.employee.date_hired = new Date();
 
 			$scope.calculateAge(new Date());
-
-			$scope.employee.allowance_types = [];
-			$scope.employee.deduction_types = [];
 		}
 
 		$scope.today = new Date();
@@ -163,22 +234,24 @@ hris
 			var allowance_type = $filter('filter')($scope.allowance_types, {'id': data.allowance_type_id})[0];
 
 			data.de_minimis = allowance_type.de_minimis_id ? allowance_type.de_minimis : null;
+
+			data.max = allowance_type.de_minimis_id ? $filter('filter')($scope.de_minimis, {'id': allowance_type.de_minimis_id})[0].maximum_amount_per_month : null;
+
+			console.log(data.max);
 		}
 
 		$scope.checkLimit = function(data){
 			var total = data.checked ? (data.first_cut_off ? data.amount : 0) + (data.second_cut_off ? data.amount : 0) + (data.third_cut_off ? data.amount : 0) + (data.fourth_cut_off ? data.amount : 0) : 0;
 
-			var de_minimis = $filter('filter')($scope.de_minimis, {'id': data.de_minimis.id})[0]
+			var de_minimis = $filter('filter')($scope.de_minimis, {'id': data.de_minimis.id})[0];
 
 			var index = $scope.de_minimis.indexOf(de_minimis);
 
-			console.log(de_minimis, index)
-
 			$scope.de_minimis[index].maximum_amount_per_month = data.de_minimis.maximum_amount_per_month - total;
 
-			data.limit = $scope.de_minimis[index].maximum_amount_per_month - data.amount < 0 ? true : false;
+			console.log($scope.de_minimis[index].maximum_amount_per_month);
 
-			console.log(total, $scope.de_minimis[index].maximum_amount_per_month, data);
+			data.limit = $scope.de_minimis[index].maximum_amount_per_month - data.amount < 0 ? true : false;
 		}
 
 		$scope.checkFrequency = function(data, hold){
@@ -203,6 +276,8 @@ hris
 						errorField.$setTouched();
 					});
 				});
+
+				Helper.alert('Oops!', 'Kindly check form for errors.')
 
 				return;
 			}
@@ -235,6 +310,8 @@ hris
 
 							$scope.busy = false;
 							$scope.error = true;
+
+							Helper.error();
 						});
 				}
 				else
@@ -257,9 +334,62 @@ hris
 
 							$scope.busy = false;
 							$scope.error = true;
+
+							Helper.error();
 						});
 				}
 			}
+		}
+
+		$scope.test = function(){
+			$scope.employee.employee_number = 10071128;
+			$scope.employee.first_name = 'Marco Chrisitan';
+			$scope.employee.middle_name = 'Santillan';
+			$scope.employee.last_name = 'Paco';
+			$scope.employee.birthdate = new Date('12/30/1993');
+			$scope.employee.age = 22;
+			$scope.employee.civil_status = 'Single';
+			$scope.employee.batch_id = 1;
+			$scope.employee.branch_id = 1;
+			$scope.employee.cost_center_id = 1;
+			$scope.employee.position_id = 1;
+			$scope.employee.employment_status = 'Regular';
+			$scope.employee.date_hired = new Date('07/29/2015');
+			$scope.employee.street_address = 'B3 L8 Terry Town Subdivision';
+			$scope.employee.city = 'Santa Rosa City';
+			$scope.employee.province_id = 40;
+			$scope.employee.postal_code = 4026;
+			$scope.employee.email = 'marcopaco1230@gmail.com';
+			$scope.employee.mobile_number = '09364589106';
+			$scope.employee.telephone_number = '(049) 543-1704';
+			$scope.employee.tax_code_id = 2;
+			$scope.tin = '012345678';
+			$scope.sss = '0123456789';
+			$scope.pagibig = '012345678901';
+			$scope.philhealth = '012345678901';
+
+			$scope.employee.tin = '012-345-678';
+			$scope.employee.sss = '01-2345678-9';
+			$scope.employee.pagibig = '0123-4567-8901';
+			$scope.employee.philhealth = '01-234567890-1';
+			$scope.employee.time_interpretation_id = 1;
+			$scope.employee.basic_salary = 14000;
+			$scope.employee.allowance_types = [
+				{
+					'allowance_type_id': 1,
+					'amount': 100,
+					'first_cut_off': true,
+					'second_cut_off': true,
+				}
+			]
+			$scope.employee.deduction_types = [
+				{
+					'deduction_type_id': 5,
+					'amount': 100,
+					'first_cut_off': true,
+					'second_cut_off': true,
+				}
+			]
 		}
 
 		$scope.init = function(){

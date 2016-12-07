@@ -13,12 +13,12 @@ class Employee extends Model
 
     public function allowance_types()
     {
-    	return $this->belongsToMany('App\AllowanceType', 'employee_allowance_type');
+    	return $this->belongsToMany('App\AllowanceType', 'employee_allowance_type')->withPivot('amount', 'first_cut_off', 'second_cut_off', 'third_cut_off', 'fourth_cut_off', 'on_hold');
     }
 
     public function deduction_types()
     {
-        return $this->belongsToMany('App\AllowanceType', 'employee_deduction_type');
+        return $this->belongsToMany('App\DeductionType', 'employee_deduction_type')->withPivot('amount', 'first_cut_off', 'second_cut_off', 'third_cut_off', 'fourth_cut_off', 'on_hold');
     }
 
     // public function shift_schedules()
@@ -54,5 +54,20 @@ class Employee extends Model
     public function tax_code()
     {
         return $this->belongsTo('App\TaxCode');
+    }
+
+    public function city()
+    {
+        return $this->belongsTo('App\City');
+    }
+
+    public function province()
+    {
+        return $this->belongsTo('App\Province');
+    }
+
+    public function time_interpretation()
+    {
+        return $this->belongsTo('App\TimeInterpretation');
     }
 }

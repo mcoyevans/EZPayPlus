@@ -17,9 +17,9 @@ class CreateEmployeesTable extends Migration
             $table->increments('id');
             $table->integer('employee_number')->unsigned();
             $table->string('first_name');
-            $table->string('middle_name');
+            $table->string('middle_name')->nullable();
             $table->string('last_name');
-            $table->string('suffix');
+            $table->string('suffix')->nullable();
             $table->string('sex');
             $table->integer('age');
             $table->date('birthdate');
@@ -29,12 +29,12 @@ class CreateEmployeesTable extends Migration
             $table->integer('cost_center_id')->unsigned();
             $table->integer('position_id')->unsigned();
             $table->dateTime('date_hired');
-            $table->string('employement_status');
+            $table->string('employment_status');
             $table->text('street_address');
             $table->integer('city_id')->unsigned();
             $table->integer('province_id')->unsigned();
             // $table->integer('country_id')->unsigned();
-            $table->string('postal_code')->nullable();
+            $table->integer('postal_code')->nullable();
             $table->string('telephone_number')->nullable();
             $table->string('mobile_number')->nullable();
             $table->string('tin', 11);
@@ -43,7 +43,7 @@ class CreateEmployeesTable extends Migration
             $table->string('pagibig', 14);
             $table->integer('tax_code_id')->unsigned();
             $table->smallInteger('dependents')->unsigned();
-            $table->string('email')->nullable();
+            $table->string('email');
             $table->integer('time_interpretation_id')->unsigned();
             $table->float('basic_salary');
             // $table->string('payment_type');

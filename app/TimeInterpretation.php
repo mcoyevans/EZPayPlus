@@ -44,4 +44,9 @@ class TimeInterpretation extends Model
     {
     	return $this->hasMany('App\Payroll');
     }
+
+    public function employees()
+    {
+    	return $this->hasMany('App\Employee');
+    }
 }

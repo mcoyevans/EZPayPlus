@@ -52,30 +52,40 @@ hris
 			$scope.$broadcast('close');
 		});
 
-		$scope.listItemAction = function(data){
-			if(!data.deleted_at)
-			{
-				// if the tab is in user groups and the data clicked has users under him
-				if(data.current.label == 'User Groups' && data.users.length)
-				{
-					// disable the delete button
-					data.current.menu[1].show = false;
-				}
-				// otherwise
-				else if(data.current.label == 'User Groups' && !data.users.length)
-				{
-					// enable the delete button
-					data.current.menu[1].show = true;
-				}
+		$scope.view = function(data){
+			Helper.set(data);
 
-				Helper.set(data);
-
-				var dialog = {};
-				dialog.controller = 'listItemActionsDialogController';
-				dialog.template = '/app/shared/templates/dialogs/list-item-actions-dialog.template.html';
-
-				Helper.customDialog(dialog);
+			var dialog = {
+				'template': '/app/components/hris/templates/dialogs/employee-information-dialog.template.html',
+				'controller': 'employeeInformationDialogController',
+				'fullscreen': true
 			}
+
+			Helper.customDialog(dialog)
+				.then(function(data){
+					var confirm = {}
+
+					confirm.title = 'Delete';
+					confirm.message = 'Are you sure you want to delete this employee?';
+					confirm.ok = 'Delete';
+					confirm.cancel = 'Cancel';
+
+					if(data){
+						Helper.confirm(confirm)
+							.then(function(){
+								Helper.preload();
+								Helper.delete('/employee/' + data)
+									.success(function(){
+										Helper.stop();
+										$scope.refresh();
+										Helper.notify('Employee deleted.')
+									})
+									.error(function(){
+										Helper.error();
+									})
+							})
+					}
+				});
 		}
 
 		$scope.request = {}
@@ -101,7 +111,7 @@ hris
 					if(data.data.length){
 						// iterate over each record and set the format
 						angular.forEach(data.data, function(item){
-							pushItem(item);
+							// pushItem(item);
 						});
 					}
 
@@ -126,7 +136,7 @@ hris
 
 								// iterate over each data then splice it to the data array
 								angular.forEach(data.data, function(item, key){
-									pushItem(item);
+									// pushItem(item);
 									$scope.model.items.push(item);
 								});
 
