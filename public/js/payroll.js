@@ -1,2 +1,1 @@
-var payroll = angular.module('payroll', []);
-//# sourceMappingURL=payroll.js.map
+var payroll=angular.module("payroll",[]);

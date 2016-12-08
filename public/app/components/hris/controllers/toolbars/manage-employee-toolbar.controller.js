@@ -9,7 +9,7 @@ hris
 			return results;
 		}
 
-		$scope.toolbar.searchAll = true;
+		$scope.toolbar.hideSearchIcon = true;
 		/**
 		 * Reveals the search bar.
 		 *

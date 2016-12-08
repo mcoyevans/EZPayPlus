@@ -23,119 +23,10 @@ hris
 		    $scope.employee.age = Math.abs(ageDate.getUTCFullYear() - 1970);
 		}
 
-		if($stateParams.employeeID)
-		{
-			var request = {}
-
-			request.with = [
-				{
-					'relation': 'allowance_types',
-					'withTrashed': false,
-				},
-				{
-					'relation': 'deduction_types',
-					'withTrashed': false,
-				},
-				{
-					'relation': 'batch',
-					'withTrashed': true,
-				},
-				{
-					'relation': 'branch',
-					'withTrashed': true,
-				},
-				{
-					'relation': 'cost_center',
-					'withTrashed': true,
-				},
-				{
-					'relation': 'position',
-					'withTrashed': true,
-				},
-				{
-					'relation': 'city',
-					'withTrashed': false,
-				},
-				{
-					'relation': 'province',
-					'withTrashed': false,
-				},
-				{
-					'relation': 'tax_code',
-					'withTrashed': false,
-				},
-				{
-					'relation': 'time_interpretation',
-					'withTrashed': false,
-				},
-			]
-
-			request.withTrashed = true;
-
-			request.first = true;
-
-			Helper.post('/employee/enlist', request)
-				.success(function(data){
-					$scope.employee = data;
-					$scope.employee.birthdate = new Date(data.birthdate);
-					$scope.employee.date_hired = new Date(data.date_hired);
-					$scope.employee.city = data.city.name;
-					$scope.employee.province = data.province.name;
-
-					$scope.tin = data.tin.replace(/-/g, '');
-					$scope.sss = data.sss.replace(/-/g, '');
-					$scope.pagibig = data.pagibig.replace(/-/g, '');
-					$scope.philhealth = data.philhealth.replace(/-/g, '');
-
-					angular.forEach($scope.employee.allowance_types, function(item, key){
-						$scope.employee.allowance_types[key] = item.pivot;
-					})
-
-					angular.forEach($scope.employee.deduction_types, function(item, key){
-						$scope.employee.deduction_types[key] = item.pivot;
-					})
-
-					$scope.toolbar.childState = data.last_name + ', ' + data.first_name;
-				})
-				.error(function(){
-					Helper.error();
-				});
-		}
-		else{
-			$scope.toolbar.childState = 'Employee';
-
-			$scope.employee.sex = 'Male';
-
-			$scope.employee.date_hired = new Date();
-
-			$scope.calculateAge(new Date());
-		}
-
 		$scope.today = new Date();
 
 		$scope.civil_status = ['Single', 'Married', 'Widowed'];
 		$scope.employment_status = ['Probationary', 'Project Based', 'Regular'];
-
-		$scope.addEarnings = function(){
-			$scope.employee.allowance_types.push({});
-		}
-
-		$scope.addDeductions = function(){
-			$scope.employee.deduction_types.push({});
-		}
-
-		$scope.removeEarnings = function(item){
-			var index = $scope.employee.allowance_types.indexOf(item);
-
-			$scope.employee.allowance_types.splice(index, 1);
-		}
-
-		$scope.removeDeduction = function(item){
-			var index = $scope.employee.deduction_types.indexOf(item);
-
-			$scope.employee.deduction_types.splice(index, 1);
-		}
-
 
 		$scope.checkDuplicate = function(){
 			Helper.post('/employee/check-duplicate', $scope.employee)
@@ -230,34 +121,108 @@ hris
 			}
 		}
 
-		$scope.checkDeMinimis = function(data){
+		$scope.addEarnings = function(){
+			$scope.employee.allowance_types.push({});
+		}
+
+		$scope.addDeductions = function(){
+			$scope.employee.deduction_types.push({});
+		}
+
+		$scope.removeEarnings = function(item){
+			var index = $scope.employee.allowance_types.indexOf(item);
+
+			if(item.de_minimis)
+			{
+				var de_minimis = $filter('filter')($scope.de_minimis, {'id': item.de_minimis.id})[0];
+
+				var de_minimis_index = $scope.de_minimis.indexOf(de_minimis);
+
+				$scope.de_minimis[de_minimis_index].balance = $scope.de_minimis[de_minimis_index].balance + (item.first_cut_off ? item.amount : 0) + (item.second_cut_off ? item.amount : 0) + (item.third_cut_off ? item.amount : 0) + (item.fourth_cut_off ? item.amount : 0);
+
+				if($scope.de_minimis[de_minimis_index].balance)
+				{
+					var allowance_type = $filter('filter')($scope.allowance_types, {'id': item.allowance_type_id})[0];
+
+					var allowance_type_index = $scope.allowance_types.indexOf(allowance_type);
+
+					$scope.allowance_types[allowance_type_index].maxed_out = false;
+				}
+			}
+
+
+			$scope.employee.allowance_types.splice(index, 1);
+		}
+
+		$scope.removeDeduction = function(item){
+			var index = $scope.employee.deduction_types.indexOf(item);
+
+			$scope.employee.deduction_types.splice(index, 1);
+		}
+
+		$scope.checkDeduction = function(data, edit){
+			console.log(data);
+
+			var siblings = $filter('filter')($scope.employee.deduction_types, {'deduction_type_id': data.deduction_type_id});
+
+			if(!edit){
+				angular.forEach(siblings, function(item){
+					data.first_cut_off_checked = item.first_cut_off ? item.first_cut_off : data.first_cut_off_checked;
+					data.second_cut_off_checked = item.second_cut_off ? item.second_cut_off : data.second_cut_off_checked;
+					data.third_cut_off_checked = item.third_cut_off ? item.third_cut_off : data.third_cut_off_checked;
+					data.fourth_cut_off_checked = item.fourth_cut_off ? item.fourth_cut_off : data.fourth_cut_off_checked;
+				});
+			}
+		}
+
+		// check the maximum amount you can still input
+		// check for siblings that used the same allowance type
+		$scope.checkDeMinimis = function(data, edit){
 			var allowance_type = $filter('filter')($scope.allowance_types, {'id': data.allowance_type_id})[0];
 
 			data.de_minimis = allowance_type.de_minimis_id ? allowance_type.de_minimis : null;
 
-			data.max = allowance_type.de_minimis_id ? $filter('filter')($scope.de_minimis, {'id': allowance_type.de_minimis_id})[0].maximum_amount_per_month : null;
+			data.max = allowance_type.de_minimis_id ? $filter('filter')($scope.de_minimis, {'id': allowance_type.de_minimis_id})[0].balance : null;
 
-			console.log(data.max);
+			var siblings = $filter('filter')($scope.employee.allowance_types, {'allowance_type_id': data.allowance_type_id});
+
+			if(!edit){
+				angular.forEach(siblings, function(item){
+					data.first_cut_off_checked = item.first_cut_off ? item.first_cut_off : data.first_cut_off_checked;
+					data.second_cut_off_checked = item.second_cut_off ? item.second_cut_off : data.second_cut_off_checked;
+					data.third_cut_off_checked = item.third_cut_off ? item.third_cut_off : data.third_cut_off_checked;
+					data.fourth_cut_off_checked = item.fourth_cut_off ? item.fourth_cut_off : data.fourth_cut_off_checked;
+				});
+			}
 		}
 
-		$scope.checkLimit = function(data){
-			var total = data.checked ? (data.first_cut_off ? data.amount : 0) + (data.second_cut_off ? data.amount : 0) + (data.third_cut_off ? data.amount : 0) + (data.fourth_cut_off ? data.amount : 0) : 0;
-
+		// check the limit of the allowance type and make it not exceed the balance for the de minimis
+		$scope.checkLimit = function(data, cut_off){
 			var de_minimis = $filter('filter')($scope.de_minimis, {'id': data.de_minimis.id})[0];
 
 			var index = $scope.de_minimis.indexOf(de_minimis);
 
-			$scope.de_minimis[index].maximum_amount_per_month = data.de_minimis.maximum_amount_per_month - total;
+			if(typeof cut_off !== 'undefined')
+			{
+				$scope.de_minimis[index].balance = cut_off ? $scope.de_minimis[index].balance - data.amount : $scope.de_minimis[index].balance + data.amount;
+			}
 
-			console.log($scope.de_minimis[index].maximum_amount_per_month);
+			data.limit = $scope.de_minimis[index].balance - data.amount < 0 ? true : false;
 
-			data.limit = $scope.de_minimis[index].maximum_amount_per_month - data.amount < 0 ? true : false;
+			if($scope.de_minimis[index].balance <= 0)
+			{
+				var allowance_type = $filter('filter')($scope.allowance_types, {'id': data.allowance_type_id})[0];
+
+				var allowance_type_index = $scope.allowance_types.indexOf(allowance_type);
+
+				$scope.allowance_types[allowance_type_index].maxed_out = true;
+			}
 		}
 
-		$scope.checkFrequency = function(data, hold){
+		$scope.checkFrequency = function(data, cut_off){
 			data.checked = data.first_cut_off || data.second_cut_off || data.third_cut_off || data.fourth_cut_off || data.on_hold ? true : false;
 
-			$scope.checkLimit(data);
+			$scope.checkLimit(data, cut_off);
 		}
 
 		/*
@@ -316,6 +281,50 @@ hris
 				}
 				else
 				{
+					angular.forEach($scope.employee.allowance_types, function(item, key){
+						if(!item.first_cut_off){
+							delete item.first_cut_off;
+						}
+
+						if(!item.second_cut_off){
+							delete item.second_cut_off;
+						}
+
+						if(!item.third_cut_off){
+							delete item.third_cut_off;
+						}
+
+						if(!item.fourth_cut_off){
+							delete item.fourth_cut_off;
+						}
+
+						if(!item.on_hold){
+							delete item.on_hold;
+						}
+					});
+
+					angular.forEach($scope.employee.deduction_types, function(item, key){
+						if(!item.first_cut_off){
+							delete item.first_cut_off;
+						}
+
+						if(!item.second_cut_off){
+							delete item.second_cut_off;
+						}
+
+						if(!item.third_cut_off){
+							delete item.third_cut_off;
+						}
+
+						if(!item.fourth_cut_off){
+							delete item.fourth_cut_off;
+						}
+
+						if(!item.on_hold){
+							delete item.on_hold;
+						}
+					});
+
 					Helper.put('/employee/' + $stateParams.employeeID, $scope.employee)
 						.success(function(duplicate){
 							Helper.stop();
@@ -378,16 +387,21 @@ hris
 				{
 					'allowance_type_id': 1,
 					'amount': 100,
-					'first_cut_off': true,
-					'second_cut_off': true,
+					'first_cut_off': 1,
+					'second_cut_off': 1,
 				}
 			]
+
+			$scope.checkDeMinimis($scope.employee.allowance_types[0], true);
+			$scope.checkFrequency($scope.employee.allowance_types[0], 1);
+			$scope.checkFrequency($scope.employee.allowance_types[0], 1);
+			
 			$scope.employee.deduction_types = [
 				{
 					'deduction_type_id': 5,
 					'amount': 100,
-					'first_cut_off': true,
-					'second_cut_off': true,
+					'first_cut_off': 1,
+					'second_cut_off': 1,
 				}
 			]
 		}
@@ -421,6 +435,9 @@ hris
 			Helper.get('/de-minimis')
 				.success(function(data){
 					$scope.de_minimis = data;
+					angular.forEach($scope.de_minimis, function(item){
+						item.balance = item.maximum_amount_per_month;
+					});
 				})
 
 			var allowance_type_request = {
@@ -476,5 +493,110 @@ hris
 				.success(function(data){
 					$scope.last_employee_number = data.employee_number;
 				})
+
+			if($stateParams.employeeID)
+			{
+				var request = {}
+
+				request.with = [
+					{
+						'relation': 'allowance_types',
+						'withTrashed': false,
+					},
+					{
+						'relation': 'deduction_types',
+						'withTrashed': false,
+					},
+					{
+						'relation': 'batch',
+						'withTrashed': true,
+					},
+					{
+						'relation': 'branch',
+						'withTrashed': true,
+					},
+					{
+						'relation': 'cost_center',
+						'withTrashed': true,
+					},
+					{
+						'relation': 'position',
+						'withTrashed': true,
+					},
+					{
+						'relation': 'city',
+						'withTrashed': false,
+					},
+					{
+						'relation': 'province',
+						'withTrashed': false,
+					},
+					{
+						'relation': 'tax_code',
+						'withTrashed': false,
+					},
+					{
+						'relation': 'time_interpretation',
+						'withTrashed': false,
+					},
+				]
+
+				request.withTrashed = true;
+
+				request.first = true;
+
+				Helper.post('/employee/enlist', request)
+					.success(function(data){
+						$scope.employee = data;
+						$scope.employee.birthdate = new Date(data.birthdate);
+						$scope.employee.date_hired = new Date(data.date_hired);
+						$scope.employee.city = data.city.name;
+						$scope.employee.province = data.province.name;
+
+						$scope.tin = data.tin.replace(/-/g, '');
+						$scope.sss = data.sss.replace(/-/g, '');
+						$scope.pagibig = data.pagibig.replace(/-/g, '');
+						$scope.philhealth = data.philhealth.replace(/-/g, '');
+
+						angular.forEach($scope.employee.allowance_types, function(item, key){
+							$scope.employee.allowance_types[key] = item.pivot;
+							$scope.checkDeMinimis($scope.employee.allowance_types[key], true);
+
+							if($scope.employee.allowance_types[key].first_cut_off){
+								$scope.checkFrequency($scope.employee.allowance_types[key], 1)
+							}
+
+							if($scope.employee.allowance_types[key].second_cut_off){
+								$scope.checkFrequency($scope.employee.allowance_types[key], 1)
+							}
+
+							if($scope.employee.allowance_types[key].third_cut_off){
+								$scope.checkFrequency($scope.employee.allowance_types[key], 1)
+							}
+
+							if($scope.employee.allowance_types[key].fourth_cut_off){
+								$scope.checkFrequency($scope.employee.allowance_types[key], 1)
+							}
+						})
+
+						angular.forEach($scope.employee.deduction_types, function(item, key){
+							$scope.employee.deduction_types[key] = item.pivot;
+						})
+
+						$scope.toolbar.childState = data.last_name + ', ' + data.first_name;
+					})
+					.error(function(){
+						Helper.error();
+					});
+			}
+			else{
+				$scope.toolbar.childState = 'Employee';
+
+				$scope.employee.sex = 'Male';
+
+				$scope.employee.date_hired = new Date();
+
+				$scope.calculateAge(new Date());
+			}
 		}();
 	}]);

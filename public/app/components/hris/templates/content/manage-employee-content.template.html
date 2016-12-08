@@ -310,7 +310,7 @@
 						<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
 							<label>Name</label>
 							<md-select name="AllowanceType{{$index}}" ng-model="item.allowance_type_id" required ng-disabled="busy" ng-change="checkDeMinimis(item)">
-								<md-option ng-repeat="allowance_type in allowance_types" value="{{allowance_type.id}}">{{allowance_type.name}}</md-option>
+								<md-option ng-repeat="allowance_type in allowance_types" value="{{allowance_type.id}}" ng-show="!allowance_type.maxed_out">{{allowance_type.name}}</md-option>
 							</md-select>
 							<div ng-messages="form.employeeForm['AllowanceType' + $index].$error" ng-if="form.employeeForm['AllowanceType' + $index].$touched">
 								<div ng-message="required">Allowance is required.</div>
@@ -319,8 +319,9 @@
 						<!-- Amount -->
 						<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
 							<label>Amount</label>
-							<input type="number" name="AllowanceAmount{{$index}}" ng-model="item.amount" required min="0" max="{{item.max}}" ng-disabled="busy" ng-change="checkLimit(item)">
-							<div class="hint" ng-if="item.allowance_type_id">Maximum amount for a month is {{item.de_minimis.maximum_amount_per_month}}</div>
+							<input type="number" name="AllowanceAmount{{$index}}" ng-model="item.amount" required min="0" max="{{item.max}}" ng-disabled="busy || item.checked">
+							<div class="hint" ng-if="item.allowance_type_id && form.employeeForm['AllowanceAmount' + $index].$untouched">Maximum amount available is {{item.max}}</div>
+							<div class="hint" ng-if="item.allowance_type_id && form.employeeForm['AllowanceAmount' + $index].$valid && form.employeeForm['AllowanceAmount' + $index].$touched">Uncheck cut-offs to edit this amount.</div>
 							<div ng-messages="form.employeeForm['AllowanceAmount' + $index].$error" ng-if="form.employeeForm['AllowanceAmount' + $index].$touched">
 								<div ng-message="required">Amount is required.</div>
 								<div ng-message="min">Amount cannot be a negative number.</div>
@@ -330,11 +331,11 @@
 						<div layout="column" flex-xs="100" flex-sm="100" flex-gt-sm>
 							<!-- Frequency -->
 							<div layout="row" layout-align="center center" flex>
-								<md-checkbox ng-model="item.first_cut_off" ng-change="checkFrequency(item)" ng-disabled="item.on_hold || (item.limit && !item.first_cut_off)" ng-true-value="1" ng-false-value="0">1st</md-checkbox>
-								<md-checkbox ng-model="item.second_cut_off" ng-change="checkFrequency(item)" ng-disabled="item.on_hold || (item.limit && !item.second_cut_off)" ng-true-value="1" ng-false-value="0">2nd</md-checkbox>
-								<md-checkbox ng-model="item.third_cut_off" ng-change="checkFrequency(item)" ng-disabled="item.on_hold || (item.limit && !item.third_cut_off)" ng-true-value="1" ng-false-value="0">3rd</md-checkbox>
-								<md-checkbox ng-model="item.fourth_cut_off" ng-change="checkFrequency(item)" ng-disabled="item.on_hold || (item.limit && !item.fourth_cut_off)" ng-true-value="1" ng-false-value="0">4th</md-checkbox>
-								<md-checkbox ng-model="item.on_hold" ng-change="checkFrequency(item, true)" ng-disabled="item.first_cut_off || item.second_cut_off || item.third_cut_off || item.fourth_cut_off">Hold</md-checkbox>
+								<md-checkbox ng-model="item.first_cut_off" ng-change="checkFrequency(item, item.first_cut_off)" ng-disabled="item.on_hold || (item.limit && !item.first_cut_off) || item.first_cut_off_checked" ng-true-value="1" ng-false-value="0">1st</md-checkbox>
+								<md-checkbox ng-model="item.second_cut_off" ng-change="checkFrequency(item, item.second_cut_off)" ng-disabled="item.on_hold || (item.limit && !item.second_cut_off) || item.second_cut_off_checked" ng-true-value="1" ng-false-value="0">2nd</md-checkbox>
+								<md-checkbox ng-model="item.third_cut_off" ng-change="checkFrequency(item, item.third_cut_off)" ng-disabled="item.on_hold || (item.limit && !item.third_cut_off) || item.third_cut_off_checked" ng-true-value="1" ng-false-value="0">3rd</md-checkbox>
+								<md-checkbox ng-model="item.fourth_cut_off" ng-change="checkFrequency(item, item.fourth_cut_off)" ng-disabled="item.on_hold || (item.limit && !item.fourth_cut_off) || item.fourth_cut_off_checked" ng-true-value="1" ng-false-value="0">4th</md-checkbox>
+								<md-checkbox ng-model="item.on_hold" ng-change="checkFrequency(item)" ng-disabled="item.first_cut_off || item.second_cut_off || item.third_cut_off || item.fourth_cut_off">Hold</md-checkbox>
 							</div>
 							<div class="secondary-text" ng-if="!item.checked">Check at least one.</div>
 						</div>
@@ -354,7 +355,7 @@
 					<div layout="row" layout-wrap flex ng-repeat="item in employee.deduction_types">
 						<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
 							<label>Name</label>
-							<md-select name="DeductionType{{$index}}" ng-model="item.deduction_type_id" required ng-disabled="busy">
+							<md-select name="DeductionType{{$index}}" ng-model="item.deduction_type_id" required ng-disabled="busy" ng-change="checkDeduction(item)">
 								<md-option ng-repeat="deduction_type in deduction_types" value="{{deduction_type.id}}">{{deduction_type.name}}</md-option>
 							</md-select>
 							<div ng-messages="form.employeeForm['DeductionType' + $index].$error" ng-if="form.employeeForm['DeductionType' + $index].$touched">
@@ -372,10 +373,10 @@
 						</md-input-container>
 						<!-- Frequency -->
 						<div layout="row" flex-xs="100" flex-sm="100" flex-gt-sm layout-align="center center">
-							<md-checkbox ng-model="item.first_cut_off" ng-disabled="item.on_hold" ng-true-value="1" ng-false-value="0">1st</md-checkbox>
-							<md-checkbox ng-model="item.second_cut_off" ng-disabled="item.on_hold" ng-true-value="1" ng-false-value="0">2nd</md-checkbox>
-							<md-checkbox ng-model="item.third_cut_off" ng-disabled="item.on_hold" ng-true-value="1" ng-false-value="0">3rd</md-checkbox>
-							<md-checkbox ng-model="item.fourth_cut_off" ng-disabled="item.on_hold" ng-true-value="1" ng-false-value="0">4th</md-checkbox>
+							<md-checkbox ng-model="item.first_cut_off" ng-disabled="item.on_hold || item.first_cut_off_checked" ng-true-value="1" ng-false-value="0">1st</md-checkbox>
+							<md-checkbox ng-model="item.second_cut_off" ng-disabled="item.on_hold || item.second_cut_off_checked" ng-true-value="1" ng-false-value="0">2nd</md-checkbox>
+							<md-checkbox ng-model="item.third_cut_off" ng-disabled="item.on_hold || item.third_cut_off_checked" ng-true-value="1" ng-false-value="0">3rd</md-checkbox>
+							<md-checkbox ng-model="item.fourth_cut_off" ng-disabled="item.on_hold || item.fourth_cut_off_checked" ng-true-value="1" ng-false-value="0">4th</md-checkbox>
 							<md-checkbox ng-model="item.on_hold" ng-disabled="item.first_cut_off || item.second_cut_off || item.third_cut_off || item.fourth_cut_off">Hold</md-checkbox>
 						</div>
 						<md-button class="md-icon-button" ng-click="removeDeduction(item)">

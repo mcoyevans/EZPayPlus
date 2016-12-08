@@ -213,7 +213,7 @@
                                     <span class="md-headline secondary-text">{{item.name.charAt(0)}}</span>
                                 </h2>
                                 <div class="md-list-item-text">
-                                    <h3>{{item.pivot.amount}} - <span ng-if="item.pivot.on_hold">On Hold</span> <span ng-if="item.pivot.first_cut_off">1st</span>, <span ng-if="item.pivot.first_cut_off">2nd</span>, <span ng-if="item.pivot.first_cut_off">3rd</span>, <span ng-if="item.pivot.first_cut_off">4th</span> <span ng-if="!item.pivot.on_hold">cut-off</span></h3>
+                                    <h3>{{item.pivot.amount}} - <span ng-if="item.pivot.on_hold">On Hold</span> <span ng-if="item.pivot.first_cut_off">1st</span><span ng-if="item.pivot.second_cut_off">, 2nd</span><span ng-if="item.pivot.third_cut_off">, 3rd</span><span ng-if="item.pivot.fourth_cut_off">, 4th</span><span ng-if="!item.pivot.on_hold"> cut-off</span></h3>
                                     <p>{{item.name}}</p>
                                 </div>
                             </md-list-item>
@@ -225,7 +225,7 @@
                                     <span class="md-headline secondary-text">{{item.name.charAt(0)}}</span>
                                 </h2>
                                 <div class="md-list-item-text">
-                                    <h3>{{item.pivot.amount}} - <span ng-if="item.pivot.on_hold">On Hold</span> <span ng-if="item.pivot.first_cut_off">1st</span>, <span ng-if="item.pivot.first_cut_off">2nd</span>, <span ng-if="item.pivot.first_cut_off">3rd</span>, <span ng-if="item.pivot.first_cut_off">4th</span> <span ng-if="!item.pivot.on_hold">cut-off</span></h3>
+                                    <h3>{{item.pivot.amount}} - <span ng-if="item.pivot.on_hold">On Hold</span> <span ng-if="item.pivot.first_cut_off">1st</span>, <span ng-if="item.pivot.second_cut_off">2nd</span><span ng-if="item.pivot.third_cut_off">, 3rd</span>, <span ng-if="item.pivot.fourth_cut_off">4th</span> <span ng-if="!item.pivot.on_hold">cut-off</span></h3>
                                     <p>{{item.name}}</p>
                                 </div>
                             </md-list-item>
