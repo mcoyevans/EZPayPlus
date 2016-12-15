@@ -159,6 +159,40 @@ app
 					}
 				}
 			})
+			.state('main.payroll-settings', {
+				url: 'settings/payroll',
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/1')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'payrollSettingsContentContainerController',
+					},
+					'toolbar@main.payroll-settings': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'payrollSettingsToolbarController',
+					},
+					'left-sidenav@main.payroll-settings': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'subheader@main.payroll-settings': {
+						templateUrl: '/app/components/settings/templates/subheaders/payroll-settings-subheader.template.html',
+						controller: 'payrollSettingsSubheaderController',
+					},
+					'content@main.payroll-settings':{
+						templateUrl: '/app/components/settings/templates/content/payroll-settings-content.template.html',
+					}
+				}
+			})
 			// .state('main.timekeeping-settings', {
 			// 	url: 'settings/timekeeping',
 			// 	resolve:{

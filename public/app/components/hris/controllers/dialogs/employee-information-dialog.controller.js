@@ -47,6 +47,14 @@ hris
 			},
 		]
 
+		request.where = [
+			{
+				'label':'id',
+				'condition': '=',
+				'value': employee.id,
+			}
+		]
+
 		request.withTrashed = true;
 
 		request.first = true;

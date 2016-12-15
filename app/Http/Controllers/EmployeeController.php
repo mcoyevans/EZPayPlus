@@ -60,6 +60,13 @@ class EmployeeController extends Controller
             }
         }
 
+        if($request->has('where'))
+        {
+            for ($i=0; $i < count($request->where); $i++) { 
+                $employees->where($request->input('where')[$i]['label'], $request->input('where')[$i]['condition'], $request->input('where')[$i]['value']);
+            }
+        }
+
         if($request->has('search'))
         {
             $employees->where('first_name', 'like', '%'.$request->search.'%')->orWhere('middle_name', 'like', '%'.$request->search.'%')->orWhere('last_name', 'like', '%'.$request->search.'%')->orWhere('employee_number', '=', $request->search);

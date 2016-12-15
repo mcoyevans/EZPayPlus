@@ -1,2 +1,4544 @@
-var settings=angular.module("settings",[]);settings.controller("adminSettingsContentContainerController",["$scope","$mdMedia","Helper",function(e,t,n){(t("xs")||t("sm")||t("md"))&&e.$emit("closeSidenav"),e.subheader={},e.subheader.show=!0,e.subheader.toggleActive=function(){e.showInactive=!e.showInactive},e.subheader.sortBy=function(t){t.sortReverse=!t.sortReverse,e.sortType=t.type,e.sortReverse=t.sortReverse},e.toolbar={},e.fab={},e.fab.icon="mdi-plus",e.$on("setInit",function(){var t=n.fetch();e.subheader.current=t,e.init(t),e.$broadcast("close"),e.showInactive=!1}),e.$on("search",function(){e.subheader.current.request.search=e.toolbar.searchText,e.refresh(),e.showInactive=!0}),e.$on("refresh",function(){e.subheader.current.request.search=null,e.refresh(),e.$broadcast("close")}),e.listItemAction=function(t){if(!t.deleted_at){t.current=e.subheader.current,"User Groups"==t.current.label&&t.users.length?t.current.menu[1].show=!1:"User Groups"!=t.current.label||t.users.length||(t.current.menu[1].show=!0),n.set(t);var o={};o.controller="listItemActionsDialogController",o.template="/app/shared/templates/dialogs/list-item-actions-dialog.template.html",n.customDialog(o)}};var o=function(t){t.created_at=new Date(t.created_at);var n={};n.display=t.name,n.description=t.description,n.gl_account=t.gl_account,e.toolbar.items.push(n)};e.init=function(t,i){e.type={},e.type.items=[],e.toolbar.items=[],e.type.page=2,n.post(t.url,t.request).success(function(i){e.type.details=i,e.type.items=i.data,e.type.show=!0,e.fab.label=t.label,e.fab.action=function(){n.customDialog(t.fab).then(function(){n.notify(t.fab.message),e.refresh()},function(){})},e.fab.show=!!t.fab,i.data.length&&angular.forEach(i.data,function(e){o(e)}),e.type.paginateLoad=function(){return e.type.busy||e.type.page>e.type.details.last_page?void(e.isLoading=!1):(e.type.busy=!0,e.isLoading=!0,void n.post(t.url+"?page="+e.type.page,t.request).success(function(t){e.type.page++,angular.forEach(t.data,function(t,n){o(t),e.type.items.push(t)}),e.type.busy=!1,e.isLoading=!1}))}})},e.refresh=function(){e.isLoading=!0,e.type.show=!1,e.init(e.subheader.current)}}]),settings.controller("hrisSettingsContentContainerController",["$scope","Helper",function(e,t){e.$emit("closeSidenav"),e.subheader={},e.subheader.show=!0,e.subheader.toggleActive=function(){e.showInactive=!e.showInactive},e.subheader.sortBy=function(t){t.sortReverse=!t.sortReverse,e.sortType=t.type,e.sortReverse=t.sortReverse},e.toolbar={},e.fab={},e.fab.icon="mdi-plus",e.$on("setInit",function(){var n=t.fetch();e.subheader.current=n,e.isLoading=!0,e.init(n),e.$broadcast("close"),e.showInactive=!1}),e.$on("search",function(){e.subheader.current.request.search=e.toolbar.searchText,e.refresh(),e.showInactive=!0}),e.$on("refresh",function(){e.subheader.current.request.search=null,e.$broadcast("close"),e.refresh()}),e.listItemAction=function(n){if(!n.deleted_at){n.current=e.subheader.current,("Departments"==n.current.label||"Job Categories"==n.current.label||"Labor Types"==n.current.label)&&n.positions.length||"Positions"==n.current.label&&n.employees.length||"Batches"==n.current.label&&n.employees.length||"Deductions"==n.current.label&&n.employees.length||"Sanctions"==n.current.label&&n.sanction_levels?n.current.menu[1].show=!1:(("Departments"==n.current.label||"Job Categories"==n.current.label||"Labor Types"==n.current.label)&&!n.positions.length||"Positions"==n.current.label&&!n.employees.length||"Batches"==n.current.label&&!n.employees.length||"Deductions"==n.current.label&&!n.employees.length||"Sanctions"==n.current.label&&!n.sanction_levels)&&(n.current.menu[1].show=!0),t.set(n);var o={};o.controller="listItemActionsDialogController",o.template="/app/shared/templates/dialogs/list-item-actions-dialog.template.html",o.fullScreen=!1,t.customDialog(o)}};var n=function(t){t.created_at=new Date(t.created_at);var n={};n.display=t.name,n.description=t.description,n.gl_account=t.gl_account,e.toolbar.items.push(n)};e.init=function(o,i){e.type={},e.type.items=[],e.toolbar.items=[],e.type.page=2,t.post(o.url,o.request).success(function(i){e.type.details=i,e.type.items=i.data,e.type.show=!0,e.fab.label=o.label,e.fab.action=function(){t.set(o.fab),t.customDialog(o.fab).then(function(){t.notify(o.fab.message),e.refresh()},function(){})},e.fab.show=!0,i.data.length&&angular.forEach(i.data,function(e){n(e)}),e.type.paginateLoad=function(){return e.type.busy||e.type.page>e.type.details.last_page?void(e.isLoading=!1):(e.type.busy=!0,e.isLoading=!0,void t.post(o.url+"?page="+e.type.page,o.request).success(function(t){e.type.page++,angular.forEach(t.data,function(t,o){n(t),e.type.items.push(t)}),e.type.busy=!1,e.isLoading=!1}))}})},e.refresh=function(){e.isLoading=!0,e.type.show=!1,e.init(e.subheader.current)}}]),settings.controller("profileSettingsContentContainerController",["$scope","Helper",function(e,t){e.toolbar={},e.toolbar.parentState="Settings",e.toolbar.childState="Profile",e.toolbar.hideSearchIcon=!0,e.fab={},e.fab.icon="mdi-pencil",e.fab.label="Edit",e.fab.dialog={},e.fab.dialog.controller="editProfileDialogController",e.fab.dialog.template="/app/components/settings/templates/dialogs/edit-profile-dialog.template.html",e.fab.action=function(){t.customDialog(e.fab.dialog).then(function(){t.preload(),t.notify("Changes saved.").then(function(){e.init(!0)})},function(){})},e.fab.show=!0,e.init=function(n){var o={};o["with"]=["city","province","country"],t.post("/company/enlist",o).success(function(o){e.company=o,n&&t.stop()}).error(function(){t.error()})},e.init()}]),settings.controller("timekeepingSettingsContentContainerController",["$scope","Helper",function(e,t){e.$emit("closeSidenav"),e.subheader={},e.subheader.show=!0,e.subheader.toggleActive=function(){e.showInactive=!e.showInactive},e.subheader.sortBy=function(t){t.sortReverse=!t.sortReverse,e.sortType=t.type,e.sortReverse=t.sortReverse},e.toolbar={},e.fab={},e.fab.icon="mdi-plus",e.$on("setInit",function(){var n=t.fetch();e.subheader.current=n,e.isLoading=!0,e.init(n),e.$broadcast("close"),e.showInactive=!1}),e.$on("search",function(){e.subheader.current.request.search=e.toolbar.searchText,e.refresh(),e.showInactive=!0}),e.$on("refresh",function(){e.subheader.current.request.search=null,e.$broadcast("close"),e.refresh()}),e.listItemAction=function(n){if(!n.deleted_at){n.current=e.subheader.current,"Time Interpretation"==n.current.label?n.current.menu[1].show=!1:"Time Interpretation"==!n.current.label&&(n.current.menu[1].show=!0),t.set(n);var o={};o.controller="listItemActionsDialogController",o.template="/app/shared/templates/dialogs/list-item-actions-dialog.template.html",o.fullScreen=!1,t.customDialog(o)}};var n=function(t){t.created_at=new Date(t.created_at);var n={};n.display=t.name,n.description=t.description,n.gl_account=t.gl_account,e.toolbar.items.push(n)};e.init=function(o,i){e.type={},e.type.items=[],e.toolbar.items=[],e.type.page=2,t.post(o.url,o.request).success(function(i){e.type.details=i,e.type.items=i.data,e.type.show=!0,e.fab.label=o.label,e.fab.action=function(){t.set(o.fab),t.customDialog(o.fab).then(function(){t.notify(o.fab.message),e.refresh()},function(){})},e.fab.show=!0,i.data.length&&angular.forEach(i.data,function(e){n(e)}),e.type.paginateLoad=function(){return e.type.busy||e.type.page>e.type.details.last_page?void(e.isLoading=!1):(e.type.busy=!0,e.isLoading=!0,void t.post(o.url+"?page="+e.type.page,o.request).success(function(t){e.type.page++,angular.forEach(t.data,function(t,o){n(t),e.type.items.push(t)}),e.type.busy=!1,e.isLoading=!1}))}})},e.refresh=function(){e.isLoading=!0,e.type.show=!1,e.init(e.subheader.current)}}]),settings.controller("createBranchDialogController",["$scope","Helper",function(e,t){e.branch={},e.duplicate=!1,e.busy=!1,e.cancel=function(){t.cancel()},e.checkDuplicate=function(){t.post("/branch/check-duplicate",e.branch).success(function(t){e.duplicate=t})},e.submit=function(){return e.branchForm.$invalid?void angular.forEach(e.branchForm.$error,function(e){angular.forEach(e,function(e){e.$setTouched()})}):void(e.duplicate||(e.busy=!0,t.post("/branch",e.branch).success(function(n){return n?void(e.busy=!1):void t.stop()}).error(function(){e.busy=!1,e.error=!0})))}}]),settings.controller("createCostCenterDialogController",["$scope","Helper",function(e,t){e.cost_center={},e.duplicate=!1,e.busy=!1,e.cancel=function(){t.cancel()},e.checkDuplicate=function(){t.post("/cost-center/check-duplicate",e.cost_center).success(function(t){e.duplicate=t})},e.submit=function(){return e.costCenterForm.$invalid?void angular.forEach(e.costCenterForm.$error,function(e){angular.forEach(e,function(e){e.$setTouched()})}):void(e.duplicate||(e.busy=!0,t.post("/cost-center",e.cost_center).success(function(n){return n?void(e.busy=!1):void t.stop()}).error(function(){e.busy=!1,e.error=!0})))}}]),settings.controller("createGroupDialogController",["$scope","Helper",function(e,t){e.group={},e.group.modules=[],e.duplicate=!1,e.busy=!1,t.get("/module").success(function(t){e.modules=t}),e.cancel=function(){t.cancel()},e.checkDuplicate=function(){t.post("/group/check-duplicate",e.group).success(function(t){e.duplicate=t})},e.submit=function(){return e.groupForm.$invalid?void angular.forEach(e.groupForm.$error,function(e){angular.forEach(e,function(e){e.$setTouched()})}):void(e.duplicate||(e.busy=!0,t.post("/group",e.group).success(function(n){return n?void(e.busy=!1):void t.stop()}).error(function(){e.busy=!1,e.error=!0})))}}]),settings.controller("createHouseBankDialogController",["$scope","$filter","Helper",function(e,t,n){e.house_bank={},e.currency={},e.duplicateBankAccountNumber=!1,e.duplicateGLAccount=!1,e.busy=!1,n.get("/currency").success(function(t){e.currencies=t}),e.currency.getItems=function(n){var o=n?t("filter")(e.currencies,n):e.currencies;return o},e.cancel=function(){n.cancel()},e.checkDuplicate=function(t){n.post("/house-bank/check-duplicate",t).success(function(n){t.bank_account_number?e.duplicateBankAccountNumber=n:t.gl_account&&(e.duplicateGLAccount=n)})},e.submit=function(){return e.houseBankForm.$invalid?void angular.forEach(e.houseBankForm.$error,function(e){angular.forEach(e,function(e){e.$setTouched()})}):void(e.duplicateBankAccountNumber||e.duplicateGLAccount||(e.busy=!0,n.post("/house-bank",e.house_bank).success(function(t){return t?void(e.busy=!1):void n.stop()}).error(function(){e.busy=!1,e.error=!0})))}}]),settings.controller("createUserDialogController",["$scope","Helper",function(e,t){t.authUser();e.user={},e.duplicate=!1,e.busy=!1,t.post("/group/enlist").success(function(t){e.groups=t}),e.cancel=function(){t.cancel()},e.checkDuplicate=function(){t.post("/user/check-email",e.user).success(function(t){e.duplicate=!!t})},e.submit=function(){return e.error=!1,e.userForm.$invalid?void angular.forEach(e.userForm.$error,function(e){angular.forEach(e,function(e){e.$setTouched()})}):void(e.duplicate||e.user.password!=e.user.confirm||(e.busy=!0,t.post("/user",e.user).success(function(n){return n?void(e.busy=!1):void t.stop()}).error(function(){e.busy=!1,e.error=!0})))}}]),settings.controller("earningsDialogController",["$scope","Helper",function(e,t){e.config=t.fetch(),t.get("/de-minimis").success(function(t){e.de_minimis=t}),"create"==e.config.action?e.allowance_type={}:"edit"==e.config.action&&t.get(e.config.url+"/"+e.config.id).success(function(t){e.allowance_type=t}),e.duplicate=!1,e.busy=!1,e.cancel=function(){t.cancel()},e.checkDuplicate=function(){t.post(e.config.url+"/check-duplicate",e.allowance_type).success(function(t){e.duplicate=t})},e.submit=function(){return e.earningsForm.$invalid?void angular.forEach(e.earningsForm.$error,function(e){angular.forEach(e,function(e){e.$setTouched()})}):void(e.duplicate||(e.busy=!0,"create"==e.config.action?t.post(e.config.url,e.allowance_type).success(function(n){return n?void(e.busy=!1):void t.stop()}).error(function(){e.busy=!1,e.error=!0}):"edit"==e.config.action&&t.put(e.config.url+"/"+e.config.id,e.allowance_type).success(function(n){return n?void(e.busy=!1):void t.stop()}).error(function(){e.busy=!1,e.error=!0})))}}]),settings.controller("editBranchDialogController",["$scope","Helper",function(e,t){var n=t.fetch();t.get("/branch/"+n.id).success(function(t){e.branch=t}).error(function(){Preloader.error()}),e.duplicate=!1,e.busy=!1,e.cancel=function(){t.cancel()},e.checkDuplicate=function(){t.post("/branch/check-duplicate",e.branch).success(function(t){e.duplicate=t})},e.submit=function(){return e.branchForm.$invalid?void angular.forEach(e.branchForm.$error,function(e){angular.forEach(e,function(e){e.$setTouched()})}):void(e.duplicate||(e.busy=!0,t.put("/branch/"+e.branch.id,e.branch).success(function(n){return n?void(e.busy=!1):void t.stop()}).error(function(){e.busy=!1,e.error=!0})))}}]),settings.controller("editCostCenterDialogController",["$scope","Helper",function(e,t){var n=t.fetch();t.get("/cost-center/"+n.id).success(function(t){e.cost_center=t}).error(function(){Preloader.error()}),e.duplicate=!1,e.busy=!1,e.cancel=function(){t.cancel()},e.checkDuplicate=function(){t.post("/cost-center/check-duplicate",e.cost_center).success(function(t){e.duplicate=t})},e.submit=function(){return e.costCenterForm.$invalid?void angular.forEach(e.costCenterForm.$error,function(e){angular.forEach(e,function(e){e.$setTouched()})}):void(e.duplicate||(e.busy=!0,t.put("/cost-center/"+e.cost_center.id,e.cost_center).success(function(n){return n?void(e.busy=!1):void t.stop()}).error(function(){e.busy=!1,e.error=!0})))}}]),settings.controller("editGroupDialogController",["$scope","Helper",function(e,t){var n=t.fetch();e.duplicate=!1,e.busy=!1;var o={};o.where=[{label:"id",condition:"=",value:n.id}],o.first=!0,t.get("/module").success(function(i){e.modules=i,e.count=e.modules.length,t.post("/group/enlist",o).success(function(o){e.group=o,e.group.modules=[],angular.forEach(e.modules,function(o,i){e.group.modules.push(null);var r={};r["with"]=[{relation:"module",withTrashed:!1}],r.where=[{label:"group_id",condition:"=",value:n.id},{label:"module_id",condition:"=",value:o.id}],r.first=!0,t.post("/group-module/enlist",r).success(function(t){e.count--,t&&e.group.modules.splice(i,1,t.module)})})})}),e.cancel=function(){t.cancel()},e.checkDuplicate=function(){t.post("/group/check-duplicate",e.group).success(function(t){e.duplicate=t})},e.submit=function(){return e.groupForm.$invalid?void angular.forEach(e.groupForm.$error,function(e){angular.forEach(e,function(e){e.$setTouched()})}):void(e.duplicate||(e.busy=!0,t.put("/group/"+n.id,e.group).success(function(n){return n?void(e.busy=!1):void t.stop()}).error(function(){e.busy=!1,e.error=!0})))}}]),settings.controller("editHouseBankDialogController",["$scope","$filter","Helper",function(e,t,n){var o=n.fetch();e.currency={},e.duplicateBankAccountNumber=!1,e.duplicateGLAccount=!1,e.busy=!1;var i={};i.where=[{label:"id",condition:"=",value:o.id}],i["with"]=[{relation:"currency",withTrashed:!1}],i.first=!0,n.post("/house-bank/enlist",i).success(function(t){e.house_bank=t,n.get("/currency").success(function(t){e.currencies=t,e.currency.getItems()})}),e.currency.getItems=function(n){var o=n?t("filter")(e.currencies,n):e.currencies;return o},e.cancel=function(){n.cancel()},e.checkDuplicate=function(t){t.id=o.id,n.post("/house-bank/check-duplicate",t).success(function(n){t.bank_account_number?e.duplicateBankAccountNumber=n:t.gl_account&&(e.duplicateGLAccount=n)})},e.submit=function(){return e.houseBankForm.$invalid?void angular.forEach(e.houseBankForm.$error,function(e){angular.forEach(e,function(e){e.$setTouched()})}):void(e.duplicateBankAccountNumber||e.duplicateGLAccount||(e.busy=!0,n.put("/house-bank/"+e.house_bank.id,e.house_bank).success(function(t){return t?void(e.busy=!1):void n.stop()}).error(function(){e.busy=!1,e.error=!0})))}}]),settings.controller("editProfileDialogController",["$scope","$filter","Helper",function(e,t,n){e.company={},e.company.country_id=177,e.busy=!1;e.cancel=function(){n.cancel()},e.checkCity=function(){var t={};t.search=e.company.city,t.strict_search=!0,n.post("/city/enlist",t).success(function(t){e.cities=t,e.showError=!t.length,e.company.province_id&&e.checkProvince()})},e.fetchProvinces=function(){n.post("/province/enlist",e.company).success(function(t){e.provinces=t})},e.checkProvince=function(){var t={};t.where=[{label:"id",condition:"=",value:e.company.province_id}],t.city=e.company.city,t.result="first",n.post("/province/enlist",t).success(function(t){e.noMatches=!t.cities.length})},e.formatPagIBIG=function(){if(e.companyForm.PagIBIG.$valid){var t=e.pagibig.slice(0,4),n=e.pagibig.slice(4,8),o=e.pagibig.slice(8,12);e.company.pagibig=t+"-"+n+"-"+o}},e.formatPhilHealth=function(){if(e.companyForm.PhilHealth.$valid){var t=e.philhealth.slice(0,2),n=e.philhealth.slice(2,11),o=e.philhealth.slice(11,12);e.company.philhealth=t+"-"+n+"-"+o}},e.formatSSS=function(){if(e.companyForm.SSS.$valid){var t=e.sss.slice(0,2),n=e.sss.slice(2,9),o=e.sss.slice(9,10);e.company.sss=t+"-"+n+"-"+o}},e.formatTIN=function(){if(e.companyForm.TIN.$valid){var t=e.tin.slice(0,3),n=e.tin.slice(3,6),o=e.tin.slice(6,9);e.company.tin=t+"-"+n+"-"+o}},e.submit=function(){return e.companyForm.$invalid?void angular.forEach(e.companyForm.$error,function(e){angular.forEach(e,function(e){e.$setTouched()})}):(e.busy=!0,void n.put("/company/1",e.company).success(function(e){n.stop()}).error(function(){e.busy=!1,e.error=!0}))},e.init=function(){var t={};t["with"]=["city"],n.post("/company/enlist",t).success(function(t){t.city=t.city.name,e.pagibig=t.pagibig.replace(/-/g,""),e.philhealth=t.philhealth.replace(/-/g,""),e.sss=t.sss.replace(/-/g,""),e.tin=t.tin.replace(/-/g,""),e.company=t,e.checkCity(),e.fetchProvinces()})}()}]),settings.controller("editUserDialogController",["$scope","Helper",function(e,t){var n=(t.authUser(),t.fetch());e.edit=!0,e.duplicate=!1,e.busy=!1,t.get("/user/"+n.id).success(function(t){e.user=t}),t.post("/group/enlist").success(function(t){e.groups=t}),e.cancel=function(){t.cancel()},e.checkDuplicate=function(){t.post("/user/check-email",e.user).success(function(t){e.duplicate=!!t})},e.submit=function(){return e.error=!1,e.userForm.$invalid?void angular.forEach(e.userForm.$error,function(e){angular.forEach(e,function(e){e.$setTouched()})}):void(e.duplicate||(e.busy=!0,t.put("/user/"+n.id,e.user).success(function(n){return n?void(e.busy=!1):void t.stop()}).error(function(){e.busy=!1,e.error=!0})))}}]),settings.controller("leaveTypeDialogController",["$scope","Helper",function(e,t){e.config=t.fetch(),"create"==e.config.action?e.leave={}:"edit"==e.config.action&&t.get(e.config.url+"/"+e.config.id).success(function(t){e.leave=t,e.leave.paid=!!t.paid,e.leave.convertible=!!t.convertible}),e.duplicate=!1,e.busy=!1,e.cancel=function(){t.cancel()},e.checkDuplicate=function(){t.post(e.config.url+"/check-duplicate",e.leave).success(function(t){e.duplicate=t})},e.submit=function(){return e.leaveTypeForm.$invalid?void angular.forEach(e.leaveTypeForm.$error,function(e){angular.forEach(e,function(e){e.$setTouched()})}):void(e.duplicate||(e.busy=!0,"create"==e.config.action?t.post(e.config.url,e.leave).success(function(n){return n?void(e.busy=!1):void t.stop()}).error(function(){e.busy=!1,e.error=!0}):"edit"==e.config.action&&t.put(e.config.url+"/"+e.config.id,e.leave).success(function(n){return n?void(e.busy=!1):void t.stop()}).error(function(){e.busy=!1,e.error=!0})))}}]),settings.controller("nameDescriptionDialogController",["$scope","Helper",function(e,t){e.config=t.fetch(),"create"==e.config.action?e.model={}:"edit"==e.config.action&&t.get(e.config.url+"/"+e.config.id).success(function(t){e.model=t}),e.duplicate=!1,e.busy=!1,e.cancel=function(){t.cancel()},e.checkDuplicate=function(){t.post(e.config.url+"/check-duplicate",e.model).success(function(t){e.duplicate=t})},e.submit=function(){return e.modelForm.$invalid?void angular.forEach(e.modelForm.$error,function(e){angular.forEach(e,function(e){e.$setTouched()})}):void(e.duplicate||(e.busy=!0,"create"==e.config.action?t.post(e.config.url,e.model).success(function(n){return n?void(e.busy=!1):void t.stop()}).error(function(){e.busy=!1,e.error=!0}):"edit"==e.config.action&&t.put(e.config.url+"/"+e.config.id,e.model).success(function(n){return n?void(e.busy=!1):void t.stop()}).error(function(){e.busy=!1,e.error=!0})))}}]),settings.controller("positionDialogController",["$scope","Helper",function(e,t){e.config=t.fetch(),t.get("/department").success(function(t){e.departments=t}),t.get("/job-category").success(function(t){e.job_categories=t}),t.get("/labor-type").success(function(t){e.labor_types=t}),"create"==e.config.action?e.position={}:"edit"==e.config.action&&t.get(e.config.url+"/"+e.config.id).success(function(t){e.position=t}),e.duplicate=!1,e.busy=!1,e.cancel=function(){t.cancel()},e.checkDuplicate=function(){t.post(e.config.url+"/check-duplicate",e.position).success(function(t){e.duplicate=t})},e.submit=function(){return e.positionForm.$invalid?void angular.forEach(e.positionForm.$error,function(e){angular.forEach(e,function(e){e.$setTouched()})}):void(e.duplicate||(e.busy=!0,"create"==e.config.action?t.post(e.config.url,e.position).success(function(n){return n?void(e.busy=!1):void t.stop()}).error(function(){e.busy=!1,e.error=!0}):"edit"==e.config.action&&t.put(e.config.url+"/"+e.config.id,e.position).success(function(n){return n?void(e.busy=!1):void t.stop()}).error(function(){e.busy=!1,e.error=!0})))}}]),settings.controller("sanctionLevelDialogController",["$scope","Helper",function(e,t){e.config=t.fetch(),t.get("/sanction-type").success(function(t){e.sanctions=t}),"create"==e.config.action?e.sanction_level={}:"edit"==e.config.action&&t.get(e.config.url+"/"+e.config.id).success(function(t){e.sanction_level=t}),e.duplicate=!1,e.busy=!1,e.cancel=function(){t.cancel()},e.checkDuplicate=function(){t.post(e.config.url+"/check-duplicate",e.sanction_level).success(function(t){e.duplicate=t})},e.submit=function(){return e.sanctionLevelForm.$invalid?void angular.forEach(e.sanctionLevelForm.$error,function(e){angular.forEach(e,function(e){e.$setTouched()})}):void(e.duplicate||(e.busy=!0,"create"==e.config.action?t.post(e.config.url,e.sanction_level).success(function(n){return n?void(e.busy=!1):void t.stop()}).error(function(){e.busy=!1,e.error=!0}):"edit"==e.config.action&&t.put(e.config.url+"/"+e.config.id,e.sanction_level).success(function(n){return n?void(e.busy=!1):void t.stop()}).error(function(){e.busy=!1,e.error=!0})))}}]),settings.controller("shiftScheduleDialogController",["$scope","Helper",function(e,t){e.config=t.fetch(),"create"==e.config.action?e.shift_schedule={}:"edit"==e.config.action&&t.get(e.config.url+"/"+e.config.id).success(function(t){e.shift_schedule=t,e.shift_schedule.paid=!!t.paid,e.shift_schedule.convertible=!!t.convertible}),e.duplicate=!1,e.busy=!1,e.cancel=function(){t.cancel()},e.checkDuplicate=function(){t.post(e.config.url+"/check-duplicate",e.shift_schedule).success(function(t){e.duplicate=t})},e.submit=function(){return e.shiftScheduleForm.$invalid?void angular.forEach(e.shiftScheduleForm.$error,function(e){angular.forEach(e,function(e){e.$setTouched()})}):void(e.duplicate||(e.busy=!0,"create"==e.config.action?t.post(e.config.url,e.shift_schedule).success(function(n){return n?void(e.busy=!1):void t.stop()}).error(function(){e.busy=!1,e.error=!0}):"edit"==e.config.action&&t.put(e.config.url+"/"+e.config.id,e.shift_schedule).success(function(n){return n?void(e.busy=!1):void t.stop()}).error(function(){e.busy=!1,e.error=!0})))}}]),settings.controller("timeInterpretationDialogController",["$scope","Helper",function(e,t){e.config=t.fetch(),"create"==e.config.action?e.time_interpretation={}:"edit"==e.config.action&&t.get(e.config.url+"/"+e.config.id).success(function(t){e.regular_working_hours=t.regular_working_hours,e.night_differential=t.night_differential,e.overtime=t.overtime,e.overtime_night_differential=t.overtime_night_differential,e.rest_day_rate=t.rest_day_rate,e.rest_day_night_differential=t.rest_day_night_differential,e.rest_day_overtime=t.rest_day_overtime,e.rest_day_overtime_night_differential=t.rest_day_overtime_night_differential,e.special_holiday_rate=t.special_holiday_rate,e.special_holiday_night_differential=t.special_holiday_night_differential,e.special_holiday_overtime=t.special_holiday_overtime,e.special_holiday_overtime_night_differential=t.special_holiday_overtime_night_differential,e.special_holiday_rest_day_rate=t.special_holiday_rest_day_rate,e.special_holiday_rest_day_night_differential=t.special_holiday_rest_day_night_differential,e.special_holiday_rest_day_overtime=t.special_holiday_rest_day_overtime,e.special_holiday_rest_day_overtime_night_differential=t.special_holiday_rest_day_overtime_night_differential,e.regular_holiday_rate=t.regular_holiday_rate,e.regular_holiday_night_differential=t.regular_holiday_night_differential,e.regular_holiday_overtime=t.regular_holiday_overtime,e.regular_holiday_overtime_night_differential=t.regular_holiday_overtime_night_differential,e.regular_holiday_rest_day_rate=t.regular_holiday_rest_day_rate,e.regular_holiday_rest_day_night_differential=t.regular_holiday_rest_day_night_differential,e.regular_holiday_rest_day_overtime=t.regular_holiday_rest_day_overtime,e.regular_holiday_rest_day_overtime_night_differential=t.regular_holiday_rest_day_overtime_night_differential,e.time_interpretation=t}),e.duplicate=!1,e.busy=!1,e.cancel=function(){t.cancel()},e.checkDuplicate=function(){t.post(e.config.url+"/check-duplicate",e.time_interpretation).success(function(t){e.duplicate=t})},e.submit=function(){return e.timeInterpretationForm.$invalid?void angular.forEach(e.timeInterpretationForm.$error,function(e){angular.forEach(e,function(e){e.$setTouched()})}):void(e.duplicate||(e.busy=!0,"create"==e.config.action?t.post(e.config.url,e.time_interpretation).success(function(n){return n?void(e.busy=!1):void t.stop()}).error(function(){e.busy=!1,e.error=!0}):"edit"==e.config.action&&t.put(e.config.url+"/"+e.config.id,e.time_interpretation).success(function(n){return n?void(e.busy=!1):void t.stop()}).error(function(){e.busy=!1,e.error=!0})))}}]),settings.controller("adminSettingsSubheaderController",["$scope","Helper",function(e,t){var n=function(n){t.set(n),e.$emit("setInit")};e.subheader.navs=[{label:"House Banks",url:"/house-bank/enlist",request:{withTrashed:!0,"with":[{relation:"currency",withTrashed:!1}],paginate:20},fab:{controller:"createHouseBankDialogController",template:"/app/components/settings/templates/dialogs/house-bank-form-dialog.template.html",message:"House bank saved."},action:function(e){n(e)},menu:[{label:"Edit",icon:"mdi-pencil",show:!0,action:function(n){t.set(n);var o={};o.controller="editHouseBankDialogController",o.template="/app/components/settings/templates/dialogs/house-bank-form-dialog.template.html",t.customDialog(o).then(function(){t.notify("House bank updated."),e.$emit("refresh")},function(){})}},{label:"Delete",icon:"mdi-delete",show:!0,action:function(n){var o={};o.title="Delete",o.message="Delete "+n.name+" house bank?",o.ok="Delete",o.cancel="Cancel",t.confirm(o).then(function(){t["delete"]("/house-bank/"+n.id).success(function(){t.notify("House bank deleted."),e.$emit("refresh")}).error(function(){t.error()})},function(){})}}],sort:[{label:"Name",type:"name",sortReverse:!1},{label:"Bank Branch",type:"bank_branch",sortReverse:!1},{label:"Bank Account Number",type:"bank_account_number",sortReverse:!1},{label:"Bank Account Name",type:"bank_account_name",sortReverse:!1},{label:"GL Account",type:"gl_account",sortReverse:!1},{label:"Recently added",type:"created_at",sortReverse:!1}]},{label:"BIR Tax Table",url:"/tax/enlist",request:{"with":[{relation:"tax_code",withTrashed:!1}],paginate:200},action:function(e){n(e)},table:"tax"},{label:"SSS Table",url:"/sss/enlist",request:{paginate:20},action:function(e){n(e)},table:"sss"},{label:"HDMF Table",url:"/pagibig/enlist",request:{paginate:20},action:function(e){n(e)},table:"pagibig"},{label:"Philhealth Table",url:"/philhealth/enlist",request:{paginate:20},action:function(e){n(e)},table:"philhealth"},{label:"User Groups",url:"/group/enlist",request:{"with":[{relation:"modules",withTrashed:!1},{relation:"users",withTrashed:!1}],paginate:20},fab:{controller:"createGroupDialogController",template:"/app/components/settings/templates/dialogs/group-form-dialog.template.html",message:"User group saved."},menu:[{label:"Edit",icon:"mdi-pencil",show:!0,action:function(n){t.set(n);var o={};o.controller="editGroupDialogController",o.template="/app/components/settings/templates/dialogs/group-form-dialog.template.html",t.customDialog(o).then(function(){t.notify("User group updated."),e.$emit("refresh")},function(){})}},{label:"Delete",icon:"mdi-delete",show:!0,action:function(n){var o={};o.title="Delete",o.message="Delete "+n.name+" group?",o.ok="Delete",o.cancel="Cancel",t.confirm(o).then(function(){t["delete"]("/group/"+n.id).success(function(){t.notify("User group deleted."),e.$emit("refresh")}).error(function(){t.error()})},function(){})}}],sort:[{label:"Name",type:"name",sortReverse:!1},{label:"Description",type:"description",sortReverse:!1},{label:"Recently added",type:"created_at",sortReverse:!1}],action:function(e){n(e)}},{label:"Users",url:"/user/enlist",request:{withTrashed:!0,"with":[{relation:"group",withTrashed:!1}],where:[{label:"id",condition:"!=",value:1}],paginate:20},fab:{controller:"createUserDialogController",template:"/app/components/settings/templates/dialogs/user-form-dialog.template.html",message:"User saved."},menu:[{label:"Edit",icon:"mdi-pencil",show:!0,action:function(n){t.set(n);var o={};o.controller="editUserDialogController",o.template="/app/components/settings/templates/dialogs/user-form-dialog.template.html",t.customDialog(o).then(function(){t.notify("User updated."),e.$emit("refresh")},function(){})}},{label:"Disable Account",icon:"mdi-account-remove",show:!0,action:function(n){var o={};o.title="Disable account",o.message="Disable "+n.name+"'s account?",o.ok="Disable",o.cancel="Cancel",t.confirm(o).then(function(){t["delete"]("/user/"+n.id).success(function(){t.notify("User account disabled."),e.$emit("refresh")}).error(function(){t.error()})},function(){})}}],sort:[{label:"Name",type:"name",sortReverse:!1},{label:"Email",type:"email",sortReverse:!1},{label:"Recently added",type:"created_at",sortReverse:!1}],action:function(e){n(e)}}],n(e.subheader.navs[0])}]),settings.controller("hrisSettingsSubheaderController",["$scope","Helper",function(e,t){var n=function(n){t.set(n),e.$emit("setInit")};e.subheader.navs=[{label:"Branches",url:"/branch/enlist",request:{withTrashed:!0,paginate:20},fab:{controller:"createBranchDialogController",template:"/app/components/settings/templates/dialogs/branch-form-dialog.template.html",message:"Branch saved."},menu:[{label:"Edit",icon:"mdi-pencil",show:!0,action:function(n){t.set(n);var o={};o.controller="editBranchDialogController",o.template="/app/components/settings/templates/dialogs/branch-form-dialog.template.html",t.customDialog(o).then(function(){t.notify("Branch updated."),e.$emit("refresh")},function(){})}},{label:"Delete",icon:"mdi-delete",show:!0,action:function(n){var o={};o.title="Delete",o.message="Delete "+n.name+" branch?",o.ok="Delete",o.cancel="Cancel",t.confirm(o).then(function(){t["delete"]("/branch/"+n.id).success(function(){t.notify("Branch deleted."),e.$emit("refresh")}).error(function(){t.error()})},function(){})}}],sort:[{label:"Name",type:"name",sortReverse:!1},{label:"Description",type:"description",sortReverse:!1},{label:"GL Account",type:"gl_account",sortReverse:!1},{label:"Recently added",type:"created_at",sortReverse:!1}],action:function(e){n(e)}},{label:"Cost Centers",url:"/cost-center/enlist",request:{withTrashed:!0,paginate:20},fab:{controller:"createCostCenterDialogController",template:"/app/components/settings/templates/dialogs/cost-center-form-dialog.template.html",message:"Cost center saved."},menu:[{label:"Edit",icon:"mdi-pencil",show:!0,action:function(n){
-t.set(n);var o={};o.controller="editCostCenterDialogController",o.template="/app/components/settings/templates/dialogs/cost-center-form-dialog.template.html",t.customDialog(o).then(function(){t.notify("Cost center updated."),e.$emit("refresh")},function(){})}},{label:"Delete",icon:"mdi-delete",show:!0,action:function(n){var o={};o.title="Delete",o.message="Delete "+n.name+" cost center?",o.ok="Delete",o.cancel="Cancel",t.confirm(o).then(function(){t["delete"]("/cost-center/"+n.id).success(function(){t.notify("Cost center deleted."),e.$emit("refresh")}).error(function(){t.error()})},function(){})}}],sort:[{label:"Name",type:"name",sortReverse:!1},{label:"Description",type:"description",sortReverse:!1},{label:"GL Account",type:"gl_account",sortReverse:!1},{label:"Recently added",type:"created_at",sortReverse:!1}],action:function(e){n(e)}},{label:"Earnings",url:"/allowance-type/enlist",request:{withTrashed:!0,"with":[{relation:"employees",withTrashed:!1},{relation:"de_minimis",withTrashed:!1}],paginate:20},fab:{fullscreen:!0,controller:"earningsDialogController",template:"/app/components/settings/templates/dialogs/earnings-dialog.template.html",message:"Earnings saved.",action:"create",url:"/allowance-type"},menu:[{label:"Edit",icon:"mdi-pencil",show:!0,action:function(n){n.action="edit",n.url="/allowance-type",t.set(n);var o={};o.controller="earningsDialogController",o.template="/app/components/settings/templates/dialogs/earnings-dialog.template.html",t.customDialog(o).then(function(){t.notify("Earnings updated."),e.$emit("refresh")},function(){})}},{label:"Delete",icon:"mdi-delete",show:!0,action:function(n){var o={};o.title="Delete",o.message="Delete "+n.name+"?",o.ok="Delete",o.cancel="Cancel",t.confirm(o).then(function(){t["delete"]("/allowance-type/"+n.id).success(function(){t.notify("Earnings deleted."),e.$emit("refresh")}).error(function(){t.error()})},function(){})}}],sort:[{label:"Name",type:"name",sortReverse:!1},{label:"Description",type:"description",sortReverse:!1},{label:"Recently added",type:"created_at",sortReverse:!1}],action:function(e){n(e)}},{label:"Deductions",url:"/deduction-type/enlist",request:{withTrashed:!0,"with":[{relation:"employees",withTrashed:!1}],where:[{label:"government_deduction",condition:"=",value:!1}],paginate:20},fab:{fullscreen:!0,controller:"nameDescriptionDialogController",template:"/app/components/settings/templates/dialogs/name-description-form-dialog.template.html",message:"Deduction type saved.",action:"create",url:"/deduction-type",label:"Deduction"},menu:[{label:"Edit",icon:"mdi-pencil",show:!0,action:function(n){n.action="edit",n.url="/deduction-type",n.label="Deduction",t.set(n);var o={};o.controller="nameDescriptionDialogController",o.template="/app/components/settings/templates/dialogs/name-description-form-dialog.template.html",t.customDialog(o).then(function(){t.notify("Deduction type updated."),e.$emit("refresh")},function(){})}},{label:"Delete",icon:"mdi-delete",show:!0,action:function(n){var o={};o.title="Delete",o.message="Delete "+n.name+" deduction?",o.ok="Delete",o.cancel="Cancel",t.confirm(o).then(function(){t["delete"]("/deduction-type/"+n.id).success(function(){t.notify("Deduction type deleted."),e.$emit("refresh")}).error(function(){t.error()})},function(){})}}],sort:[{label:"Name",type:"name",sortReverse:!1},{label:"Description",type:"description",sortReverse:!1},{label:"Recently added",type:"created_at",sortReverse:!1}],action:function(e){n(e)}},{label:"Positions",url:"/position/enlist",request:{withTrashed:!0,"with":[{relation:"employees",withTrashed:!0}],paginate:20},fab:{fullscreen:!0,controller:"nameDescriptionDialogController",template:"/app/components/settings/templates/dialogs/name-description-form-dialog.template.html",message:"Position saved.",action:"create",url:"/position",label:"Position"},action:function(e){n(e)},menu:[{label:"Edit",icon:"mdi-pencil",show:!0,action:function(n){n.action="edit",n.url="/position",n.label="Position",t.set(n);var o={};o.controller="nameDescriptionDialogController",o.template="/app/components/settings/templates/dialogs/name-description-form-dialog.template.html",t.customDialog(o).then(function(){t.notify("Position updated."),e.$emit("refresh")},function(){})}},{label:"Delete",icon:"mdi-delete",show:!0,action:function(n){var o={};o.title="Delete",o.message="Delete "+n.name+" position?",o.ok="Delete",o.cancel="Cancel",t.confirm(o).then(function(){t["delete"]("/position/"+n.id).success(function(){t.notify("Position deleted."),e.$emit("refresh")}).error(function(){t.error()})},function(){})}}],sort:[{label:"Name",type:"name",sortReverse:!1},{label:"Description",type:"description",sortReverse:!1},{label:"Recently added",type:"created_at",sortReverse:!1}]},{label:"Batches",url:"/batch/enlist",request:{withTrashed:!0,"with":[{relation:"employees",withTrashed:!0}],paginate:20},fab:{fullscreen:!0,controller:"nameDescriptionDialogController",template:"/app/components/settings/templates/dialogs/name-description-form-dialog.template.html",message:"Batch saved.",action:"create",url:"/batch",label:"Batch"},action:function(e){n(e)},menu:[{label:"Edit",icon:"mdi-pencil",show:!0,action:function(n){n.action="edit",n.url="/batch",n.label="Batch",t.set(n);var o={};o.controller="nameDescriptionDialogController",o.template="/app/components/settings/templates/dialogs/name-description-form-dialog.template.html",t.customDialog(o).then(function(){t.notify("Batch updated."),e.$emit("refresh")},function(){})}},{label:"Delete",icon:"mdi-delete",show:!0,action:function(n){var o={};o.title="Delete",o.message="Delete "+n.name+" batch?",o.ok="Delete",o.cancel="Cancel",t.confirm(o).then(function(){t["delete"]("/batch/"+n.id).success(function(){t.notify("Batch deleted."),e.$emit("refresh")}).error(function(){t.error()})},function(){})}}],sort:[{label:"Name",type:"name",sortReverse:!1},{label:"Description",type:"description",sortReverse:!1},{label:"Recently added",type:"created_at",sortReverse:!1}]}],n(e.subheader.navs[0])}]),settings.controller("timekeepingSettingsSubheaderController",["$scope","Helper",function(e,t){var n=function(n){t.set(n),e.$emit("setInit")};e.subheader.navs=[{label:"Shift Schedule",url:"/shift-schedule/enlist",request:{withTrashed:!1,paginate:20},fab:{fullscreen:!0,controller:"shiftScheduleDialogController",template:"/app/components/settings/templates/dialogs/shift-schedule-form-dialog.template.html",message:"Shift schedule saved.",action:"create",url:"/shift-schedule",label:"Shift Schedule"},menu:[{label:"Edit",icon:"mdi-pencil",show:!0,action:function(n){n.action="edit",n.url="/shift-schedule",n.label="Shift Schedule",t.set(n);var o={};o.controller="shiftScheduleDialogController",o.template="/app/components/settings/templates/dialogs/shift-schedule-form-dialog.template.html",t.customDialog(o).then(function(){t.notify("Shift schedule updated."),e.$emit("refresh")},function(){})}},{label:"Delete",icon:"mdi-delete",show:!0,action:function(n){var o={};o.title="Delete",o.message="Delete this shift schedule?",o.ok="Delete",o.cancel="Cancel",t.confirm(o).then(function(){t["delete"]("/shift-schedule/"+n.id).success(function(){t.notify("Shift schedule deleted."),e.$emit("refresh")}).error(function(){t.error()})},function(){})}}],sort:[{label:"Date Start",type:"date_start",sortReverse:!1},{label:"Date End",type:"date_end",sortReverse:!1},{label:"Shift Start",type:"shift_start",sortReverse:!1},{label:"Shift End",type:"shift_end",sortReverse:!1},{label:"Hours Break",type:"hours_break",sortReverse:!1},{label:"Recently added",type:"created_at",sortReverse:!1}],action:function(e){n(e)}},{label:"Biometrics",url:"/biometric/enlist",request:{withTrashed:!0,paginate:20},fab:{fullscreen:!0,controller:"nameDescriptionDialogController",template:"/app/components/settings/templates/dialogs/name-description-form-dialog.template.html",message:"Biometric machine saved.",action:"create",url:"/biometric",label:"Biometric"},menu:[{label:"Edit",icon:"mdi-pencil",show:!0,action:function(n){n.action="edit",n.url="/biometric",n.label="Biometric",t.set(n);var o={};o.controller="nameDescriptionDialogController",o.template="/app/components/settings/templates/dialogs/name-description-form-dialog.template.html",t.customDialog(o).then(function(){t.notify("Biometric machine updated."),e.$emit("refresh")},function(){})}},{label:"Delete",icon:"mdi-delete",show:!0,action:function(n){var o={};o.title="Delete",o.message="Delete "+n.name+" biometric machine?",o.ok="Delete",o.cancel="Cancel",t.confirm(o).then(function(){t["delete"]("/biometric/"+n.id).success(function(){t.notify("Biometric machine deleted."),e.$emit("refresh")}).error(function(){t.error()})},function(){})}}],sort:[{label:"Name",type:"name",sortReverse:!1},{label:"Description",type:"description",sortReverse:!1},{label:"Recently added",type:"created_at",sortReverse:!1}],action:function(e){n(e)}},{label:"Time Interpretations",url:"/time-interpretation/enlist",request:{"with":[{relation:"positions",withTrashed:!1}],paginate:20},fab:{fullscreen:!0,controller:"timeInterpretationDialogController",template:"/app/components/settings/templates/dialogs/time-interpretation-form-dialog.template.html",message:"Time interpretation saved.",action:"create",fullscreen:!0,url:"/time-interpretation",label:"Time interpretation"},menu:[{label:"Edit",icon:"mdi-pencil",show:!0,action:function(n){n.action="edit",n.url="/time-interpretation",n.label="Time interpretation",t.set(n);var o={};o.controller="timeInterpretationDialogController",o.template="/app/components/settings/templates/dialogs/time-interpretation-form-dialog.template.html",t.customDialog(o).then(function(){t.notify("Time interpretation updated."),e.$emit("refresh")},function(){})}},{label:"Delete",icon:"mdi-delete",show:!0,action:function(n){var o={};o.title="Delete",o.message="Delete "+n.name+" time interpretation?",o.ok="Delete",o.cancel="Cancel",t.confirm(o).then(function(){t["delete"]("/time-interpretation/"+n.id).success(function(){t.notify("Time interpretation deleted."),e.$emit("refresh")}).error(function(){t.error()})},function(){})}}],action:function(e){n(e)}}],n(e.subheader.navs[0])}]),settings.controller("adminSettingsToolbarController",["$scope","$filter",function(e,t){e.toolbar.parentState="Settings",e.toolbar.childState="Admin",e.$on("close",function(){e.hideSearchBar()}),e.toolbar.getItems=function(n){var o=n?t("filter")(e.toolbar.items,n):e.toolbar.items;return o},e.toolbar.searchAll=!0,e.showSearchBar=function(){e.type.busy=!0,e.searchBar=!0,e.showInactive=!0},e.hideSearchBar=function(){e.searchBar=!1,e.toolbar.searchText="",e.toolbar.searchItem="",e.searched&&(e.type.page=1,e.type.no_matches=!1,e.type.items=[],e.searched=!1,e.$emit("refresh"))},e.searchUserInput=function(){e.$emit("search"),e.searched=!0}}]),settings.controller("hrisSettingsToolbarController",["$scope","$filter",function(e,t){e.toolbar.parentState="Settings",e.toolbar.childState="HRIS",e.$on("close",function(){e.hideSearchBar()}),e.toolbar.getItems=function(n){var o=n?t("filter")(e.toolbar.items,n):e.toolbar.items;return o},e.toolbar.searchAll=!0,e.showSearchBar=function(){e.type.busy=!0,e.searchBar=!0,e.showInactive=!0},e.hideSearchBar=function(){e.searchBar=!1,e.toolbar.searchText="",e.toolbar.searchItem="",e.searched&&(e.type.page=1,e.type.no_matches=!1,e.type.items=[],e.searched=!1,e.$emit("refresh"))},e.searchUserInput=function(){e.$emit("search"),e.searched=!0}}]),settings.controller("timekeepingSettingsToolbarController",["$scope","$filter",function(e,t){e.toolbar.parentState="Settings",e.toolbar.childState="Timekeeping",e.$on("close",function(){e.hideSearchBar()}),e.toolbar.getItems=function(n){var o=n?t("filter")(e.toolbar.items,n):e.toolbar.items;return o},e.toolbar.searchAll=!0,e.showSearchBar=function(){e.type.busy=!0,e.searchBar=!0},e.hideSearchBar=function(){e.searchBar=!1,e.toolbar.searchText="",e.toolbar.searchItem="",e.searched&&(e.type.page=1,e.type.no_matches=!1,e.type.items=[],e.searched=!1,e.$emit("refresh"))},e.searchUserInput=function(){e.$emit("search"),e.searched=!0}}]);
+var settings = angular.module('settings', []);
+settings
+	.controller('adminSettingsContentContainerController', ['$scope', '$mdMedia', 'Helper', function($scope, $mdMedia, Helper){
+		if($mdMedia('xs') || $mdMedia('sm') || $mdMedia('md')){
+			$scope.$emit('closeSidenav');
+		}
+		/*
+		 * Object for subheader
+		 *
+		*/
+		$scope.subheader = {};
+		$scope.subheader.show = true;
+
+		$scope.subheader.toggleActive = function(){
+			$scope.showInactive = !$scope.showInactive;
+		}
+		$scope.subheader.sortBy = function(filter){
+			filter.sortReverse = !filter.sortReverse;			
+			$scope.sortType = filter.type;
+			$scope.sortReverse = filter.sortReverse;
+		}
+
+		/*
+		 * Object for toolbar
+		 *
+		*/
+		$scope.toolbar = {};
+
+		/*
+		 * Object for fab
+		 *
+		*/
+		$scope.fab = {};
+		$scope.fab.icon = 'mdi-plus';
+
+		/* Action originates from subheader */
+		$scope.$on('setInit', function(){
+			var current = Helper.fetch();
+
+			$scope.subheader.current = current;
+
+			$scope.init(current);
+			$scope.$broadcast('close');
+			$scope.showInactive = false;
+		});
+
+		/* Action originates from toolbar */
+		$scope.$on('search', function(){
+			$scope.subheader.current.request.search = $scope.toolbar.searchText;
+			$scope.refresh();
+			$scope.showInactive = true;
+		});
+
+		/* Listens for any request for refresh */
+		$scope.$on('refresh', function(){
+			$scope.subheader.current.request.search = null;
+			$scope.refresh();
+			$scope.$broadcast('close');
+		});
+
+		$scope.listItemAction = function(data){
+			if(!data.deleted_at)
+			{
+				data.current = $scope.subheader.current;
+
+				// if the tab is in user groups and the data clicked has users under him
+				if(data.current.label == 'User Groups' && data.users.length)
+				{
+					// disable the delete button
+					data.current.menu[1].show = false;
+				}
+				// otherwise
+				else if(data.current.label == 'User Groups' && !data.users.length)
+				{
+					// enable the delete button
+					data.current.menu[1].show = true;
+				}
+
+				Helper.set(data);
+
+				var dialog = {};
+				dialog.controller = 'listItemActionsDialogController';
+				dialog.template = '/app/shared/templates/dialogs/list-item-actions-dialog.template.html';
+
+				Helper.customDialog(dialog);
+			}
+		}
+
+		/* Formats every data in the paginated call */
+		var pushItem = function(data){
+			data.created_at = new Date(data.created_at);
+
+			var item = {};
+
+			item.display = data.name;
+			item.description = data.description;
+			item.gl_account = data.gl_account;
+
+			$scope.toolbar.items.push(item);
+		}
+
+		$scope.init = function(query, refresh){
+			$scope.type = {};
+			$scope.type.items = [];
+			$scope.toolbar.items = [];
+
+			// 2 is default so the next page to be loaded will be page 2 
+			$scope.type.page = 2;
+
+			Helper.post(query.url, query.request)
+				.success(function(data){
+					$scope.type.details = data;
+					$scope.type.items = data.data;
+					$scope.type.show = true;
+
+					$scope.fab.label = query.label;
+					$scope.fab.action = function(){
+						Helper.customDialog(query.fab)
+							.then(function(){
+								Helper.notify(query.fab.message);
+								$scope.refresh();
+							}, function(){
+								return;
+							});
+					}
+					$scope.fab.show = query.fab ? true : false;
+
+					if(data.data.length){
+						// iterate over each record and set the format
+						angular.forEach(data.data, function(item){
+							pushItem(item);
+						});
+					}
+
+					$scope.type.paginateLoad = function(){
+						// kills the function if ajax is busy or pagination reaches last page
+						if($scope.type.busy || ($scope.type.page > $scope.type.details.last_page)){
+							$scope.isLoading = false;
+							return;
+						}
+						/**
+						 * Executes pagination call
+						 *
+						*/
+						// sets to true to disable pagination call if still busy.
+						$scope.type.busy = true;
+						$scope.isLoading = true;
+						// Calls the next page of pagination.
+						Helper.post(query.url + '?page=' + $scope.type.page, query.request)
+							.success(function(data){
+								// increment the page to set up next page for next AJAX Call
+								$scope.type.page++;
+
+								// iterate over each data then splice it to the data array
+								angular.forEach(data.data, function(item, key){
+									pushItem(item);
+									$scope.type.items.push(item);
+								});
+
+								// Enables again the pagination call for next call.
+								$scope.type.busy = false;
+								$scope.isLoading = false;
+							});
+					}
+				});
+		}
+
+		$scope.refresh = function(){
+			$scope.isLoading = true;
+  			$scope.type.show = false;
+
+  			$scope.init($scope.subheader.current);
+		};
+	}]);
+settings
+	.controller('hrisSettingsContentContainerController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.$emit('closeSidenav');
+		/*
+		 * Object for subheader
+		 *
+		*/
+		$scope.subheader = {};
+		$scope.subheader.show = true;
+
+		$scope.subheader.toggleActive = function(){
+			$scope.showInactive = !$scope.showInactive;
+		}
+		$scope.subheader.sortBy = function(filter){
+			filter.sortReverse = !filter.sortReverse;			
+			$scope.sortType = filter.type;
+			$scope.sortReverse = filter.sortReverse;
+		}
+
+		/*
+		 * Object for toolbar
+		 *
+		*/
+		$scope.toolbar = {};
+		
+		/*
+		 * Object for fab
+		 *
+		*/
+		$scope.fab = {};
+		$scope.fab.icon = 'mdi-plus';
+
+		/* Action originates from subheader */
+		$scope.$on('setInit', function(){
+			var current = Helper.fetch();
+
+			$scope.subheader.current = current;
+			$scope.isLoading = true;
+			$scope.init(current);
+			$scope.$broadcast('close');
+			$scope.showInactive = false;
+		});
+
+		/* Action originates from toolbar */
+		$scope.$on('search', function(){
+			$scope.subheader.current.request.search = $scope.toolbar.searchText;
+			$scope.refresh();
+			$scope.showInactive = true;
+		});
+
+		/* Listens for any request for refresh */
+		$scope.$on('refresh', function(){
+			$scope.subheader.current.request.search = null;
+			$scope.$broadcast('close');
+			$scope.refresh();
+		});
+
+		$scope.listItemAction = function(data){
+			if(!data.deleted_at)
+			{
+				data.current = $scope.subheader.current;
+
+				// condition for checking if the delete button can be allowed
+				if( ((data.current.label == 'Departments' || data.current.label == 'Job Categories' || data.current.label == 'Labor Types') && data.positions.length) || (data.current.label == 'Positions' && data.employees.length) || (data.current.label == 'Batches' && data.employees.length) || (data.current.label == 'Deductions' && data.employees.length) || (data.current.label == 'Sanctions' && data.sanction_levels) )
+				{
+					// disable the delete button
+					data.current.menu[1].show = false;
+				}
+				// otherwise
+				else if( ((data.current.label == 'Departments' || data.current.label == 'Job Categories' || data.current.label == 'Labor Types') && !data.positions.length) || (data.current.label == 'Positions' && !data.employees.length) || (data.current.label == 'Batches' && !data.employees.length) || (data.current.label == 'Deductions' && !data.employees.length) || (data.current.label == 'Sanctions' && !data.sanction_levels) )
+				{
+					// enable the delete button
+					data.current.menu[1].show = true;
+				}
+
+				Helper.set(data);
+
+				var dialog = {};
+				dialog.controller = 'listItemActionsDialogController';
+				dialog.template = '/app/shared/templates/dialogs/list-item-actions-dialog.template.html';
+				dialog.fullScreen = false;
+
+				Helper.customDialog(dialog);
+			}
+		}
+
+		/* Formats every data in the paginated call */
+		var pushItem = function(data){
+			data.created_at = new Date(data.created_at);
+
+			var item = {};
+
+			item.display = data.name;
+			item.description = data.description;
+			item.gl_account = data.gl_account;
+
+			$scope.toolbar.items.push(item);
+		}
+
+		$scope.init = function(query, refresh){
+			$scope.type = {};
+			$scope.type.items = [];
+			$scope.toolbar.items = [];
+
+			// 2 is default so the next page to be loaded will be page 2 
+			$scope.type.page = 2;
+
+			Helper.post(query.url, query.request)
+				.success(function(data){
+					$scope.type.details = data;
+					$scope.type.items = data.data;
+					$scope.type.show = true;
+
+					$scope.fab.label = query.label;
+					$scope.fab.action = function(){
+						Helper.set(query.fab);
+
+						Helper.customDialog(query.fab)
+							.then(function(){
+								Helper.notify(query.fab.message);
+								$scope.refresh();
+							}, function(){
+								return;
+							});
+					}
+					$scope.fab.show = true;
+
+					if(data.data.length){
+						// iterate over each record and set the format
+						angular.forEach(data.data, function(item){
+							pushItem(item);
+						});
+					}
+
+					$scope.type.paginateLoad = function(){
+						// kills the function if ajax is busy or pagination reaches last page
+						if($scope.type.busy || ($scope.type.page > $scope.type.details.last_page)){
+							$scope.isLoading = false;
+							return;
+						}
+						/**
+						 * Executes pagination call
+						 *
+						*/
+						// sets to true to disable pagination call if still busy.
+						$scope.type.busy = true;
+						$scope.isLoading = true;
+						// Calls the next page of pagination.
+						Helper.post(query.url + '?page=' + $scope.type.page, query.request)
+							.success(function(data){
+								// increment the page to set up next page for next AJAX Call
+								$scope.type.page++;
+
+								// iterate over each data then splice it to the data array
+								angular.forEach(data.data, function(item, key){
+									pushItem(item);
+									$scope.type.items.push(item);
+								});
+
+								// Enables again the pagination call for next call.
+								$scope.type.busy = false;
+								$scope.isLoading = false;
+							});
+					}
+				});
+		}
+
+		$scope.refresh = function(){
+			$scope.isLoading = true;
+  			$scope.type.show = false;
+
+  			$scope.init($scope.subheader.current);
+		};
+	}]);
+settings
+	.controller('payrollSettingsContentContainerController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.$emit('closeSidenav');
+		/*
+		 * Object for subheader
+		 *
+		*/
+		$scope.subheader = {};
+		$scope.subheader.show = true;
+
+		$scope.subheader.toggleActive = function(){
+			$scope.showInactive = !$scope.showInactive;
+		}
+		$scope.subheader.sortBy = function(filter){
+			filter.sortReverse = !filter.sortReverse;			
+			$scope.sortType = filter.type;
+			$scope.sortReverse = filter.sortReverse;
+		}
+
+		/*
+		 * Object for toolbar
+		 *
+		*/
+		$scope.toolbar = {};
+		
+		/*
+		 * Object for fab
+		 *
+		*/
+		$scope.fab = {};
+		$scope.fab.icon = 'mdi-plus';
+
+		/* Action originates from subheader */
+		$scope.$on('setInit', function(){
+			var current = Helper.fetch();
+
+			$scope.subheader.current = current;
+			$scope.isLoading = true;
+			$scope.init(current);
+			$scope.$broadcast('close');
+			$scope.showInactive = false;
+		});
+
+		/* Action originates from toolbar */
+		$scope.$on('search', function(){
+			$scope.subheader.current.request.search = $scope.toolbar.searchText;
+			$scope.refresh();
+			$scope.showInactive = true;
+		});
+
+		/* Listens for any request for refresh */
+		$scope.$on('refresh', function(){
+			$scope.subheader.current.request.search = null;
+			$scope.$broadcast('close');
+			$scope.refresh();
+		});
+
+		$scope.listItemAction = function(data){
+			if(!data.deleted_at)
+			{
+				data.current = $scope.subheader.current;
+
+				// condition for checking if the delete button can be allowed
+				if(data.current.label == 'Time Interpretation')
+				{
+					// disable the delete button
+					data.current.menu[1].show = false;
+				}
+				// otherwise
+				else if(!data.current.label == 'Time Interpretation')
+				{
+					// enable the delete button
+					data.current.menu[1].show = true;
+				}
+
+				Helper.set(data);
+
+				var dialog = {};
+				dialog.controller = 'listItemActionsDialogController';
+				dialog.template = '/app/shared/templates/dialogs/list-item-actions-dialog.template.html';
+				dialog.fullScreen = false;
+
+				Helper.customDialog(dialog);
+			}
+		}
+
+		/* Formats every data in the paginated call */
+		var pushItem = function(data){
+			data.created_at = new Date(data.created_at);
+
+			var item = {};
+
+			item.display = data.name;
+			item.description = data.description;
+			item.gl_account = data.gl_account;
+
+			$scope.toolbar.items.push(item);
+		}
+
+		$scope.init = function(query, refresh){
+			$scope.type = {};
+			$scope.type.items = [];
+			$scope.toolbar.items = [];
+
+			// 2 is default so the next page to be loaded will be page 2 
+			$scope.type.page = 2;
+
+			Helper.post(query.url, query.request)
+				.success(function(data){
+					$scope.type.details = data;
+					$scope.type.items = data.data;
+					$scope.type.show = true;
+
+					$scope.fab.label = query.label;
+					$scope.fab.action = function(){
+						Helper.set(query.fab);
+
+						Helper.customDialog(query.fab)
+							.then(function(){
+								Helper.notify(query.fab.message);
+								$scope.refresh();
+							}, function(){
+								return;
+							});
+					}
+					$scope.fab.show = true;
+
+					if(data.data.length){
+						// iterate over each record and set the format
+						angular.forEach(data.data, function(item){
+							pushItem(item);
+						});
+					}
+
+					$scope.type.paginateLoad = function(){
+						// kills the function if ajax is busy or pagination reaches last page
+						if($scope.type.busy || ($scope.type.page > $scope.type.details.last_page)){
+							$scope.isLoading = false;
+							return;
+						}
+						/**
+						 * Executes pagination call
+						 *
+						*/
+						// sets to true to disable pagination call if still busy.
+						$scope.type.busy = true;
+						$scope.isLoading = true;
+						// Calls the next page of pagination.
+						Helper.post(query.url + '?page=' + $scope.type.page, query.request)
+							.success(function(data){
+								// increment the page to set up next page for next AJAX Call
+								$scope.type.page++;
+
+								// iterate over each data then splice it to the data array
+								angular.forEach(data.data, function(item, key){
+									pushItem(item);
+									$scope.type.items.push(item);
+								});
+
+								// Enables again the pagination call for next call.
+								$scope.type.busy = false;
+								$scope.isLoading = false;
+							});
+					}
+				});
+		}
+
+		$scope.refresh = function(){
+			$scope.isLoading = true;
+  			$scope.type.show = false;
+
+  			$scope.init($scope.subheader.current);
+		};
+	}]);
+settings
+	.controller('profileSettingsContentContainerController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.toolbar = {};
+
+		$scope.toolbar.parentState = 'Settings';
+		$scope.toolbar.childState = 'Profile';
+
+		$scope.toolbar.hideSearchIcon = true;
+
+		$scope.fab = {}
+
+		$scope.fab.icon = 'mdi-pencil';
+		$scope.fab.label = 'Edit';
+
+		$scope.fab.dialog = {};
+		
+		$scope.fab.dialog.controller = 'editProfileDialogController';
+		$scope.fab.dialog.template = '/app/components/settings/templates/dialogs/edit-profile-dialog.template.html';
+
+		$scope.fab.action = function(){
+			Helper.customDialog($scope.fab.dialog)
+				.then(function(){
+					Helper.preload();
+					Helper.notify('Changes saved.')
+						.then(function(){
+							$scope.init(true);
+						})
+				}, function(){
+					return;
+				});
+		}
+
+		$scope.fab.show = true;
+
+		$scope.init = function(refresh)
+		{
+			var query = {};
+			query.with = ['city', 'province', 'country'];
+
+			Helper.post('/company/enlist', query)
+				.success(function(data){
+					$scope.company = data;
+
+					if(refresh)
+					{
+						Helper.stop();
+					}
+				})
+				.error(function(){
+					Helper.error();
+				});
+		}
+
+		$scope.init();
+	}]);
+settings
+	.controller('timekeepingSettingsContentContainerController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.$emit('closeSidenav');
+		/*
+		 * Object for subheader
+		 *
+		*/
+		$scope.subheader = {};
+		$scope.subheader.show = true;
+
+		$scope.subheader.toggleActive = function(){
+			$scope.showInactive = !$scope.showInactive;
+		}
+		$scope.subheader.sortBy = function(filter){
+			filter.sortReverse = !filter.sortReverse;			
+			$scope.sortType = filter.type;
+			$scope.sortReverse = filter.sortReverse;
+		}
+
+		/*
+		 * Object for toolbar
+		 *
+		*/
+		$scope.toolbar = {};
+		
+		/*
+		 * Object for fab
+		 *
+		*/
+		$scope.fab = {};
+		$scope.fab.icon = 'mdi-plus';
+
+		/* Action originates from subheader */
+		$scope.$on('setInit', function(){
+			var current = Helper.fetch();
+
+			$scope.subheader.current = current;
+			$scope.isLoading = true;
+			$scope.init(current);
+			$scope.$broadcast('close');
+			$scope.showInactive = false;
+		});
+
+		/* Action originates from toolbar */
+		$scope.$on('search', function(){
+			$scope.subheader.current.request.search = $scope.toolbar.searchText;
+			$scope.refresh();
+			$scope.showInactive = true;
+		});
+
+		/* Listens for any request for refresh */
+		$scope.$on('refresh', function(){
+			$scope.subheader.current.request.search = null;
+			$scope.$broadcast('close');
+			$scope.refresh();
+		});
+
+		$scope.listItemAction = function(data){
+			if(!data.deleted_at)
+			{
+				data.current = $scope.subheader.current;
+
+				// condition for checking if the delete button can be allowed
+				if(data.current.label == 'Time Interpretation')
+				{
+					// disable the delete button
+					data.current.menu[1].show = false;
+				}
+				// otherwise
+				else if(!data.current.label == 'Time Interpretation')
+				{
+					// enable the delete button
+					data.current.menu[1].show = true;
+				}
+
+				Helper.set(data);
+
+				var dialog = {};
+				dialog.controller = 'listItemActionsDialogController';
+				dialog.template = '/app/shared/templates/dialogs/list-item-actions-dialog.template.html';
+				dialog.fullScreen = false;
+
+				Helper.customDialog(dialog);
+			}
+		}
+
+		/* Formats every data in the paginated call */
+		var pushItem = function(data){
+			data.created_at = new Date(data.created_at);
+
+			var item = {};
+
+			item.display = data.name;
+			item.description = data.description;
+			item.gl_account = data.gl_account;
+
+			$scope.toolbar.items.push(item);
+		}
+
+		$scope.init = function(query, refresh){
+			$scope.type = {};
+			$scope.type.items = [];
+			$scope.toolbar.items = [];
+
+			// 2 is default so the next page to be loaded will be page 2 
+			$scope.type.page = 2;
+
+			Helper.post(query.url, query.request)
+				.success(function(data){
+					$scope.type.details = data;
+					$scope.type.items = data.data;
+					$scope.type.show = true;
+
+					$scope.fab.label = query.label;
+					$scope.fab.action = function(){
+						Helper.set(query.fab);
+
+						Helper.customDialog(query.fab)
+							.then(function(){
+								Helper.notify(query.fab.message);
+								$scope.refresh();
+							}, function(){
+								return;
+							});
+					}
+					$scope.fab.show = true;
+
+					if(data.data.length){
+						// iterate over each record and set the format
+						angular.forEach(data.data, function(item){
+							pushItem(item);
+						});
+					}
+
+					$scope.type.paginateLoad = function(){
+						// kills the function if ajax is busy or pagination reaches last page
+						if($scope.type.busy || ($scope.type.page > $scope.type.details.last_page)){
+							$scope.isLoading = false;
+							return;
+						}
+						/**
+						 * Executes pagination call
+						 *
+						*/
+						// sets to true to disable pagination call if still busy.
+						$scope.type.busy = true;
+						$scope.isLoading = true;
+						// Calls the next page of pagination.
+						Helper.post(query.url + '?page=' + $scope.type.page, query.request)
+							.success(function(data){
+								// increment the page to set up next page for next AJAX Call
+								$scope.type.page++;
+
+								// iterate over each data then splice it to the data array
+								angular.forEach(data.data, function(item, key){
+									pushItem(item);
+									$scope.type.items.push(item);
+								});
+
+								// Enables again the pagination call for next call.
+								$scope.type.busy = false;
+								$scope.isLoading = false;
+							});
+					}
+				});
+		}
+
+		$scope.refresh = function(){
+			$scope.isLoading = true;
+  			$scope.type.show = false;
+
+  			$scope.init($scope.subheader.current);
+		};
+	}]);
+settings
+	.controller('createBranchDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.branch = {};
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post('/branch/check-duplicate', $scope.branch)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.branchForm.$invalid){
+				angular.forEach($scope.branchForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+				Helper.post('/branch', $scope.branch)
+					.success(function(duplicate){
+						if(duplicate){
+							$scope.busy = false;
+							return;
+						}
+
+						Helper.stop();
+					})
+					.error(function(){
+						$scope.busy = false;
+						$scope.error = true;
+					});
+			}
+		}
+	}]);
+settings
+	.controller('createCostCenterDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.cost_center = {};
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post('/cost-center/check-duplicate', $scope.cost_center)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.costCenterForm.$invalid){
+				angular.forEach($scope.costCenterForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+				Helper.post('/cost-center', $scope.cost_center)
+					.success(function(duplicate){
+						if(duplicate){
+							$scope.busy = false;
+							return;
+						}
+
+						Helper.stop();
+					})
+					.error(function(){
+						$scope.busy = false;
+						$scope.error = true;
+					});
+			}
+		}
+	}]);
+settings
+	.controller('createGroupDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.group = {};
+		$scope.group.modules = [];
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		Helper.get('/module')
+			.success(function(data){
+				$scope.modules = data;
+			})
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post('/group/check-duplicate', $scope.group)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.groupForm.$invalid){
+				angular.forEach($scope.groupForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+				
+				Helper.post('/group', $scope.group)
+					.success(function(duplicate){
+						if(duplicate){
+							$scope.busy = false;
+							return;
+						}
+
+						Helper.stop();
+					})
+					.error(function(){
+						$scope.busy = false;
+						$scope.error = true;
+					});
+			}
+		}
+	}]);
+settings
+	.controller('createHouseBankDialogController', ['$scope', '$filter', 'Helper', function($scope, $filter, Helper){
+		$scope.house_bank = {};
+		$scope.currency = {};
+		$scope.duplicateBankAccountNumber = false;
+		$scope.duplicateGLAccount = false;
+
+		$scope.busy = false;
+
+		Helper.get('/currency')
+			.success(function(data){
+				$scope.currencies = data;
+			})
+
+		$scope.currency.getItems = function(query){
+			var results = query ? $filter('filter')($scope.currencies, query) : $scope.currencies;
+			return results;
+		}
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(query){
+			Helper.post('/house-bank/check-duplicate', query)
+				.success(function(data){
+					if(query.bank_account_number)
+					{
+						$scope.duplicateBankAccountNumber = data;
+					}
+					else if(query.gl_account)
+					{
+						$scope.duplicateGLAccount = data;
+					}
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.houseBankForm.$invalid){
+				angular.forEach($scope.houseBankForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			if(!$scope.duplicateBankAccountNumber && !$scope.duplicateGLAccount)
+			{
+				$scope.busy = true;
+				Helper.post('/house-bank', $scope.house_bank)
+					.success(function(duplicate){
+						if(duplicate){
+							$scope.busy = false;
+							return;
+						}
+
+						Helper.stop();
+					})
+					.error(function(){
+						$scope.busy = false;
+						$scope.error = true;
+					});
+			}
+		}
+	}]);
+settings
+	.controller('createUserDialogController', ['$scope', 'Helper', function($scope, Helper){
+		var user = Helper.authUser();
+
+		$scope.user = {};
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+		
+		Helper.post('/group/enlist')
+			.success(function(data){
+				$scope.groups = data;
+			})
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post('/user/check-email', $scope.user)
+				.success(function(data){
+					$scope.duplicate = data ? true : false;
+				})
+		}
+
+		$scope.submit = function(){
+			$scope.error = false;
+			if($scope.userForm.$invalid){
+				angular.forEach($scope.userForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			if(!$scope.duplicate && $scope.user.password == $scope.user.confirm)
+			{
+				$scope.busy = true;
+				Helper.post('/user', $scope.user)
+					.success(function(duplicate){
+						if(duplicate){
+							$scope.busy = false;
+							return;
+						}
+
+						Helper.stop();
+					})
+					.error(function(){
+						$scope.busy = false;
+						$scope.error = true;
+					});
+			}
+		}
+	}]);
+settings
+	.controller('earningsDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.config = Helper.fetch();
+
+		Helper.get('/de-minimis')
+			.success(function(data){
+				$scope.de_minimis = data;
+			})
+
+		if($scope.config.action == 'create')
+		{
+			$scope.allowance_type = {};
+		}
+		else if($scope.config.action == 'edit')
+		{
+			Helper.get($scope.config.url + '/' + $scope.config.id)
+				.success(function(data){
+					$scope.allowance_type = data;
+				})
+		}
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post($scope.config.url + '/check-duplicate', $scope.allowance_type)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.earningsForm.$invalid){
+				angular.forEach($scope.earningsForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+
+				if($scope.config.action == 'create')
+				{
+					Helper.post($scope.config.url, $scope.allowance_type)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+				else if($scope.config.action == 'edit')
+				{
+					Helper.put($scope.config.url + '/' + $scope.config.id, $scope.allowance_type)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+			}
+		}
+	}]);
+settings
+	.controller('editBranchDialogController', ['$scope', 'Helper', function($scope, Helper){
+		var branch = Helper.fetch();
+
+		Helper.get('/branch/' + branch.id)
+			.success(function(data){
+				$scope.branch = data;
+			})
+			.error(function(){
+				Preloader.error();
+			});
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post('/branch/check-duplicate', $scope.branch)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.branchForm.$invalid){
+				angular.forEach($scope.branchForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+				Helper.put('/branch/' + $scope.branch.id, $scope.branch)
+					.success(function(duplicate){
+						if(duplicate){
+							$scope.busy = false;
+							return;
+						}
+
+						Helper.stop();
+					})
+					.error(function(){
+						$scope.busy = false;
+						$scope.error = true;
+					});
+			}
+		}
+	}]);
+settings
+	.controller('editCostCenterDialogController', ['$scope', 'Helper', function($scope, Helper){
+		var cost_center = Helper.fetch();
+
+		Helper.get('/cost-center/' + cost_center.id)
+			.success(function(data){
+				$scope.cost_center = data;
+			})
+			.error(function(){
+				Preloader.error();
+			});
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post('/cost-center/check-duplicate', $scope.cost_center)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.costCenterForm.$invalid){
+				angular.forEach($scope.costCenterForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+				Helper.put('/cost-center/' + $scope.cost_center.id, $scope.cost_center)
+					.success(function(duplicate){
+						if(duplicate){
+							$scope.busy = false;
+							return;
+						}
+
+						Helper.stop();
+					})
+					.error(function(){
+						$scope.busy = false;
+						$scope.error = true;
+					});
+			}
+		}
+	}]);
+settings
+	.controller('editGroupDialogController', ['$scope', 'Helper', function($scope, Helper){
+		var group = Helper.fetch();
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		var query = {};
+		query.where = [
+			{
+				'label':'id',
+				'condition':'=',
+				'value': group.id,
+			}
+		];
+		query.first = true;
+
+		Helper.get('/module')
+			.success(function(data){
+				$scope.modules = data;
+
+				$scope.count = $scope.modules.length;
+				Helper.post('/group/enlist', query)
+					.success(function(data){
+						$scope.group = data;
+						$scope.group.modules = [];
+
+						angular.forEach($scope.modules, function(item, key){
+							$scope.group.modules.push(null);
+
+							var query = {};
+							query.with = [
+								{
+									'relation':'module',
+									'withTrashed': false,
+								},
+							];
+							query.where = [
+								{
+									'label': 'group_id',
+									'condition': '=',
+									'value': group.id,
+								},
+								{
+									'label': 'module_id',
+									'condition': '=',
+									'value': item.id,
+								},
+							];
+							query.first = true;
+
+							Helper.post('/group-module/enlist', query)
+								.success(function(data){
+									$scope.count--;
+									if(data)
+									{
+										$scope.group.modules.splice(key, 1, data.module);
+									}
+								});
+						});
+					});
+			});
+		
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post('/group/check-duplicate', $scope.group)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.groupForm.$invalid){
+				angular.forEach($scope.groupForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+				
+				Helper.put('/group/' + group.id, $scope.group)
+					.success(function(duplicate){
+						if(duplicate){
+							$scope.busy = false;
+							return;
+						}
+
+						Helper.stop();
+					})
+					.error(function(){
+						$scope.busy = false;
+						$scope.error = true;
+					});
+			}
+		}
+	}]);
+settings
+	.controller('editHouseBankDialogController', ['$scope', '$filter', 'Helper', function($scope, $filter, Helper){
+		var house_bank = Helper.fetch();
+
+		$scope.currency = {};
+		$scope.duplicateBankAccountNumber = false;
+		$scope.duplicateGLAccount = false;
+
+		$scope.busy = false;
+
+		var query = {};
+		query.where = [
+			{
+				'label':'id',
+				'condition':'=',
+				'value':house_bank.id,
+			}
+		];
+		query.with = [
+			{
+				'relation':'currency',
+				'withTrashed':false,
+			},
+		];
+		query.first = true;
+
+		Helper.post('/house-bank/enlist', query)
+			.success(function(data){
+				$scope.house_bank = data;
+
+				Helper.get('/currency')
+					.success(function(data){
+						$scope.currencies = data;
+						$scope.currency.getItems();						
+					})
+			});
+
+		$scope.currency.getItems = function(query){
+			var results = query ? $filter('filter')($scope.currencies, query) : $scope.currencies;
+			return results;
+		}
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(query){
+			query.id = house_bank.id;
+			Helper.post('/house-bank/check-duplicate', query)
+				.success(function(data){
+					if(query.bank_account_number)
+					{
+						$scope.duplicateBankAccountNumber = data;
+					}
+					else if(query.gl_account)
+					{
+						$scope.duplicateGLAccount = data;
+					}
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.houseBankForm.$invalid){
+				angular.forEach($scope.houseBankForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			if(!$scope.duplicateBankAccountNumber && !$scope.duplicateGLAccount)
+			{
+				$scope.busy = true;
+				Helper.put('/house-bank/' + $scope.house_bank.id, $scope.house_bank)
+					.success(function(duplicate){
+						if(duplicate){
+							$scope.busy = false;
+							return;
+						}
+
+						Helper.stop();
+					})
+					.error(function(){
+						$scope.busy = false;
+						$scope.error = true;
+					});
+			}
+		}
+	}]);
+settings
+	.controller('editProfileDialogController', ['$scope', '$filter', 'Helper', function($scope, $filter, Helper){
+		$scope.company = {};
+		$scope.company.country_id = 177; //Philippines
+
+		$scope.busy = false;
+
+		var busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}
+
+		$scope.checkCity = function(){
+			var query = {};
+			query.search = $scope.company.city;
+			query.strict_search = true;
+
+			Helper.post('/city/enlist', query)
+				.success(function(data){
+					$scope.cities = data;
+					$scope.showError = data.length ? false : true;
+
+					if($scope.company.province_id)
+					{
+						$scope.checkProvince();
+					}
+				})
+		}
+
+		$scope.fetchProvinces = function(){
+			Helper.post('/province/enlist', $scope.company)
+				.success(function(data){
+					$scope.provinces = data;
+				})
+		}
+
+		$scope.checkProvince = function(){
+			var query = {};
+			query.where = [
+				{
+					'label': 'id',
+					'condition': '=',
+					'value': $scope.company.province_id
+				}
+			];
+			query.city = $scope.company.city;
+			query.result = 'first';
+
+			Helper.post('/province/enlist', query)
+				.success(function(data){
+					$scope.noMatches = data.cities.length ? false : true;
+				})
+		}
+
+		$scope.formatPagIBIG = function(){
+			if($scope.companyForm.PagIBIG.$valid)
+			{
+				var first = $scope.pagibig.slice(0,4);
+				var second = $scope.pagibig.slice(4,8);
+				var third = $scope.pagibig.slice(8,12);
+
+				$scope.company.pagibig = first + '-' + second + '-' + third;
+			}
+		}
+
+		$scope.formatPhilHealth = function(){
+			if($scope.companyForm.PhilHealth.$valid)
+			{
+				var first = $scope.philhealth.slice(0,2);
+				var second = $scope.philhealth.slice(2,11);
+				var third = $scope.philhealth.slice(11,12);
+
+				$scope.company.philhealth = first + '-' + second + '-' + third;
+			}
+		}
+
+		$scope.formatSSS = function(){
+			if($scope.companyForm.SSS.$valid)
+			{
+				var first = $scope.sss.slice(0,2);
+				var second = $scope.sss.slice(2,9);
+				var third = $scope.sss.slice(9,10);
+
+				$scope.company.sss = first + '-' + second + '-' + third;
+			}
+		}	
+
+		$scope.formatTIN = function(){
+			if($scope.companyForm.TIN.$valid)
+			{
+				var first = $scope.tin.slice(0,3);
+				var second = $scope.tin.slice(3,6);
+				var third = $scope.tin.slice(6,9);
+
+				$scope.company.tin = first + '-' + second + '-' + third;
+			}
+		}		
+
+		$scope.submit = function(){
+			if($scope.companyForm.$invalid){
+				angular.forEach($scope.companyForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			
+			$scope.busy = true;
+			Helper.put('/company/1', $scope.company)
+				.success(function(duplicate){
+					Helper.stop();
+				})
+				.error(function(){
+					$scope.busy = false;
+					$scope.error = true;
+				});
+		}
+
+		$scope.init = function()
+		{
+			var query = {};
+
+			query.with = ['city'];
+
+			Helper.post('/company/enlist', query)
+				.success(function(data){
+					data.city = data.city.name;
+
+					$scope.pagibig = data.pagibig.replace(/-/g, '');
+					$scope.philhealth = data.philhealth.replace(/-/g, '');
+					$scope.sss = data.sss.replace(/-/g, '');
+					$scope.tin = data.tin.replace(/-/g, '');
+
+					$scope.company = data;
+
+					$scope.checkCity();
+					$scope.fetchProvinces();
+				})
+		}();
+	}]);
+settings
+	.controller('editUserDialogController', ['$scope', 'Helper', function($scope, Helper){
+		var user = Helper.authUser();
+
+		var dataUser = Helper.fetch();
+		
+		$scope.edit = true;
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		Helper.get('/user/' + dataUser.id)
+			.success(function(data){
+				$scope.user = data;
+			})
+
+		Helper.post('/group/enlist')
+			.success(function(data){
+				$scope.groups = data;
+			})
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post('/user/check-email', $scope.user)
+				.success(function(data){
+					$scope.duplicate = data ? true : false;
+				})
+		}
+
+		$scope.submit = function(){
+			$scope.error = false;
+			if($scope.userForm.$invalid){
+				angular.forEach($scope.userForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+				Helper.put('/user/' + dataUser.id , $scope.user)
+					.success(function(duplicate){
+						if(duplicate){
+							$scope.busy = false;
+							return;
+						}
+
+						Helper.stop();
+					})
+					.error(function(){
+						$scope.busy = false;
+						$scope.error = true;
+					});
+			}
+		}
+	}]);
+settings
+	.controller('leaveTypeDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.config = Helper.fetch();
+
+		if($scope.config.action == 'create')
+		{
+			$scope.leave = {};
+		}
+		else if($scope.config.action == 'edit')
+		{
+			Helper.get($scope.config.url + '/' + $scope.config.id)
+				.success(function(data){
+					$scope.leave = data;
+					$scope.leave.paid = data.paid ? true : false;
+					$scope.leave.convertible = data.convertible ? true : false;
+				})
+		}
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post($scope.config.url + '/check-duplicate', $scope.leave)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.leaveTypeForm.$invalid){
+				angular.forEach($scope.leaveTypeForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+
+				if($scope.config.action == 'create')
+				{
+					Helper.post($scope.config.url, $scope.leave)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+				else if($scope.config.action == 'edit')
+				{
+					Helper.put($scope.config.url + '/' + $scope.config.id, $scope.leave)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+			}
+		}
+	}]);
+settings
+	.controller('nameDescriptionDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.config = Helper.fetch();
+
+		if($scope.config.action == 'create')
+		{
+			$scope.model = {};
+		}
+		else if($scope.config.action == 'edit')
+		{
+			Helper.get($scope.config.url + '/' + $scope.config.id)
+				.success(function(data){
+					$scope.model = data;
+				})
+		}
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post($scope.config.url + '/check-duplicate', $scope.model)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.modelForm.$invalid){
+				angular.forEach($scope.modelForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+
+				if($scope.config.action == 'create')
+				{
+					Helper.post($scope.config.url, $scope.model)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+				else if($scope.config.action == 'edit')
+				{
+					Helper.put($scope.config.url + '/' + $scope.config.id, $scope.model)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+			}
+		}
+	}]);
+settings
+	.controller('positionDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.config = Helper.fetch();
+
+		Helper.get('/department')
+			.success(function(data){
+				$scope.departments = data;
+			})
+
+		Helper.get('/job-category')
+			.success(function(data){
+				$scope.job_categories = data;
+			})
+
+		Helper.get('/labor-type')
+			.success(function(data){
+				$scope.labor_types = data;
+			})		
+
+		if($scope.config.action == 'create')
+		{
+			$scope.position = {};
+		}
+		else if($scope.config.action == 'edit')
+		{
+			Helper.get($scope.config.url + '/' + $scope.config.id)
+				.success(function(data){
+					$scope.position = data;
+				})
+		}
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post($scope.config.url + '/check-duplicate', $scope.position)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.positionForm.$invalid){
+				angular.forEach($scope.positionForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+
+				if($scope.config.action == 'create')
+				{
+					Helper.post($scope.config.url, $scope.position)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+				else if($scope.config.action == 'edit')
+				{
+					Helper.put($scope.config.url + '/' + $scope.config.id, $scope.position)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+			}
+		}
+	}]);
+settings
+	.controller('sanctionLevelDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.config = Helper.fetch();
+
+		Helper.get('/sanction-type')
+			.success(function(data){
+				$scope.sanctions = data;
+			})
+
+		if($scope.config.action == 'create')
+		{
+			$scope.sanction_level = {};
+		}
+		else if($scope.config.action == 'edit')
+		{
+			Helper.get($scope.config.url + '/' + $scope.config.id)
+				.success(function(data){
+					$scope.sanction_level = data;
+				})
+		}
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post($scope.config.url + '/check-duplicate', $scope.sanction_level)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.sanctionLevelForm.$invalid){
+				angular.forEach($scope.sanctionLevelForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+
+				if($scope.config.action == 'create')
+				{
+					Helper.post($scope.config.url, $scope.sanction_level)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+				else if($scope.config.action == 'edit')
+				{
+					Helper.put($scope.config.url + '/' + $scope.config.id, $scope.sanction_level)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+			}
+		}
+	}]);
+settings
+	.controller('shiftScheduleDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.config = Helper.fetch();
+
+		if($scope.config.action == 'create')
+		{
+			$scope.shift_schedule = {};
+		}
+		else if($scope.config.action == 'edit')
+		{
+			Helper.get($scope.config.url + '/' + $scope.config.id)
+				.success(function(data){
+					$scope.shift_schedule = data;
+					$scope.shift_schedule.paid = data.paid ? true : false;
+					$scope.shift_schedule.convertible = data.convertible ? true : false;
+				})
+		}
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post($scope.config.url + '/check-duplicate', $scope.shift_schedule)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.shiftScheduleForm.$invalid){
+				angular.forEach($scope.shiftScheduleForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+
+				if($scope.config.action == 'create')
+				{
+					Helper.post($scope.config.url, $scope.shift_schedule)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+				else if($scope.config.action == 'edit')
+				{
+					Helper.put($scope.config.url + '/' + $scope.config.id, $scope.shift_schedule)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+			}
+		}
+	}]);
+settings
+	.controller('timeInterpretationDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.config = Helper.fetch();
+
+		if($scope.config.action == 'create')
+		{
+			$scope.time_interpretation = {};
+		}
+		else if($scope.config.action == 'edit')
+		{
+			Helper.get($scope.config.url + '/' + $scope.config.id)
+				.success(function(data){
+					$scope.regular_working_hours = data.regular_working_hours;
+					$scope.night_differential = data.night_differential;
+					$scope.overtime = data.overtime;
+					$scope.overtime_night_differential = data.overtime_night_differential;
+					$scope.rest_day_rate = data.rest_day_rate;
+					$scope.rest_day_night_differential = data.rest_day_night_differential;
+					$scope.rest_day_overtime = data.rest_day_overtime;
+					$scope.rest_day_overtime_night_differential = data.rest_day_overtime_night_differential;
+
+					$scope.special_holiday_rate = data.special_holiday_rate;
+					$scope.special_holiday_night_differential = data.special_holiday_night_differential;
+					$scope.special_holiday_overtime = data.special_holiday_overtime;
+					$scope.special_holiday_overtime_night_differential = data.special_holiday_overtime_night_differential;
+					$scope.special_holiday_rest_day_rate = data.special_holiday_rest_day_rate;
+					$scope.special_holiday_rest_day_night_differential = data.special_holiday_rest_day_night_differential;
+					$scope.special_holiday_rest_day_overtime = data.special_holiday_rest_day_overtime;
+					$scope.special_holiday_rest_day_overtime_night_differential = data.special_holiday_rest_day_overtime_night_differential;
+
+					$scope.regular_holiday_rate = data.regular_holiday_rate;
+					$scope.regular_holiday_night_differential = data.regular_holiday_night_differential;
+					$scope.regular_holiday_overtime = data.regular_holiday_overtime;
+					$scope.regular_holiday_overtime_night_differential = data.regular_holiday_overtime_night_differential;
+					$scope.regular_holiday_rest_day_rate = data.regular_holiday_rest_day_rate;
+					$scope.regular_holiday_rest_day_night_differential = data.regular_holiday_rest_day_night_differential;
+					$scope.regular_holiday_rest_day_overtime = data.regular_holiday_rest_day_overtime;
+					$scope.regular_holiday_rest_day_overtime_night_differential = data.regular_holiday_rest_day_overtime_night_differential;
+
+					$scope.time_interpretation = data;
+				})
+		}
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post($scope.config.url + '/check-duplicate', $scope.time_interpretation)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.timeInterpretationForm.$invalid){
+				angular.forEach($scope.timeInterpretationForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+
+				if($scope.config.action == 'create')
+				{
+					Helper.post($scope.config.url, $scope.time_interpretation)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+				else if($scope.config.action == 'edit')
+				{
+					Helper.put($scope.config.url + '/' + $scope.config.id, $scope.time_interpretation)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+			}
+		}
+	}]);
+settings
+	.controller('adminSettingsSubheaderController', ['$scope', 'Helper', function($scope, Helper){
+		var setInit = function(data){
+			Helper.set(data);
+
+			$scope.$emit('setInit');
+		}
+
+		$scope.subheader.navs = [
+			// {
+			// 	'label':'Branches',
+			// 	'url': '/branch/enlist',
+			// 	'request': {
+			// 		'withTrashed': true,
+			// 		'paginate':20,
+			// 	},
+			// 	'fab': {
+			// 		'controller':'createBranchDialogController',
+			// 		'template':'/app/components/settings/templates/dialogs/branch-form-dialog.template.html',
+			// 		'message': 'Branch saved.'
+			// 	},
+			// 	'menu': [
+			// 		{
+			// 			'label': 'Edit',
+			// 			'icon': 'mdi-pencil',
+			// 			'show':true,
+			// 			action: function(data){
+			// 				Helper.set(data);
+
+			// 				var dialog = {};
+			// 				dialog.controller = 'editBranchDialogController';
+			// 				dialog.template = '/app/components/settings/templates/dialogs/branch-form-dialog.template.html';
+
+			// 				Helper.customDialog(dialog)
+			// 					.then(function(){
+			// 						Helper.notify('Branch updated.');
+			// 						$scope.$emit('refresh');
+			// 					}, function(){
+			// 						return;
+			// 					})
+			// 			},
+			// 		},
+			// 		{
+			// 			'label': 'Delete',
+			// 			'icon': 'mdi-delete',
+			// 			'show':true,
+			// 			action: function(data){
+			// 				var dialog = {};
+			// 				dialog.title = 'Delete';
+			// 				dialog.message = 'Delete ' + data.name + ' branch?'
+			// 				dialog.ok = 'Delete';
+			// 				dialog.cancel = 'Cancel';
+
+			// 				Helper.confirm(dialog)
+			// 					.then(function(){
+			// 						Helper.delete('/branch/' + data.id)
+			// 							.success(function(){
+			// 								Helper.notify('Branch deleted.');
+			// 								$scope.$emit('refresh');
+			// 							})
+			// 							.error(function(){
+			// 								Helper.error();
+			// 							});
+			// 					}, function(){
+			// 						return;
+			// 					})
+			// 			},
+			// 		},
+			// 	],
+			// 	'sort': [
+			// 		{
+			// 			'label': 'Name',
+			// 			'type': 'name',
+			// 			'sortReverse': false,
+			// 		},
+			// 		{
+			// 			'label': 'Description',
+			// 			'type': 'description',
+			// 			'sortReverse': false,
+			// 		},
+			// 		{
+			// 			'label': 'GL Account',
+			// 			'type': 'gl_account',
+			// 			'sortReverse': false,
+			// 		},
+			// 		{
+			// 			'label': 'Recently added',
+			// 			'type': 'created_at',
+			// 			'sortReverse': false,
+			// 		},
+			// 	],
+			// 	action: function(current){
+			// 		setInit(current);
+			// 	},
+			// },
+			{
+				'label':'House Banks',
+				'url': '/house-bank/enlist',
+				'request': {
+					'withTrashed': true,
+					'with': [
+						{
+							'relation' : 'currency',
+							'withTrashed': false,
+						},
+					],
+					'paginate':20,
+				},
+				'fab': {
+					'controller':'createHouseBankDialogController',
+					'template':'/app/components/settings/templates/dialogs/house-bank-form-dialog.template.html',
+					'message': 'House bank saved.'
+				},
+				action: function(current){
+					setInit(current);
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show':true,
+						action: function(data){
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'editHouseBankDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/house-bank-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('House bank updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show':true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' house bank?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/house-bank/' + data.id)
+										.success(function(){
+											Helper.notify('House bank deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Bank Branch',
+						'type': 'bank_branch',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Bank Account Number',
+						'type': 'bank_account_number',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Bank Account Name',
+						'type': 'bank_account_name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'GL Account',
+						'type': 'gl_account',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+			},
+			// Bir Tax Table
+			{
+				'label':'BIR Tax Table',
+				'url': '/tax/enlist',
+				'request': {
+					'with': [
+						{
+							'relation' : 'tax_code',
+							'withTrashed': false,
+						},
+					],
+					'paginate':200
+				},
+				action: function(current){
+					setInit(current);
+				},
+				'table': 'tax',
+			},
+			{
+				'label':'SSS Table',
+				'url': '/sss/enlist',
+				'request': {
+					'paginate':20,
+				},
+				action: function(current){
+					setInit(current);
+				},
+				'table': 'sss',
+			},
+			{
+				'label':'HDMF Table',
+				'url': '/pagibig/enlist',
+				'request': {
+					'paginate':20,
+				},
+				action: function(current){
+					setInit(current);
+				},
+				'table': 'pagibig',
+			},
+			{
+				'label':'Philhealth Table',
+				'url': '/philhealth/enlist',
+				'request': {
+					'paginate':20,
+				},
+				action: function(current){
+					setInit(current);
+				},
+				'table': 'philhealth',
+			},
+			// User Groups
+			{
+				'label':'User Groups',
+				'url': '/group/enlist',
+				'request' : {
+					'with': [
+						{
+							'relation':'modules',
+							'withTrashed': false,
+						},
+						{
+							'relation':'users',
+							'withTrashed': false,	
+						},
+					],
+					'paginate':20,
+				},
+				'fab': {
+					'controller':'createGroupDialogController',
+					'template':'/app/components/settings/templates/dialogs/group-form-dialog.template.html',
+					'message': 'User group saved.'
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show':true,
+						action: function(data){
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'editGroupDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/group-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('User group updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show':true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' group?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/group/' + data.id)
+										.success(function(){
+											Helper.notify('User group deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+			// Users
+			{
+				'label':'Users',
+				'url': '/user/enlist',
+				'request' : {
+					'withTrashed': true,
+					'with' : [
+						{
+							'relation':'group',
+							'withTrashed': false,
+						}
+					],
+					'where': [
+						{
+							'label':'id',
+							'condition':'!=',
+							'value': 1,
+						},
+					],
+					'paginate':20,
+				},
+				'fab': {
+					'controller':'createUserDialogController',
+					'template':'/app/components/settings/templates/dialogs/user-form-dialog.template.html',
+					'message': 'User saved.'
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show':true,
+						action: function(data){
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'editUserDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/user-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('User updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Disable Account',
+						'icon': 'mdi-account-remove',
+						'show':true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Disable account';
+							dialog.message = 'Disable ' + data.name + '\'s account?'
+							dialog.ok = 'Disable';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/user/' + data.id)
+										.success(function(){
+											Helper.notify('User account disabled.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Email',
+						'type': 'email',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+		];
+
+		setInit($scope.subheader.navs[0]);
+	}]);
+settings
+	.controller('hrisSettingsSubheaderController', ['$scope', 'Helper', function($scope, Helper){
+		var setInit = function(data){
+			Helper.set(data);
+
+			$scope.$emit('setInit');
+		}
+
+		$scope.subheader.navs = [
+			// Branches
+			{
+				'label':'Branches',
+				'url': '/branch/enlist',
+				'request': {
+					'withTrashed': true,
+					'paginate':20,
+				},
+				'fab': {
+					'controller':'createBranchDialogController',
+					'template':'/app/components/settings/templates/dialogs/branch-form-dialog.template.html',
+					'message': 'Branch saved.'
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show':true,
+						action: function(data){
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'editBranchDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/branch-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Branch updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show':true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' branch?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/branch/' + data.id)
+										.success(function(){
+											Helper.notify('Branch deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'GL Account',
+						'type': 'gl_account',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+			// Cost Centers
+			{
+				'label':'Cost Centers',
+				'url': '/cost-center/enlist',
+				'request': {
+					'withTrashed': true,
+					'paginate':20,
+				},
+				'fab': {
+					'controller':'createCostCenterDialogController',
+					'template':'/app/components/settings/templates/dialogs/cost-center-form-dialog.template.html',
+					'message': 'Cost center saved.'
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show':true,
+						action: function(data){
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'editCostCenterDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/cost-center-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Cost center updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show':true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' cost center?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/cost-center/' + data.id)
+										.success(function(){
+											Helper.notify('Cost center deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'GL Account',
+						'type': 'gl_account',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+			// Departments
+			// {
+			// 	'label':'Departments',
+			// 	'url': '/department/enlist',
+			// 	'request': {
+			// 		'with': [
+			// 			{
+			// 				'relation':'positions',
+			// 				'withTrashed':false,
+			// 			},
+			// 		],
+			// 		'withTrashed': true,
+			// 		'paginate':20,
+			// 	},
+			// 	'fab': {
+			// 		'fullscreen' : true,
+			// 		'controller':'nameDescriptionDialogController',
+			// 		'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
+			// 		'message': 'Department saved.',
+			// 		'action' : 'create',
+			// 		'url': '/department',
+			// 		'label': 'Department',
+			// 	},
+			// 	'menu': [
+			// 		{
+			// 			'label': 'Edit',
+			// 			'icon': 'mdi-pencil',
+			// 			'show': true,
+			// 			action: function(data){
+			// 				data.action = 'edit';
+			// 				data.url = '/department';
+			// 				data.label = 'Department';
+
+			// 				Helper.set(data);
+
+			// 				var dialog = {};
+			// 				dialog.controller = 'nameDescriptionDialogController';
+			// 				dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
+
+			// 				Helper.customDialog(dialog)
+			// 					.then(function(){
+			// 						Helper.notify('Department updated.');
+			// 						$scope.$emit('refresh');
+			// 					}, function(){
+			// 						return;
+			// 					})
+			// 			},
+			// 		},
+			// 		{
+			// 			'label': 'Delete',
+			// 			'icon': 'mdi-delete',
+			// 			'show': true,
+			// 			action: function(data){
+			// 				var dialog = {};
+			// 				dialog.title = 'Delete';
+			// 				dialog.message = 'Delete ' + data.name + ' department?'
+			// 				dialog.ok = 'Delete';
+			// 				dialog.cancel = 'Cancel';
+
+			// 				Helper.confirm(dialog)
+			// 					.then(function(){
+			// 						Helper.delete('/department/' + data.id)
+			// 							.success(function(){
+			// 								Helper.notify('Department deleted.');
+			// 								$scope.$emit('refresh');
+			// 							})
+			// 							.error(function(){
+			// 								Helper.error();
+			// 							});
+			// 					}, function(){
+			// 						return;
+			// 					})
+			// 			},
+			// 		},
+			// 	],
+			// 	'sort': [
+			// 		{
+			// 			'label': 'Name',
+			// 			'type': 'name',
+			// 			'sortReverse': false,
+			// 		},
+			// 		{
+			// 			'label': 'Description',
+			// 			'type': 'description',
+			// 			'sortReverse': false,
+			// 		},
+			// 		{
+			// 			'label': 'Recently added',
+			// 			'type': 'created_at',
+			// 			'sortReverse': false,
+			// 		},
+			// 	],
+			// 	action: function(current){
+			// 		setInit(current);
+			// 	},
+			// },
+			// Job Categories
+			/*{
+				'label':'Job Categories',
+				'url': '/job-category/enlist',
+				'request' : {
+					'with': [
+						{
+							'relation':'positions',
+							'withTrashed': false,
+						},
+					],
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'nameDescriptionDialogController',
+					'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
+					'message': 'Job category saved.',
+					'action' : 'create',
+					'url': '/job-category',
+					'label': 'Job category',
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/job-category';
+							data.label = 'Job category';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'nameDescriptionDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Job category updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' job category?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/job-category/' + data.id)
+										.success(function(){
+											Helper.notify('Job category deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},*/
+			// Labor Types
+			/*{
+				'label':'Labor Types',
+				'url': '/labor-type/enlist',
+				'request' : {
+					'with' : [
+						{
+							'relation':'positions',
+							'withTrashed': false,
+						}
+					],
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'nameDescriptionDialogController',
+					'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
+					'message': 'Labor type saved.',
+					'action' : 'create',
+					'fullscreen' : true,
+					'url': '/labor-type',
+					'label': 'Labor type',
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/labor-type';
+							data.label = 'Labor type';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'nameDescriptionDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Labor type updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' labor type?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/labor-type/' + data.id)
+										.success(function(){
+											Helper.notify('Labor type deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},*/
+			// Leaves
+			/*{
+				'label':'Leaves',
+				'url': '/leave-type/enlist',
+				'request': {
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'leaveTypeDialogController',
+					'template':'/app/components/settings/templates/dialogs/leave-type-form-dialog.template.html',
+					'message': 'Leave saved.',
+					'action' : 'create',
+					'url': '/leave-type',
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/leave-type';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'leaveTypeDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/leave-type-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Leave updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' leave?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/leave-type/' + data.id)
+										.success(function(){
+											Helper.notify('Leave deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},*/
+			// Earnings
+			{
+				'label':'Earnings',
+				'url': '/allowance-type/enlist',
+				'request' : {
+					'withTrashed': true,
+					'with' : [
+						{
+							'relation':'employees',
+							'withTrashed': false,
+						},
+						{
+							'relation':'de_minimis',
+							'withTrashed': false,
+						}
+					],
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'earningsDialogController',
+					'template':'/app/components/settings/templates/dialogs/earnings-dialog.template.html',
+					'message': 'Earnings saved.',
+					'action' : 'create',
+					'url': '/allowance-type',
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/allowance-type';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'earningsDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/earnings-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Earnings updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + '?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/allowance-type/' + data.id)
+										.success(function(){
+											Helper.notify('Earnings deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+			// Deductions
+			{
+				'label':'Deductions',
+				'url': '/deduction-type/enlist',
+				'request' : {
+					'withTrashed': true,
+					'with' : [
+						{
+							'relation':'employees',
+							'withTrashed': false,
+						}
+					],
+					'where': [
+						{
+							'label':'government_deduction',
+							'condition': '=',
+							'value': false
+						}
+					],
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'nameDescriptionDialogController',
+					'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
+					'message': 'Deduction type saved.',
+					'action' : 'create',
+					'url': '/deduction-type',
+					'label': 'Deduction',
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/deduction-type';
+							data.label = 'Deduction';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'nameDescriptionDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Deduction type updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' deduction?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/deduction-type/' + data.id)
+										.success(function(){
+											Helper.notify('Deduction type deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+			// Positions
+			{
+				'label':'Positions',
+				'url': '/position/enlist',
+				'request': {
+					'withTrashed': true,
+					'with': [
+					// 	{
+					// 		'relation' : 'department',
+					// 		'withTrashed': false,
+					// 	},
+					// 	{
+					// 		'relation' : 'job_category',
+					// 		'withTrashed': false,
+					// 	},
+					// 	{
+					// 		'relation' : 'labor_type',
+					// 		'withTrashed': false,
+					// 	},
+					// 	{
+					// 		'relation' : 'deployments',
+					// 		'withTrashed': false,	
+					// 	},
+						{
+							'relation' : 'employees',
+							'withTrashed': true,	
+						},
+					],
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'nameDescriptionDialogController',
+					'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
+					'message': 'Position saved.',
+					'action' : 'create',
+					'url': '/position',
+					'label': 'Position',
+				},
+				action: function(current){
+					setInit(current);
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/position';
+							data.label = 'Position';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'nameDescriptionDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Position updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' position?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/position/' + data.id)
+										.success(function(){
+											Helper.notify('Position deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+			},
+			// Batches
+			{
+				'label':'Batches',
+				'url': '/batch/enlist',
+				'request': {
+					'withTrashed': true,
+					'with': [
+						{
+							'relation' : 'employees',
+							'withTrashed': true,	
+						},
+					],
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'nameDescriptionDialogController',
+					'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
+					'message': 'Batch saved.',
+					'action' : 'create',
+					'url': '/batch',
+					'label': 'Batch',
+				},
+				action: function(current){
+					setInit(current);
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/batch';
+							data.label = 'Batch';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'nameDescriptionDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Batch updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' batch?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/batch/' + data.id)
+										.success(function(){
+											Helper.notify('Batch deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+			},
+			// Sanctions
+			// {
+			// 	'label':'Sanctions',
+			// 	'url': '/sanction-type/enlist',
+			// 	'request' : {		
+			// 		'with': [
+			// 			{
+			// 				'relation':'sanction_levels',
+			// 				'withTrashed': false,
+			// 			},
+			// 		],
+			// 		'paginate':20,
+			// 	},
+			// 	'fab': {
+			// 		'fullscreen' : true,
+			// 		'controller':'nameDescriptionDialogController',
+			// 		'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
+			// 		'message': 'Sanction type saved.',
+			// 		'action' : 'create',
+			// 		'url': '/sanction-type',
+			// 		'label': 'Sanction',
+			// 	},
+			// 	'menu': [
+			// 		{
+			// 			'label': 'Edit',
+			// 			'icon': 'mdi-pencil',
+			// 			'show': true,
+			// 			action: function(data){
+			// 				data.action = 'edit';
+			// 				data.url = '/sanction-type';
+			// 				data.label = 'Sanction';
+
+			// 				Helper.set(data);
+
+			// 				var dialog = {};
+			// 				dialog.controller = 'nameDescriptionDialogController';
+			// 				dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
+
+			// 				Helper.customDialog(dialog)
+			// 					.then(function(){
+			// 						Helper.notify('Sanction type updated.');
+			// 						$scope.$emit('refresh');
+			// 					}, function(){
+			// 						return;
+			// 					})
+			// 			},
+			// 		},
+			// 		{
+			// 			'label': 'Delete',
+			// 			'icon': 'mdi-delete',
+			// 			'show': true,
+			// 			action: function(data){
+			// 				var dialog = {};
+			// 				dialog.title = 'Delete';
+			// 				dialog.message = 'Delete ' + data.name + ' sanction type?'
+			// 				dialog.ok = 'Delete';
+			// 				dialog.cancel = 'Cancel';
+
+			// 				Helper.confirm(dialog)
+			// 					.then(function(){
+			// 						Helper.delete('/sanction-type/' + data.id)
+			// 							.success(function(){
+			// 								Helper.notify('Sanction type deleted.');
+			// 								$scope.$emit('refresh');
+			// 							})
+			// 							.error(function(){
+			// 								Helper.error();
+			// 							});
+			// 					}, function(){
+			// 						return;
+			// 					})
+			// 			},
+			// 		},
+			// 	],
+			// 	'sort': [
+			// 		{
+			// 			'label': 'Name',
+			// 			'type': 'name',
+			// 			'sortReverse': false,
+			// 		},
+			// 		{
+			// 			'label': 'Description',
+			// 			'type': 'description',
+			// 			'sortReverse': false,
+			// 		},
+			// 		{
+			// 			'label': 'Recently added',
+			// 			'type': 'created_at',
+			// 			'sortReverse': false,
+			// 		},
+			// 	],
+			// 	action: function(current){
+			// 		setInit(current);
+			// 	},
+			// },
+			// Sanction Levels
+			// {
+			// 	'label':'Sanction Levels',
+			// 	'url': '/sanction-level/enlist',
+			// 	'request' : {		
+			// 		'with': [
+			// 			{
+			// 				'relation':'sanction_type',
+			// 				'withTrashed': false,
+			// 			},
+			// 		],
+			// 		'paginate':20,
+			// 	},
+			// 	'fab': {
+			// 		'fullscreen' : true,
+			// 		'controller':'sanctionLevelDialogController',
+			// 		'template':'/app/components/settings/templates/dialogs/sanction-level-form-dialog.template.html',
+			// 		'message': 'Sanction level saved.',
+			// 		'action' : 'create',
+			// 		'url': '/sanction-level',
+			// 		'label': 'Sanction',
+			// 	},
+			// 	'menu': [
+			// 		{
+			// 			'label': 'Edit',
+			// 			'icon': 'mdi-pencil',
+			// 			'show': true,
+			// 			action: function(data){
+			// 				data.action = 'edit';
+			// 				data.url = '/sanction-level';
+			// 				data.label = 'Sanction';
+
+			// 				Helper.set(data);
+
+			// 				var dialog = {};
+			// 				dialog.controller = 'sanctionLevelDialogController';
+			// 				dialog.template = '/app/components/settings/templates/dialogs/sanction-level-form-dialog.template.html';
+
+			// 				Helper.customDialog(dialog)
+			// 					.then(function(){
+			// 						Helper.notify('Sanction level updated.');
+			// 						$scope.$emit('refresh');
+			// 					}, function(){
+			// 						return;
+			// 					})
+			// 			},
+			// 		},
+			// 		{
+			// 			'label': 'Delete',
+			// 			'icon': 'mdi-delete',
+			// 			'show': true,
+			// 			action: function(data){
+			// 				var dialog = {};
+			// 				dialog.title = 'Delete';
+			// 				dialog.message = 'Delete ' + data.name + ' sanction level?'
+			// 				dialog.ok = 'Delete';
+			// 				dialog.cancel = 'Cancel';
+
+			// 				Helper.confirm(dialog)
+			// 					.then(function(){
+			// 						Helper.delete('/sanction-level/' + data.id)
+			// 							.success(function(){
+			// 								Helper.notify('Sanction level deleted.');
+			// 								$scope.$emit('refresh');
+			// 							})
+			// 							.error(function(){
+			// 								Helper.error();
+			// 							});
+			// 					}, function(){
+			// 						return;
+			// 					})
+			// 			},
+			// 		},
+			// 	],
+			// 	'sort': [
+			// 		{
+			// 			'label': 'Name',
+			// 			'type': 'name',
+			// 			'sortReverse': false,
+			// 		},
+			// 		{
+			// 			'label': 'Description',
+			// 			'type': 'description',
+			// 			'sortReverse': false,
+			// 		},
+			// 		{
+			// 			'label': 'Recently added',
+			// 			'type': 'created_at',
+			// 			'sortReverse': false,
+			// 		},
+			// 	],
+			// 	action: function(current){
+			// 		setInit(current);
+			// 	},
+			// },
+		];
+
+		setInit($scope.subheader.navs[0]);
+	}]);
+settings
+	.controller('payrollSettingsSubheaderController', ['$scope', 'Helper', function($scope, Helper){
+		var setInit = function(data){
+			Helper.set(data);
+
+			$scope.$emit('setInit');
+		}
+
+		$scope.subheader.navs = [
+			// Time Interpretations
+			{
+				'label':'Time Interpretations',
+				'url': '/time-interpretation/enlist',
+				'request' : {
+					'with' : [
+						{
+							'relation':'positions',
+							'withTrashed': false,
+						}
+					],
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'timeInterpretationDialogController',
+					'template':'/app/components/settings/templates/dialogs/time-interpretation-form-dialog.template.html',
+					'message': 'Time interpretation saved.',
+					'action' : 'create',
+					'fullscreen' : true,
+					'url': '/time-interpretation',
+					'label': 'Time interpretation',
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/time-interpretation';
+							data.label = 'Time interpretation';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'timeInterpretationDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/time-interpretation-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Time interpretation updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' time interpretation?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/time-interpretation/' + data.id)
+										.success(function(){
+											Helper.notify('Time interpretation deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+			// Payroll Configuration
+			{
+				'label':'Payroll Configuration',
+				'url': '/payroll/enlist',
+				'request' : {
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'payrollConfigurationDialogController',
+					'template':'/app/components/settings/templates/dialogs/payroll-configuration-dialog.template.html',
+					'message': 'Payroll configuration saved.',
+					'action' : 'create',
+					'fullscreen' : true,
+					'url': '/payroll',
+					'label': 'Payroll Configuration',
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/payroll';
+							data.label = 'Payroll Configuration';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'payrollConfigurationDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/payroll-configuration-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Payroll configuration updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' payroll configuration?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/payroll/' + data.id)
+										.success(function(){
+											Helper.notify('Payroll configuration deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+			// Payroll Period
+			{
+				'label':'Payroll Period',
+				'url': '/payroll-period/enlist',
+				'request' : {
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'payrollPeriodDialogController',
+					'template':'/app/components/settings/templates/dialogs/payroll-period-dialog.template.html',
+					'message': 'Payroll period saved.',
+					'action' : 'create',
+					'fullscreen' : true,
+					'url': '/payroll',
+					'label': 'Payroll Period',
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/payroll-period';
+							data.label = 'Payroll Period';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'payrollPeriodDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/payroll-period-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Payroll Period updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' payroll period?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/payroll-period/' + data.id)
+										.success(function(){
+											Helper.notify('Payroll period deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+			// Holidays
+			{
+				'label':'Holidays',
+				'url': '/holiday/enlist',
+				'request' : {
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'holidayDialogController',
+					'template':'/app/components/settings/templates/dialogs/holiday-dialog.template.html',
+					'message': 'Holiday saved.',
+					'action' : 'create',
+					'fullscreen' : true,
+					'url': '/payroll',
+					'label': 'Holiday',
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/holiday';
+							data.label = 'Holiday';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'holidayDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/holiday-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Holiday updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' holiday?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/holiday/' + data.id)
+										.success(function(){
+											Helper.notify('Holiday deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+		];
+
+		setInit($scope.subheader.navs[0]);
+	}]);
+settings
+	.controller('timekeepingSettingsSubheaderController', ['$scope', 'Helper', function($scope, Helper){
+		var setInit = function(data){
+			Helper.set(data);
+
+			$scope.$emit('setInit');
+		}
+
+		$scope.subheader.navs = [
+			// Departments
+			{
+				'label':'Shift Schedule',
+				'url': '/shift-schedule/enlist',
+				'request': {
+					'withTrashed': false,
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'shiftScheduleDialogController',
+					'template':'/app/components/settings/templates/dialogs/shift-schedule-form-dialog.template.html',
+					'message': 'Shift schedule saved.',
+					'action' : 'create',
+					'url': '/shift-schedule',
+					'label': 'Shift Schedule',
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/shift-schedule';
+							data.label = 'Shift Schedule';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'shiftScheduleDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/shift-schedule-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Shift schedule updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete this shift schedule?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/shift-schedule/' + data.id)
+										.success(function(){
+											Helper.notify('Shift schedule deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Date Start',
+						'type': 'date_start',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Date End',
+						'type': 'date_end',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Shift Start',
+						'type': 'shift_start',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Shift End',
+						'type': 'shift_end',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Hours Break',
+						'type': 'hours_break',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+			// Biometrics
+			{
+				'label':'Biometrics',
+				'url': '/biometric/enlist',
+				'request' : {
+					'withTrashed': true,
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'nameDescriptionDialogController',
+					'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
+					'message': 'Biometric machine saved.',
+					'action' : 'create',
+					'url': '/biometric',
+					'label': 'Biometric',
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/biometric';
+							data.label = 'Biometric';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'nameDescriptionDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Biometric machine updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' biometric machine?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/biometric/' + data.id)
+										.success(function(){
+											Helper.notify('Biometric machine deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+			// Time Interpretations
+			{
+				'label':'Time Interpretations',
+				'url': '/time-interpretation/enlist',
+				'request' : {
+					'with' : [
+						{
+							'relation':'positions',
+							'withTrashed': false,
+						}
+					],
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'timeInterpretationDialogController',
+					'template':'/app/components/settings/templates/dialogs/time-interpretation-form-dialog.template.html',
+					'message': 'Time interpretation saved.',
+					'action' : 'create',
+					'fullscreen' : true,
+					'url': '/time-interpretation',
+					'label': 'Time interpretation',
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/time-interpretation';
+							data.label = 'Time interpretation';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'timeInterpretationDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/time-interpretation-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Time interpretation updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' time interpretation?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/time-interpretation/' + data.id)
+										.success(function(){
+											Helper.notify('Time interpretation deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+		];
+
+		setInit($scope.subheader.navs[0]);
+	}]);
+settings
+	.controller('adminSettingsToolbarController', ['$scope', '$filter', function($scope, $filter){
+		$scope.toolbar.parentState = 'Settings';
+		$scope.toolbar.childState = 'Admin';
+
+		$scope.$on('close', function(){
+			$scope.hideSearchBar();
+		});
+
+		$scope.toolbar.getItems = function(query){
+			var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items;
+			return results;
+		}
+
+		$scope.toolbar.searchAll = true;
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.type.busy = true;
+			$scope.searchBar = true;
+			$scope.showInactive = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.searchBar = false;
+			$scope.toolbar.searchText = '';
+			$scope.toolbar.searchItem = '';
+			/* Cancels the paginate when the user sent a query */
+			if($scope.searched){
+				$scope.type.page = 1;
+				$scope.type.no_matches = false;
+				$scope.type.items = [];
+				$scope.searched = false;
+				$scope.$emit('refresh');
+			}
+		};
+
+		$scope.searchUserInput = function(){
+			$scope.$emit('search');
+			$scope.searched = true;
+		};
+	}]);
+settings
+	.controller('hrisSettingsToolbarController', ['$scope', '$filter', function($scope, $filter){
+		$scope.toolbar.parentState = 'Settings';
+		$scope.toolbar.childState = 'HRIS';
+
+		$scope.$on('close', function(){
+			$scope.hideSearchBar();
+		});
+
+		$scope.toolbar.getItems = function(query){
+			var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items;
+			return results;
+		}
+
+		$scope.toolbar.searchAll = true;
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.type.busy = true;
+			$scope.searchBar = true;
+			$scope.showInactive = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.searchBar = false;
+			$scope.toolbar.searchText = '';
+			$scope.toolbar.searchItem = '';
+			/* Cancels the paginate when the user sent a query */
+			if($scope.searched){
+				$scope.type.page = 1;
+				$scope.type.no_matches = false;
+				$scope.type.items = [];
+				$scope.searched = false;
+				$scope.$emit('refresh');
+			}
+		};
+
+		$scope.searchUserInput = function(){
+			$scope.$emit('search');
+			$scope.searched = true;
+		};
+	}]);
+settings
+	.controller('payrollSettingsToolbarController', ['$scope', '$filter', function($scope, $filter){
+		$scope.toolbar.parentState = 'Settings';
+		$scope.toolbar.childState = 'Payroll';
+
+		$scope.$on('close', function(){
+			$scope.hideSearchBar();
+		});
+
+		$scope.toolbar.getItems = function(query){
+			var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items;
+			return results;
+		}
+
+		$scope.toolbar.searchAll = true;
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.type.busy = true;
+			$scope.searchBar = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.searchBar = false;
+			$scope.toolbar.searchText = '';
+			$scope.toolbar.searchItem = '';
+			/* Cancels the paginate when the user sent a query */
+			if($scope.searched){
+				$scope.type.page = 1;
+				$scope.type.no_matches = false;
+				$scope.type.items = [];
+				$scope.searched = false;
+				$scope.$emit('refresh');
+			}
+		};
+
+		$scope.searchUserInput = function(){
+			$scope.$emit('search');
+			$scope.searched = true;
+		};
+	}]);
+settings
+	.controller('timekeepingSettingsToolbarController', ['$scope', '$filter', function($scope, $filter){
+		$scope.toolbar.parentState = 'Settings';
+		$scope.toolbar.childState = 'Timekeeping';
+
+		$scope.$on('close', function(){
+			$scope.hideSearchBar();
+		});
+
+		$scope.toolbar.getItems = function(query){
+			var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items;
+			return results;
+		}
+
+		$scope.toolbar.searchAll = true;
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.type.busy = true;
+			$scope.searchBar = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.searchBar = false;
+			$scope.toolbar.searchText = '';
+			$scope.toolbar.searchItem = '';
+			/* Cancels the paginate when the user sent a query */
+			if($scope.searched){
+				$scope.type.page = 1;
+				$scope.type.no_matches = false;
+				$scope.type.items = [];
+				$scope.searched = false;
+				$scope.$emit('refresh');
+			}
+		};
+
+		$scope.searchUserInput = function(){
+			$scope.$emit('search');
+			$scope.searched = true;
+		};
+	}]);
+//# sourceMappingURL=settings.js.map
