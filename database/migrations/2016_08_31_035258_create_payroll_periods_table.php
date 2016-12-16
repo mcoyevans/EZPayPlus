@@ -20,6 +20,7 @@ class CreatePayrollPeriodsTable extends Migration
             $table->date('cut_off_start');
             $table->date('cut_off_end');
             $table->date('payout');
+            $table->integer('payroll_id')->unsigned();
             $table->timestamps();
             $table->softDeletes();
         });
