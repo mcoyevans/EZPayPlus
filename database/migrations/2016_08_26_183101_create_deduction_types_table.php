@@ -17,6 +17,7 @@ class CreateDeductionTypesTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('description');
+            $table->boolean('government_deduction');
             $table->timestamps();
             $table->softDeletes();
         });

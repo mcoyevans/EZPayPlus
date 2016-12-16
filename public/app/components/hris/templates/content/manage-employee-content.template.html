@@ -1,0 +1,396 @@
+<form name="form.employeeForm" flex>
+	<md-subheader class="md-primary">Primary Information</md-subheader>
+	<md-button class="md-primary" ng-click="test()">Auto Fill</md-button>
+	<div layout="row" flex layout-align="center center">
+		<md-card layout="column" flex flex-gt-md="80">
+			<md-card-content>
+				<div layout="row" layout-wrap flex>					
+					<!-- Employee ID -->
+					<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+						<label>Employee ID</label>
+						<input type="number" name="EmployeeID" ng-model="employee.employee_number" min="0" required ng-blur="checkDuplicate()" ng-disabled="busy">
+						<div class="hint" ng-if="last_employee_number && form.employeeForm.EmployeeID.$untouched">Last Employee ID used was {{last_employee_number}}.</div>
+						<div class="pattern" ng-if="duplicate">Employee ID already in use.</div>
+						<div ng-messages="form.employeeForm.EmployeeID.$error" ng-if="form.employeeForm.EmployeeID.$touched">
+							<div ng-message="required">Employee ID is required.</div>
+							<div ng-message="min">Employee ID cannot accept negative numbers.</div>
+						</div>
+					</md-input-container>
+				</div>
+				<div layout="row" layout-wrap flex>
+					<!-- First Name -->
+					<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+						<label>First Name</label>
+						<input type="text" name="FirstName" ng-model="employee.first_name" required ng-disabled="busy">
+						<div ng-messages="form.employeeForm.FirstName.$error" ng-if="form.employeeForm.FirstName.$touched">
+							<div ng-message="required">First name is required.</div>
+						</div>
+					</md-input-container>
+					<!-- Middle Name -->
+					<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+						<label>Middle Name</label>
+						<input type="text" name="MiddleName" ng-model="employee.middle_name" ng-disabled="busy">
+					</md-input-container>
+					<!-- Last Name -->
+					<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+						<label>Last Name</label>
+						<input type="text" name="LastName" ng-model="employee.last_name" required ng-disabled="busy">
+						<div ng-messages="form.employeeForm.LastName.$error" ng-if="form.employeeForm.LastName.$touched">
+							<div ng-message="required">Last name is required.</div>
+						</div>
+					</md-input-container>
+					<!-- Suffix -->
+					<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+						<label>Suffix</label>
+						<input type="text" name="Suffix" ng-model="employee.suffix" ng-disabled="busy">
+					</md-input-container>					
+				</div>
+				<div layout="row" layout-wrap>
+					<!-- Birthdate -->
+					<div flex-xs="100" flex-sm="100" flex-gt-sm>
+				        <h4>Birthdate</h4>
+				        <md-datepicker name="Birthdate" ng-model="employee.birthdate" md-placeholder="Birthdate" required md-max-date="today" ng-change="calculateAge(employee.birthdate)" ng-disabled="busy"></md-datepicker>
+				        <div class="secondary-text" ng-if="employee.age > 1">{{employee.age}} years old.</div>
+				        <div class="validation-messages" ng-messages="form.employeeForm.Birthdate.$error" ng-if="form.employeeForm.Birthdate.$touched">
+				          	<div ng-message="valid">The entered value is not a date.</div>
+				          	<div ng-message="required">Birthdate is required.</div>
+				          	<div ng-message="maxdate">Birthdate cannot be later than today.</div>
+				        </div>
+				    </div>
+					<div layout="row" layout-align="center center" layout-margin flex-xs="100" flex-sm="100" flex-gt-sm>
+						<!-- Sex -->
+						<md-radio-group name="Sex" ng-model="employee.sex" layout="row" layout-align="start center" ng-disabled="busy">
+							<md-radio-button value="Male" class="md-primary" flex>Male</md-radio-button>
+							<md-radio-button value="Female" class="md-primary" flex>Female</md-radio-button>
+						</md-radio-group>
+					</div>
+				</div>
+				<div layout="row" layout-wrap>
+					<!-- Civil Status -->
+			    	<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+			    		<label>Civil Status</label>
+			    		<md-select name="CivilStatus" ng-model="employee.civil_status" required ng-disabled="busy">
+			    			<md-option ng-repeat="item in civil_status" value="{{item}}">{{item}}</md-option>
+			    		</md-select>
+			    		<div ng-messages="form.employeeForm.CivilStatus.$error" ng-if="form.employeeForm.CivilStatus.$touched">
+			    			<div ng-message="required">Civil Status is required.</div>
+			    		</div>
+			    	</md-input-container>
+			    	<!-- Batch -->
+			    	<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm ng-if="batches.length">
+			    		<label>Batch</label>
+			    		<md-select name="Batch" ng-model="employee.batch_id" required ng-disabled="busy">
+			    			<md-option ng-repeat="batch in batches" value="{{batch.id}}">{{batch.name}}</md-option>
+			    		</md-select>
+			    		<div ng-messages="form.employeeForm.Batch.$error" ng-if="form.employeeForm.Batch.$touched">
+			    			<div ng-message="required">Batch is required.</div>
+			    		</div>
+			    	</md-input-container>
+				</div>
+			</md-card-content>
+		</md-card>
+	</div>
+	<md-subheader class="md-primary">Employment Information</md-subheader>
+	<div layout="row" flex layout-align="center center">
+		<md-card layout="column" flex flex-gt-md="80">
+			<md-card-content>
+				<div layout="row" layout-wrap>
+					<!-- Branch -->
+			    	<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm ng-if="branches.length">
+			    		<label>Branch</label>
+			    		<md-select name="Branch" ng-model="employee.branch_id" required ng-disabled="busy">
+			    			<md-option ng-repeat="branch in branches" value="{{branch.id}}">{{branch.name}}</md-option>
+			    		</md-select>
+			    		<div ng-messages="form.employeeForm.Branch.$error" ng-if="form.employeeForm.Branch.$touched">
+			    			<div ng-message="required">Branch is required.</div>
+			    		</div>
+			    	</md-input-container>
+			    	<!-- Cost Center -->
+			    	<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm ng-if="cost_centers.length">
+			    		<label>Cost Center</label>
+			    		<md-select name="CostCenter" ng-model="employee.cost_center_id" required ng-disabled="busy">
+			    			<md-option ng-repeat="cost_center in cost_centers" value="{{cost_center.id}}">{{cost_center.name}}</md-option>
+			    		</md-select>
+			    		<div ng-messages="form.employeeForm.CostCenter.$error" ng-if="form.employeeForm.CostCenter.$touched">
+			    			<div ng-message="required">Cost Center is required.</div>
+			    		</div>
+			    	</md-input-container>
+				</div>
+				<div layout="row" layout-wrap>
+					<!-- Position -->
+			    	<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm ng-if="positions.length">
+			    		<label>Position</label>
+			    		<md-select name="Position" ng-model="employee.position_id" required ng-disabled="busy">
+			    			<md-option ng-repeat="position in positions" value="{{position.id}}">{{position.name}}</md-option>
+			    		</md-select>
+			    		<div ng-messages="form.employeeForm.Position.$error" ng-if="form.employeeForm.Position.$touched">
+			    			<div ng-message="required">Position is required.</div>
+			    		</div>
+			    	</md-input-container>
+			    	<!-- Employment Status -->
+			    	<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm ng-if="employment_status.length">
+			    		<label>Employment Status</label>
+			    		<md-select name="EmploymentStatus" ng-model="employee.employment_status" required ng-disabled="busy">
+			    			<md-option ng-repeat="item in employment_status" value="{{item}}">{{item}}</md-option>
+			    		</md-select>
+			    		<div ng-messages="form.employeeForm.EmploymentStatus.$error" ng-if="form.employeeForm.EmploymentStatus.$touched">
+			    			<div ng-message="required">Employment Status is required.</div>
+			    		</div>
+			    	</md-input-container>
+				</div>
+		    	<!-- Date Hired -->
+				<div flex-xs="100" flex-sm="100" flex-gt-sm>
+			        <h4>Date Hired</h4>
+			        <md-datepicker name="DateHired" ng-model="employee.date_hired" md-placeholder="Date Hired" required md-max-date="today" ng-disabled="busy"></md-datepicker>
+			        <div class="validation-messages" ng-messages="form.employeeForm.DateHired.$error" ng-if="form.employeeForm.DateHired.$touched">
+			          	<div ng-message="valid">The entered value is not a date.</div>
+			          	<div ng-message="required">Date Hired is required.</div>
+			          	<div ng-message="maxdate">Date Hired cannot be later than today.</div>
+			        </div>
+			    </div>
+			</md-card-content>
+		</md-card>
+	</div>
+	<md-subheader class="md-primary">Personal Information</md-subheader>
+	<div layout="row" flex layout-align="center center">
+		<md-card layout="column" flex flex-gt-md="80">
+			<md-card-content>
+				<div layout="row" layout-wrap flex>
+					<!-- Street Address -->
+	                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+	                    <label>Street Address</label>
+	                    <input type="text" name="StreetAddress" required ng-model="employee.street_address">
+	                    <div ng-messages="form.employeeForm.StreetAddress.$error" ng-if="form.employeeForm.StreetAddress.$touched">
+	                        <div ng-message="required">Street Address is required.</div>
+	                    </div>
+	                </md-input-container>
+				</div>
+				<div layout="row" layout-wrap flex>
+	                <!-- City -->
+	                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+	                    <label>City</label>
+	                    <input type="text" name="City" required ng-model="employee.city" ng-blur="checkCity()" ng-disabled="busy">
+	                    <div class="pattern" ng-if="!cities.length && showError">No cities or municipalities matching "{{employee.city}}" were found.</div>
+	                    <div ng-messages="form.employeeForm.City.$error" ng-if="form.employeeForm.City.$touched">
+	                        <div ng-message="required">City is required.</div>
+	                    </div>
+	                </md-input-container>
+	                <!-- Province -->
+	                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+	                    <label>Province</label>
+	                    <md-select name="Province" ng-model="employee.province_id" md-on-open="fetchProvinces()" ng-change="checkProvince()" required ng-disabled="!cities.length" ng-disabled="busy">
+	                        <md-option ng-value="province.id" ng-repeat="province in provinces" ng-if="province.cities.length">
+	                            {{province.name}}
+	                        </md-option>
+	                    </md-select>
+	                    <div class="pattern" ng-if="noMatches">No cities or municipalities matching "{{employee.city}}" were found in this province.</div>
+	                    <div ng-messages="form.employeeForm.Province.$error" ng-if="form.employeeForm.Province.$touched">
+	                        <div ng-message="required">Province is required.</div>
+	                    </div>
+	                </md-input-container>
+	                <!-- Postal Code -->
+	                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+	                    <label>Postal Code</label>
+	                    <input type="number" name="PostalCode" ng-model="employee.postal_code" ng-disabled="busy">
+	                </md-input-container>
+	            </div>
+	            <div layout="row" layout-wrap flex>
+	            	<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+	            		<label>Email</label>
+	            		<input type="email" name="Email" required ng-model="employee.email" ng-disabled="busy" minlength="10" maxlength="100" ng-pattern="/^.+@.+\..+$/">
+	            		<div ng-messages="form.employeeForm.Email.$error" ng-if="form.employeeForm.Email.$touched">
+	            			<div ng-message-exp="['required', 'minlength', 'maxlength', 'pattern']">
+				              Email must be between 10 and 100 characters long and look like an e-mail address.
+				            </div>
+	            		</div>
+	            	</md-input-container>
+	            	<!-- Mobile Number -->
+	                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+	                    <label>Mobile Number</label>
+	                    <input type="text" name="MobileNumber" ng-model="employee.mobile_number" ng-disabled="busy" minlength="11" maxlength="11" ng-pattern="/^\d+$/">
+	                    <div class="hint" ng-if="form.employeeForm.MobileNumber.$untouched">11 digit number</div>
+	                    <div ng-messages="form.employeeForm.MobileNumber.$error" ng-if="form.employeeForm.MobileNumber.$touched">
+	                        <div ng-message-exp="['minlength', 'maxlength', 'pattern']">
+						        Mobile phone number is numeric, and must be 11 characters long.
+						    </div>
+	                    </div>
+	                </md-input-container>
+	                <!-- Phone Number -->
+	                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+	                	<label>Phone Number</label>
+	                	<input type="text" name="PhoneNumber" ng-model="employee.telephone_number" ng-disabled="busy">
+	                </md-input-container>
+	            </div>
+	            <div layout="row" layout-wrap flex>
+	            	<!-- Tax Code -->
+			    	<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm ng-if="tax_codes.length">
+			    		<label>Tax Code</label>
+			    		<md-select name="TaxCode" ng-model="employee.tax_code_id" required ng-disabled="busy">
+			    			<md-option ng-repeat="item in tax_codes" value="{{item.id}}">{{item.code}} - {{item.description}}</md-option>
+			    		</md-select>
+			    		<div ng-messages="form.employeeForm.TaxCode.$error" ng-if="form.employeeForm.TaxCode.$touched">
+			    			<div ng-message="required">Tax Code is required.</div>
+			    		</div>
+			    	</md-input-container>
+			    	<!-- TIN -->
+	                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+	                    <label>TIN</label>
+	                    <input type="text" name="TIN" required ng-model="tin" minlength="9" maxlength="9" ng-pattern="/^\d+$/" ng-change="formatTIN(tin)" ng-disabled="busy">
+	                    <div class="hint" ng-if="!form.employeeForm.TIN.$touched && !tin">9 digit number</div>
+	                    <div class="hint" ng-if="form.employeeForm.TIN.$valid">{{employee.tin}}</div>
+	                    <div ng-messages="form.employeeForm.TIN.$error" ng-if="form.employeeForm.TIN.$touched">
+	                        <div ng-message-exp="['required', 'pattern', 'minlength', 'maxlength']">TIN is required, 9 characters long, and must be numeric.</div>
+	                    </div>
+	                </md-input-container>
+	            </div>
+	            <div layout="row" layout-wrap flex>
+	            	<!-- SSS -->
+	                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+	                    <label>SSS</label>
+	                    <input type="text" name="SSS" required ng-model="sss" minlength="10" maxlength="10" ng-pattern="/^\d+$/" ng-change="formatSSS(sss)" ng-disabled="busy">
+	                    <div class="hint" ng-if="!form.employeeForm.SSS.$touched && !sss">10 digit number</div>
+	                    <div class="hint" ng-if="form.employeeForm.SSS.$valid">{{employee.sss}}</div>
+	                    <div ng-messages="form.employeeForm.SSS.$error" ng-if="form.employeeForm.SSS.$touched">
+	                        <div ng-message-exp="['required', 'pattern', 'minlength', 'maxlength']">SSS is required, 10 characters long, and must be numeric.</div>
+	                    </div>
+	                </md-input-container>
+	                <!-- Pag-IBIG -->
+	                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+	                    <label>Pag-IBIG</label>
+	                    <input type="text" name="PagIBIG" required ng-model="pagibig" minlength="12" maxlength="12" ng-pattern="/^\d+$/" ng-change="formatPagIBIG(pagibig)" ng-disabled="busy">
+	                    <div class="hint" ng-if="!form.employeeForm.PagIBIG.$touched && !pagibig">12 digit number</div>
+	                    <div class="hint" ng-if="form.employeeForm.PagIBIG.$valid">{{employee.pagibig}}</div>
+	                    <div ng-messages="form.employeeForm.PagIBIG.$error" ng-if="form.employeeForm.PagIBIG.$touched">
+	                        <div ng-message-exp="['required', 'pattern', 'minlength', 'maxlength']">Pag-IBIG is required, 12 characters long, and must be numeric.</div>
+	                    </div>
+	                </md-input-container>
+	                <!-- PhilHealth -->
+	                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+	                    <label>PhilHealth</label>
+	                    <input type="text" name="PhilHealth" required ng-model="philhealth" minlength="12" maxlength="12" ng-pattern="/^\d+$/" ng-change="formatPhilHealth(philhealth)" ng-disabled="busy">
+	                    <div class="hint" ng-if="!form.employeeForm.PhilHealth.$touched && !philhealth">12 digit number</div>
+	                    <div class="hint" ng-if="form.employeeForm.PhilHealth.$valid">{{employee.philhealth}}</div>
+	                    <div ng-messages="form.employeeForm.PhilHealth.$error" ng-if="form.employeeForm.PhilHealth.$touched">
+	                        <div ng-message-exp="['required', 'pattern', 'minlength', 'maxlength']">PhilHealth is required, 12 characters long, and must be numeric.</div>
+	                    </div>
+	                </md-input-container>
+	            </div>
+			</md-card-content>
+		</md-card>
+	</div>
+	<md-subheader class="md-primary">Salary Information</md-subheader>
+	<div layout="row" flex layout-align="center center">
+		<md-card layout="column" flex flex-gt-md="80">
+			<md-card-content>
+				<div layout="row" layout-wrap flex>
+					<!-- Time Interpretation -->
+					<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+						<label>Time Interpretation</label>
+						<md-select name="TimeInterpretation" ng-model="employee.time_interpretation_id" required ng-disabled="busy" ng-if="time_interpretations">
+							<md-option ng-repeat="time_interpretation in time_interpretations" value="{{time_interpretation.id}}">{{time_interpretation.name}}</md-option>
+						</md-select>
+						<div ng-messages="form.employeeForm.TimeInterpretation.$error" ng-if="form.employeeForm.TimeInterpretation.$touched">
+							<div ng-message="required">Time interpretation is required.</div>
+						</div>
+					</md-input-container>
+					<!-- Basic Salary -->
+					<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+						<label>Basic Salary</label>
+						<input type="number" name="BasicSalary" ng-model="employee.basic_salary" required min="0" ng-disabled="busy">
+						<div ng-messages="form.employeeForm.BasicSalary.$error" ng-if="form.employeeForm.BasicSalary.$touched">
+							<div ng-message="required">Basic Salary is required.</div>
+							<div ng-message="min">Basic salary cannot be a negative number.</div>
+						</div>
+					</md-input-container>
+				</div>
+				<div ng-if="allowance_types.length">
+					<!-- Allowances -->
+					<md-subheader class="md-no-stick">Additional Earnings</md-subheader>
+					<div layout="row" layout-wrap flex ng-repeat="item in employee.allowance_types">
+						<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+							<label>Name</label>
+							<md-select name="AllowanceType{{$index}}" ng-model="item.allowance_type_id" required ng-disabled="busy" ng-change="checkDeMinimis(item)">
+								<md-option ng-repeat="allowance_type in allowance_types" value="{{allowance_type.id}}" ng-show="!allowance_type.maxed_out">{{allowance_type.name}}</md-option>
+							</md-select>
+							<div ng-messages="form.employeeForm['AllowanceType' + $index].$error" ng-if="form.employeeForm['AllowanceType' + $index].$touched">
+								<div ng-message="required">Allowance is required.</div>
+							</div>
+						</md-input-container>
+						<!-- Amount -->
+						<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+							<label>Amount</label>
+							<input type="number" name="AllowanceAmount{{$index}}" ng-model="item.amount" required min="0" max="{{item.max}}" ng-disabled="busy || item.checked">
+							<div class="hint" ng-if="item.allowance_type_id && form.employeeForm['AllowanceAmount' + $index].$untouched">Maximum amount available is {{item.max}}</div>
+							<div class="hint" ng-if="item.allowance_type_id && form.employeeForm['AllowanceAmount' + $index].$valid && form.employeeForm['AllowanceAmount' + $index].$touched">Uncheck cut-offs to edit this amount.</div>
+							<div ng-messages="form.employeeForm['AllowanceAmount' + $index].$error" ng-if="form.employeeForm['AllowanceAmount' + $index].$touched">
+								<div ng-message="required">Amount is required.</div>
+								<div ng-message="min">Amount cannot be a negative number.</div>
+								<div ng-message="max">Amount already exceeds de minimis for the allowance.</div>
+							</div>
+						</md-input-container>
+						<div layout="column" flex-xs="100" flex-sm="100" flex-gt-sm>
+							<!-- Frequency -->
+							<div layout="row" layout-align="center center" flex>
+								<md-checkbox ng-model="item.first_cut_off" ng-change="checkFrequency(item, item.first_cut_off)" ng-disabled="item.on_hold || (item.limit && !item.first_cut_off) || item.first_cut_off_checked" ng-true-value="1" ng-false-value="0">1st</md-checkbox>
+								<md-checkbox ng-model="item.second_cut_off" ng-change="checkFrequency(item, item.second_cut_off)" ng-disabled="item.on_hold || (item.limit && !item.second_cut_off) || item.second_cut_off_checked" ng-true-value="1" ng-false-value="0">2nd</md-checkbox>
+								<md-checkbox ng-model="item.third_cut_off" ng-change="checkFrequency(item, item.third_cut_off)" ng-disabled="item.on_hold || (item.limit && !item.third_cut_off) || item.third_cut_off_checked" ng-true-value="1" ng-false-value="0">3rd</md-checkbox>
+								<md-checkbox ng-model="item.fourth_cut_off" ng-change="checkFrequency(item, item.fourth_cut_off)" ng-disabled="item.on_hold || (item.limit && !item.fourth_cut_off) || item.fourth_cut_off_checked" ng-true-value="1" ng-false-value="0">4th</md-checkbox>
+								<md-checkbox ng-model="item.on_hold" ng-change="checkFrequency(item)" ng-disabled="item.first_cut_off || item.second_cut_off || item.third_cut_off || item.fourth_cut_off">Hold</md-checkbox>
+							</div>
+							<div class="secondary-text" ng-if="!item.checked">Check at least one.</div>
+						</div>
+						<md-button class="md-icon-button" ng-click="removeEarnings(item)">
+							<md-icon class="mdi mdi-close grey"></md-icon>
+							<md-tooltip>Remove</md-tooltip>
+						</md-button>
+					</div>
+					<md-button class="md-fab md-mini md-primary" ng-click="addEarnings()">
+						<md-icon class="mdi mdi-plus"></md-icon>
+						<md-tooltip>Earnings</md-tooltip>
+					</md-button>
+				</div>
+				<div ng-if="deduction_types.length">
+					<!-- Deductions -->
+					<md-subheader class="md-no-stick">Additional Deductions</md-subheader>
+					<div layout="row" layout-wrap flex ng-repeat="item in employee.deduction_types">
+						<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+							<label>Name</label>
+							<md-select name="DeductionType{{$index}}" ng-model="item.deduction_type_id" required ng-disabled="busy" ng-change="checkDeduction(item)">
+								<md-option ng-repeat="deduction_type in deduction_types" value="{{deduction_type.id}}">{{deduction_type.name}}</md-option>
+							</md-select>
+							<div ng-messages="form.employeeForm['DeductionType' + $index].$error" ng-if="form.employeeForm['DeductionType' + $index].$touched">
+								<div ng-message="required">Deduction is required.</div>
+							</div>
+						</md-input-container>
+						<!-- Amount -->
+						<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+							<label>Amount</label>
+							<input type="number" name="DeductionAmount{{$index}}" ng-model="item.amount" required min="0"  ng-disabled="busy">
+							<div ng-messages="form.employeeForm['DeductionAmount' + $index].$error" ng-if="form.employeeForm['DeductionAmount' + $index].$touched">
+								<div ng-message="required">Amount is required.</div>
+								<div ng-message="min">Amount cannot be a negative number.</div>
+							</div>
+						</md-input-container>
+						<!-- Frequency -->
+						<div layout="row" flex-xs="100" flex-sm="100" flex-gt-sm layout-align="center center">
+							<md-checkbox ng-model="item.first_cut_off" ng-disabled="item.on_hold || item.first_cut_off_checked" ng-true-value="1" ng-false-value="0">1st</md-checkbox>
+							<md-checkbox ng-model="item.second_cut_off" ng-disabled="item.on_hold || item.second_cut_off_checked" ng-true-value="1" ng-false-value="0">2nd</md-checkbox>
+							<md-checkbox ng-model="item.third_cut_off" ng-disabled="item.on_hold || item.third_cut_off_checked" ng-true-value="1" ng-false-value="0">3rd</md-checkbox>
+							<md-checkbox ng-model="item.fourth_cut_off" ng-disabled="item.on_hold || item.fourth_cut_off_checked" ng-true-value="1" ng-false-value="0">4th</md-checkbox>
+							<md-checkbox ng-model="item.on_hold" ng-disabled="item.first_cut_off || item.second_cut_off || item.third_cut_off || item.fourth_cut_off">Hold</md-checkbox>
+						</div>
+						<md-button class="md-icon-button" ng-click="removeDeduction(item)">
+							<md-icon class="mdi mdi-close grey"></md-icon>
+							<md-tooltip>Remove</md-tooltip>
+						</md-button>
+					</div>
+					<md-button class="md-fab md-mini md-primary" ng-click="addDeductions()">
+						<md-icon class="mdi mdi-plus"></md-icon>
+						<md-tooltip>Deductions</md-tooltip>
+					</md-button>
+				</div>
+			</md-card-content>
+		</md-card>
+	</div>
+</form>
+

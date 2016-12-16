@@ -45,6 +45,19 @@ class AuthServiceProvider extends ServiceProvider
             }
 
             return false;
+        });   
+
+        Gate::define('hris', function($user){
+            $user = User::with('group.modules')->where('id', $user->id)->first();
+
+            foreach ($user->group->modules as $module) {
+                if($module->name == 'HRIS')
+                {
+                    return true;
+                }
+            }
+
+            return false;
         });        
     }
 }

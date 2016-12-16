@@ -15,13 +15,13 @@ class CreateSSSTable extends Migration
         Schema::create('sss', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
-            $table->float('minimum_range');
-            $table->float('maximum_range');
+            $table->float('from');
+            $table->float('to')->nullable();
             $table->float('monthly_salary_credit');
-            $table->float('employee_contribution');
-            $table->float('employer_contribution');
-            $table->float('total_contribution');
-            $table->timestamps();
+            $table->float('ER');
+            $table->float('EE');
+            $table->float('EC');
+            $table->float('total');
         });
     }
 

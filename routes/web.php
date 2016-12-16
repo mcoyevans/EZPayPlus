@@ -22,6 +22,7 @@ Route::get('/home', 'HomeController@index');
 /* Resource routes */
 Route::resource('allowance-type', 'AllowanceTypeController');
 Route::resource('biometric', 'BiometricController');
+Route::resource('batch', 'BatchController');
 Route::resource('branch', 'BranchController');
 Route::resource('city', 'CityController');
 Route::resource('company', 'CompanyController');
@@ -30,6 +31,7 @@ Route::resource('country', 'CountryController');
 Route::resource('currency', 'CurrencyController');
 Route::resource('deduction-type', 'DeductionTypeController');
 Route::resource('department', 'DepartmentController');
+Route::resource('de-minimis', 'DeMinimisController');
 Route::resource('employee', 'EmployeeController');
 Route::resource('employee-allowance-type', 'EmployeeAllowanceTypeController');
 Route::resource('employee-deduction-type', 'EmployeeDeductionTypeController');
@@ -87,6 +89,12 @@ Route::group(['prefix' => 'province'], function(){
 Route::group(['prefix' => 'branch'], function(){
 	Route::post('enlist', 'BranchController@enlist');
 	Route::post('check-duplicate', 'BranchController@checkDuplicate');
+});
+
+/* Cost Center Routes */
+Route::group(['prefix' => 'cost-center'], function(){
+	Route::post('enlist', 'CostCenterController@enlist');
+	Route::post('check-duplicate', 'CostCenterController@checkDuplicate');
 });
 
 /* House Bank Routes */
@@ -177,4 +185,36 @@ Route::group(['prefix' => 'biometric'], function(){
 Route::group(['prefix' => 'time-interpretation'], function(){
 	Route::post('enlist', 'TimeInterpretationController@enlist');
 	Route::post('check-duplicate', 'TimeInterpretationController@checkDuplicate');
+});
+
+/* Tax Routes */
+Route::group(['prefix' => 'tax'], function(){
+	Route::post('enlist', 'TaxController@enlist');
+});
+
+/* SSS Routes */
+Route::group(['prefix' => 'sss'], function(){
+	Route::post('enlist', 'SSSController@enlist');
+});
+
+/* Pagibig Routes */
+Route::group(['prefix' => 'pagibig'], function(){
+	Route::post('enlist', 'PagibigController@enlist');
+});
+
+/* Philhealth Routes */
+Route::group(['prefix' => 'philhealth'], function(){
+	Route::post('enlist', 'PhilhealthController@enlist');
+});
+
+/* Batch Routes */
+Route::group(['prefix' => 'batch'], function(){
+	Route::post('enlist', 'BatchController@enlist');
+	Route::post('check-duplicate', 'BatchController@checkDuplicate');
+});
+
+/* Employee */
+Route::group(['prefix' => 'employee'], function(){
+	Route::post('enlist', 'EmployeeController@enlist');
+	Route::post('check-duplicate', 'EmployeeController@checkDuplicate');
 });

@@ -17,11 +17,9 @@ class CreateTaxesTable extends Migration
             $table->increments('id');
             $table->integer('tax_code_id')->unsigned();
             $table->string('pay_frequency');
-            $table->float('minimum_range');
-            $table->float('maximum_range');
+            $table->float('salary');
             $table->float('tax');
             $table->float('excess');
-            $table->timestamps();
         });
     }
 

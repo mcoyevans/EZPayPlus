@@ -17,12 +17,14 @@ class CreateEmployeeDeductionTypeTable extends Migration
             $table->increments('id');
             $table->integer('employee_id')->unsigned();
             $table->integer('deduction_type_id')->unsigned();
-            $table->decimal('amount', 8,2);
-            $table->decimal('amortization', 8,2);
-            $table->date('date_start');
-            $table->date('date_end')->nullable();
+            $table->float('amount');
+            // $table->decimal('amortization', 8,2);
+            // $table->date('date_start');
+            // $table->date('date_end')->nullable();
             $table->boolean('first_cut_off');
             $table->boolean('second_cut_off');
+            $table->boolean('third_cut_off');
+            $table->boolean('fourth_cut_off');
             $table->boolean('on_hold');
             $table->timestamps();
         });

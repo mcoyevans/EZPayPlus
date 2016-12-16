@@ -29,4 +29,3 @@ $factory->define(App\Branch::class, function (Faker\Generator $faker) {
         'gl_account' => str_random(12),
     ];
 });
-

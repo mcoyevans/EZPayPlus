@@ -1,5 +1,5 @@
 <div infinite-scroll='type.paginateLoad()' infinite-scroll-distance="1" infinite-scroll-disabled="type.busy" infinite-scroll-parent ng-if="type.show">
-	<md-list>
+	<md-list ng-if="!subheader.current.table">
 		<md-list-item class="md-3-line" ng-repeat="type in type.items | filter: toolbar.searchText | orderBy:sortType:sortReverse" ng-if="showInactive || !type.deleted_at" ng-click="listItemAction(type)">
 			<h2 class="md-avatar" ng-class="type.deleted_at ? 'accent-bg': 'primary-bg'" layout="row" layout-align="center center">
 				<span class="md-headline white-text">{{type.name.charAt(0).toUpperCase()}}</span>
@@ -15,6 +15,10 @@
 			</div>
 		</md-list-item>
 	</md-list>
+	<div layout="row" flex layout-align="center center" ng-include="'/app/components/app/templates/bir-tax-table.template.html'" ng-if="subheader.current.table == 'tax'"></div>
+	<div layout="row" flex layout-align="center center" ng-include="'/app/components/app/templates/sss-table.template.html'" ng-if="subheader.current.table == 'sss'"></div>
+	<div layout="row" flex layout-align="center center" ng-include="'/app/components/app/templates/pagibig-table.template.html'" ng-if="subheader.current.table == 'pagibig'"></div>
+	<div layout="row" flex layout-align="center center" ng-include="'/app/components/app/templates/philhealth-table.template.html'" ng-if="subheader.current.table == 'philhealth'"></div>
 </div>
 <div layout="row" layout-align="center center" layout-padding layout-margin ng-if="isLoading">
 	<md-progress-circular class="md-primary" md-diameter="60"></md-progress-circular>

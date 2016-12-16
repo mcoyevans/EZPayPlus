@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class RenameSantionTypesTableToSanctionTypesTable extends Migration
+class CreateBatchesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,13 @@ class RenameSantionTypesTableToSanctionTypesTable extends Migration
      */
     public function up()
     {
-        Schema::rename('santion_types', 'sanction_types');
+        Schema::create('batches', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->text('description');
+            $table->timestamps();
+            $table->softDeletes();
+        });
     }
 
     /**
@@ -23,6 +29,6 @@ class RenameSantionTypesTableToSanctionTypesTable extends Migration
      */
     public function down()
     {
-        Schema::rename('sanction_types', 'santion_types');
+        Schema::dropIfExists('batches');
     }
 }

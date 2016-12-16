@@ -7,211 +7,278 @@ settings
 		}
 
 		$scope.subheader.navs = [
+			// Branches
+			{
+				'label':'Branches',
+				'url': '/branch/enlist',
+				'request': {
+					'withTrashed': true,
+					'paginate':20,
+				},
+				'fab': {
+					'controller':'createBranchDialogController',
+					'template':'/app/components/settings/templates/dialogs/branch-form-dialog.template.html',
+					'message': 'Branch saved.'
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show':true,
+						action: function(data){
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'editBranchDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/branch-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Branch updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show':true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' branch?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/branch/' + data.id)
+										.success(function(){
+											Helper.notify('Branch deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'GL Account',
+						'type': 'gl_account',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
+			// Cost Centers
+			{
+				'label':'Cost Centers',
+				'url': '/cost-center/enlist',
+				'request': {
+					'withTrashed': true,
+					'paginate':20,
+				},
+				'fab': {
+					'controller':'createCostCenterDialogController',
+					'template':'/app/components/settings/templates/dialogs/cost-center-form-dialog.template.html',
+					'message': 'Cost center saved.'
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show':true,
+						action: function(data){
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'editCostCenterDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/cost-center-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Cost center updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show':true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + data.name + ' cost center?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/cost-center/' + data.id)
+										.success(function(){
+											Helper.notify('Cost center deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Name',
+						'type': 'name',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'GL Account',
+						'type': 'gl_account',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
+				action: function(current){
+					setInit(current);
+				},
+			},
 			// Departments
-			{
-				'label':'Departments',
-				'url': '/department/enlist',
-				'request': {
-					'with': [
-						{
-							'relation':'positions',
-							'withTrashed':false,
-						},
-					],
-					'withTrashed': true,
-					'paginate':20,
-				},
-				'fab': {
-					'fullscreen' : true,
-					'controller':'nameDescriptionDialogController',
-					'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
-					'message': 'Department saved.',
-					'action' : 'create',
-					'url': '/department',
-					'label': 'Department',
-				},
-				'menu': [
-					{
-						'label': 'Edit',
-						'icon': 'mdi-pencil',
-						'show': true,
-						action: function(data){
-							data.action = 'edit';
-							data.url = '/department';
-							data.label = 'Department';
+			// {
+			// 	'label':'Departments',
+			// 	'url': '/department/enlist',
+			// 	'request': {
+			// 		'with': [
+			// 			{
+			// 				'relation':'positions',
+			// 				'withTrashed':false,
+			// 			},
+			// 		],
+			// 		'withTrashed': true,
+			// 		'paginate':20,
+			// 	},
+			// 	'fab': {
+			// 		'fullscreen' : true,
+			// 		'controller':'nameDescriptionDialogController',
+			// 		'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
+			// 		'message': 'Department saved.',
+			// 		'action' : 'create',
+			// 		'url': '/department',
+			// 		'label': 'Department',
+			// 	},
+			// 	'menu': [
+			// 		{
+			// 			'label': 'Edit',
+			// 			'icon': 'mdi-pencil',
+			// 			'show': true,
+			// 			action: function(data){
+			// 				data.action = 'edit';
+			// 				data.url = '/department';
+			// 				data.label = 'Department';
 
-							Helper.set(data);
+			// 				Helper.set(data);
 
-							var dialog = {};
-							dialog.controller = 'nameDescriptionDialogController';
-							dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
+			// 				var dialog = {};
+			// 				dialog.controller = 'nameDescriptionDialogController';
+			// 				dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
 
-							Helper.customDialog(dialog)
-								.then(function(){
-									Helper.notify('Department updated.');
-									$scope.$emit('refresh');
-								}, function(){
-									return;
-								})
-						},
-					},
-					{
-						'label': 'Delete',
-						'icon': 'mdi-delete',
-						'show': true,
-						action: function(data){
-							var dialog = {};
-							dialog.title = 'Delete';
-							dialog.message = 'Delete ' + data.name + ' department?'
-							dialog.ok = 'Delete';
-							dialog.cancel = 'Cancel';
+			// 				Helper.customDialog(dialog)
+			// 					.then(function(){
+			// 						Helper.notify('Department updated.');
+			// 						$scope.$emit('refresh');
+			// 					}, function(){
+			// 						return;
+			// 					})
+			// 			},
+			// 		},
+			// 		{
+			// 			'label': 'Delete',
+			// 			'icon': 'mdi-delete',
+			// 			'show': true,
+			// 			action: function(data){
+			// 				var dialog = {};
+			// 				dialog.title = 'Delete';
+			// 				dialog.message = 'Delete ' + data.name + ' department?'
+			// 				dialog.ok = 'Delete';
+			// 				dialog.cancel = 'Cancel';
 
-							Helper.confirm(dialog)
-								.then(function(){
-									Helper.delete('/department/' + data.id)
-										.success(function(){
-											Helper.notify('Department deleted.');
-											$scope.$emit('refresh');
-										})
-										.error(function(){
-											Helper.error();
-										});
-								}, function(){
-									return;
-								})
-						},
-					},
-				],
-				'sort': [
-					{
-						'label': 'Name',
-						'type': 'name',
-						'sortReverse': false,
-					},
-					{
-						'label': 'Description',
-						'type': 'description',
-						'sortReverse': false,
-					},
-					{
-						'label': 'Recently added',
-						'type': 'created_at',
-						'sortReverse': false,
-					},
-				],
-				action: function(current){
-					setInit(current);
-				},
-			},
-			// Positions
-			{
-				'label':'Positions',
-				'url': '/position/enlist',
-				'request': {
-					'withTrashed': true,
-					'with': [
-						{
-							'relation' : 'department',
-							'withTrashed': false,
-						},
-						{
-							'relation' : 'job_category',
-							'withTrashed': false,
-						},
-						{
-							'relation' : 'labor_type',
-							'withTrashed': false,
-						},
-						{
-							'relation' : 'deployments',
-							'withTrashed': false,	
-						},
-					],
-					'paginate':20,
-				},
-				'fab': {
-					'fullscreen' : true,
-					'controller':'positionDialogController',
-					'template':'/app/components/settings/templates/dialogs/position-form-dialog.template.html',
-					'message': 'Position saved.',
-					'action' : 'create',
-					'url': '/position',
-
-				},
-				action: function(current){
-					setInit(current);
-				},
-				'menu': [
-					{
-						'label': 'Edit',
-						'icon': 'mdi-pencil',
-						'show': true,
-						action: function(data){
-							data.action = 'edit';
-							data.url = '/position';
-
-							Helper.set(data);
-
-							var dialog = {};
-							dialog.controller = 'positionDialogController';
-							dialog.template = '/app/components/settings/templates/dialogs/position-form-dialog.template.html';
-
-							Helper.customDialog(dialog)
-								.then(function(){
-									Helper.notify('Position updated.');
-									$scope.$emit('refresh');
-								}, function(){
-									return;
-								})
-						},
-					},
-					{
-						'label': 'Delete',
-						'icon': 'mdi-delete',
-						'show': true,
-						action: function(data){
-							var dialog = {};
-							dialog.title = 'Delete';
-							dialog.message = 'Delete ' + data.name + ' position?'
-							dialog.ok = 'Delete';
-							dialog.cancel = 'Cancel';
-
-							Helper.confirm(dialog)
-								.then(function(){
-									Helper.delete('/position/' + data.id)
-										.success(function(){
-											Helper.notify('Position deleted.');
-											$scope.$emit('refresh');
-										})
-										.error(function(){
-											Helper.error();
-										});
-								}, function(){
-									return;
-								})
-						},
-					},
-				],
-				'sort': [
-					{
-						'label': 'Name',
-						'type': 'name',
-						'sortReverse': false,
-					},
-					{
-						'label': 'Description',
-						'type': 'description',
-						'sortReverse': false,
-					},
-					{
-						'label': 'Recently added',
-						'type': 'created_at',
-						'sortReverse': false,
-					},
-				],
-			},
+			// 				Helper.confirm(dialog)
+			// 					.then(function(){
+			// 						Helper.delete('/department/' + data.id)
+			// 							.success(function(){
+			// 								Helper.notify('Department deleted.');
+			// 								$scope.$emit('refresh');
+			// 							})
+			// 							.error(function(){
+			// 								Helper.error();
+			// 							});
+			// 					}, function(){
+			// 						return;
+			// 					})
+			// 			},
+			// 		},
+			// 	],
+			// 	'sort': [
+			// 		{
+			// 			'label': 'Name',
+			// 			'type': 'name',
+			// 			'sortReverse': false,
+			// 		},
+			// 		{
+			// 			'label': 'Description',
+			// 			'type': 'description',
+			// 			'sortReverse': false,
+			// 		},
+			// 		{
+			// 			'label': 'Recently added',
+			// 			'type': 'created_at',
+			// 			'sortReverse': false,
+			// 		},
+			// 	],
+			// 	action: function(current){
+			// 		setInit(current);
+			// 	},
+			// },
 			// Job Categories
-			{
+			/*{
 				'label':'Job Categories',
 				'url': '/job-category/enlist',
 				'request' : {
@@ -304,9 +371,9 @@ settings
 				action: function(current){
 					setInit(current);
 				},
-			},
+			},*/
 			// Labor Types
-			{
+			/*{
 				'label':'Labor Types',
 				'url': '/labor-type/enlist',
 				'request' : {
@@ -400,9 +467,9 @@ settings
 				action: function(current){
 					setInit(current);
 				},
-			},
+			},*/
 			// Leaves
-			{
+			/*{
 				'label':'Leaves',
 				'url': '/leave-type/enlist',
 				'request': {
@@ -487,10 +554,10 @@ settings
 				action: function(current){
 					setInit(current);
 				},
-			},
-			// Allowances
+			},*/
+			// Earnings
 			{
-				'label':'Allowances',
+				'label':'Earnings',
 				'url': '/allowance-type/enlist',
 				'request' : {
 					'withTrashed': true,
@@ -498,18 +565,21 @@ settings
 						{
 							'relation':'employees',
 							'withTrashed': false,
+						},
+						{
+							'relation':'de_minimis',
+							'withTrashed': false,
 						}
 					],
 					'paginate':20,
 				},
 				'fab': {
 					'fullscreen' : true,
-					'controller':'nameDescriptionDialogController',
-					'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
-					'message': 'Allowance type saved.',
+					'controller':'earningsDialogController',
+					'template':'/app/components/settings/templates/dialogs/earnings-dialog.template.html',
+					'message': 'Earnings saved.',
 					'action' : 'create',
 					'url': '/allowance-type',
-					'label': 'Allowance',
 				},
 				'menu': [
 					{
@@ -519,17 +589,16 @@ settings
 						action: function(data){
 							data.action = 'edit';
 							data.url = '/allowance-type';
-							data.label = 'Allowance';
 
 							Helper.set(data);
 
 							var dialog = {};
-							dialog.controller = 'nameDescriptionDialogController';
-							dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
+							dialog.controller = 'earningsDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/earnings-dialog.template.html';
 
 							Helper.customDialog(dialog)
 								.then(function(){
-									Helper.notify('Allowance type updated.');
+									Helper.notify('Earnings updated.');
 									$scope.$emit('refresh');
 								}, function(){
 									return;
@@ -543,7 +612,7 @@ settings
 						action: function(data){
 							var dialog = {};
 							dialog.title = 'Delete';
-							dialog.message = 'Delete ' + data.name + ' allowance?'
+							dialog.message = 'Delete ' + data.name + '?'
 							dialog.ok = 'Delete';
 							dialog.cancel = 'Cancel';
 
@@ -551,7 +620,7 @@ settings
 								.then(function(){
 									Helper.delete('/allowance-type/' + data.id)
 										.success(function(){
-											Helper.notify('Allowance type deleted.');
+											Helper.notify('Earnings deleted.');
 											$scope.$emit('refresh');
 										})
 										.error(function(){
@@ -594,6 +663,13 @@ settings
 						{
 							'relation':'employees',
 							'withTrashed': false,
+						}
+					],
+					'where': [
+						{
+							'label':'government_deduction',
+							'condition': '=',
+							'value': false
 						}
 					],
 					'paginate':20,
@@ -680,15 +756,32 @@ settings
 					setInit(current);
 				},
 			},
-			// Sanctions
+			// Positions
 			{
-				'label':'Sanctions',
-				'url': '/sanction-type/enlist',
-				'request' : {		
+				'label':'Positions',
+				'url': '/position/enlist',
+				'request': {
+					'withTrashed': true,
 					'with': [
+					// 	{
+					// 		'relation' : 'department',
+					// 		'withTrashed': false,
+					// 	},
+					// 	{
+					// 		'relation' : 'job_category',
+					// 		'withTrashed': false,
+					// 	},
+					// 	{
+					// 		'relation' : 'labor_type',
+					// 		'withTrashed': false,
+					// 	},
+					// 	{
+					// 		'relation' : 'deployments',
+					// 		'withTrashed': false,	
+					// 	},
 						{
-							'relation':'sanction_levels',
-							'withTrashed': false,
+							'relation' : 'employees',
+							'withTrashed': true,	
 						},
 					],
 					'paginate':20,
@@ -697,10 +790,13 @@ settings
 					'fullscreen' : true,
 					'controller':'nameDescriptionDialogController',
 					'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
-					'message': 'Sanction type saved.',
+					'message': 'Position saved.',
 					'action' : 'create',
-					'url': '/sanction-type',
-					'label': 'Sanction',
+					'url': '/position',
+					'label': 'Position',
+				},
+				action: function(current){
+					setInit(current);
 				},
 				'menu': [
 					{
@@ -709,8 +805,8 @@ settings
 						'show': true,
 						action: function(data){
 							data.action = 'edit';
-							data.url = '/sanction-type';
-							data.label = 'Sanction';
+							data.url = '/position';
+							data.label = 'Position';
 
 							Helper.set(data);
 
@@ -720,7 +816,7 @@ settings
 
 							Helper.customDialog(dialog)
 								.then(function(){
-									Helper.notify('Sanction type updated.');
+									Helper.notify('Position updated.');
 									$scope.$emit('refresh');
 								}, function(){
 									return;
@@ -734,15 +830,15 @@ settings
 						action: function(data){
 							var dialog = {};
 							dialog.title = 'Delete';
-							dialog.message = 'Delete ' + data.name + ' sanction type?'
+							dialog.message = 'Delete ' + data.name + ' position?'
 							dialog.ok = 'Delete';
 							dialog.cancel = 'Cancel';
 
 							Helper.confirm(dialog)
 								.then(function(){
-									Helper.delete('/sanction-type/' + data.id)
+									Helper.delete('/position/' + data.id)
 										.success(function(){
-											Helper.notify('Sanction type deleted.');
+											Helper.notify('Position deleted.');
 											$scope.$emit('refresh');
 										})
 										.error(function(){
@@ -771,31 +867,32 @@ settings
 						'sortReverse': false,
 					},
 				],
-				action: function(current){
-					setInit(current);
-				},
 			},
-			// Sanction Levels
+			// Batches
 			{
-				'label':'Sanction Levels',
-				'url': '/sanction-level/enlist',
-				'request' : {		
+				'label':'Batches',
+				'url': '/batch/enlist',
+				'request': {
+					'withTrashed': true,
 					'with': [
 						{
-							'relation':'sanction_type',
-							'withTrashed': false,
+							'relation' : 'employees',
+							'withTrashed': true,	
 						},
 					],
 					'paginate':20,
 				},
 				'fab': {
 					'fullscreen' : true,
-					'controller':'sanctionLevelDialogController',
-					'template':'/app/components/settings/templates/dialogs/sanction-level-form-dialog.template.html',
-					'message': 'Sanction level saved.',
+					'controller':'nameDescriptionDialogController',
+					'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
+					'message': 'Batch saved.',
 					'action' : 'create',
-					'url': '/sanction-level',
-					'label': 'Sanction',
+					'url': '/batch',
+					'label': 'Batch',
+				},
+				action: function(current){
+					setInit(current);
 				},
 				'menu': [
 					{
@@ -804,18 +901,18 @@ settings
 						'show': true,
 						action: function(data){
 							data.action = 'edit';
-							data.url = '/sanction-level';
-							data.label = 'Sanction';
+							data.url = '/batch';
+							data.label = 'Batch';
 
 							Helper.set(data);
 
 							var dialog = {};
-							dialog.controller = 'sanctionLevelDialogController';
-							dialog.template = '/app/components/settings/templates/dialogs/sanction-level-form-dialog.template.html';
+							dialog.controller = 'nameDescriptionDialogController';
+							dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
 
 							Helper.customDialog(dialog)
 								.then(function(){
-									Helper.notify('Sanction level updated.');
+									Helper.notify('Batch updated.');
 									$scope.$emit('refresh');
 								}, function(){
 									return;
@@ -829,15 +926,15 @@ settings
 						action: function(data){
 							var dialog = {};
 							dialog.title = 'Delete';
-							dialog.message = 'Delete ' + data.name + ' sanction level?'
+							dialog.message = 'Delete ' + data.name + ' batch?'
 							dialog.ok = 'Delete';
 							dialog.cancel = 'Cancel';
 
 							Helper.confirm(dialog)
 								.then(function(){
-									Helper.delete('/sanction-level/' + data.id)
+									Helper.delete('/batch/' + data.id)
 										.success(function(){
-											Helper.notify('Sanction level deleted.');
+											Helper.notify('Batch deleted.');
 											$scope.$emit('refresh');
 										})
 										.error(function(){
@@ -866,10 +963,197 @@ settings
 						'sortReverse': false,
 					},
 				],
-				action: function(current){
-					setInit(current);
-				},
 			},
+			// Sanctions
+			// {
+			// 	'label':'Sanctions',
+			// 	'url': '/sanction-type/enlist',
+			// 	'request' : {		
+			// 		'with': [
+			// 			{
+			// 				'relation':'sanction_levels',
+			// 				'withTrashed': false,
+			// 			},
+			// 		],
+			// 		'paginate':20,
+			// 	},
+			// 	'fab': {
+			// 		'fullscreen' : true,
+			// 		'controller':'nameDescriptionDialogController',
+			// 		'template':'/app/components/settings/templates/dialogs/name-description-form-dialog.template.html',
+			// 		'message': 'Sanction type saved.',
+			// 		'action' : 'create',
+			// 		'url': '/sanction-type',
+			// 		'label': 'Sanction',
+			// 	},
+			// 	'menu': [
+			// 		{
+			// 			'label': 'Edit',
+			// 			'icon': 'mdi-pencil',
+			// 			'show': true,
+			// 			action: function(data){
+			// 				data.action = 'edit';
+			// 				data.url = '/sanction-type';
+			// 				data.label = 'Sanction';
+
+			// 				Helper.set(data);
+
+			// 				var dialog = {};
+			// 				dialog.controller = 'nameDescriptionDialogController';
+			// 				dialog.template = '/app/components/settings/templates/dialogs/name-description-form-dialog.template.html';
+
+			// 				Helper.customDialog(dialog)
+			// 					.then(function(){
+			// 						Helper.notify('Sanction type updated.');
+			// 						$scope.$emit('refresh');
+			// 					}, function(){
+			// 						return;
+			// 					})
+			// 			},
+			// 		},
+			// 		{
+			// 			'label': 'Delete',
+			// 			'icon': 'mdi-delete',
+			// 			'show': true,
+			// 			action: function(data){
+			// 				var dialog = {};
+			// 				dialog.title = 'Delete';
+			// 				dialog.message = 'Delete ' + data.name + ' sanction type?'
+			// 				dialog.ok = 'Delete';
+			// 				dialog.cancel = 'Cancel';
+
+			// 				Helper.confirm(dialog)
+			// 					.then(function(){
+			// 						Helper.delete('/sanction-type/' + data.id)
+			// 							.success(function(){
+			// 								Helper.notify('Sanction type deleted.');
+			// 								$scope.$emit('refresh');
+			// 							})
+			// 							.error(function(){
+			// 								Helper.error();
+			// 							});
+			// 					}, function(){
+			// 						return;
+			// 					})
+			// 			},
+			// 		},
+			// 	],
+			// 	'sort': [
+			// 		{
+			// 			'label': 'Name',
+			// 			'type': 'name',
+			// 			'sortReverse': false,
+			// 		},
+			// 		{
+			// 			'label': 'Description',
+			// 			'type': 'description',
+			// 			'sortReverse': false,
+			// 		},
+			// 		{
+			// 			'label': 'Recently added',
+			// 			'type': 'created_at',
+			// 			'sortReverse': false,
+			// 		},
+			// 	],
+			// 	action: function(current){
+			// 		setInit(current);
+			// 	},
+			// },
+			// Sanction Levels
+			// {
+			// 	'label':'Sanction Levels',
+			// 	'url': '/sanction-level/enlist',
+			// 	'request' : {		
+			// 		'with': [
+			// 			{
+			// 				'relation':'sanction_type',
+			// 				'withTrashed': false,
+			// 			},
+			// 		],
+			// 		'paginate':20,
+			// 	},
+			// 	'fab': {
+			// 		'fullscreen' : true,
+			// 		'controller':'sanctionLevelDialogController',
+			// 		'template':'/app/components/settings/templates/dialogs/sanction-level-form-dialog.template.html',
+			// 		'message': 'Sanction level saved.',
+			// 		'action' : 'create',
+			// 		'url': '/sanction-level',
+			// 		'label': 'Sanction',
+			// 	},
+			// 	'menu': [
+			// 		{
+			// 			'label': 'Edit',
+			// 			'icon': 'mdi-pencil',
+			// 			'show': true,
+			// 			action: function(data){
+			// 				data.action = 'edit';
+			// 				data.url = '/sanction-level';
+			// 				data.label = 'Sanction';
+
+			// 				Helper.set(data);
+
+			// 				var dialog = {};
+			// 				dialog.controller = 'sanctionLevelDialogController';
+			// 				dialog.template = '/app/components/settings/templates/dialogs/sanction-level-form-dialog.template.html';
+
+			// 				Helper.customDialog(dialog)
+			// 					.then(function(){
+			// 						Helper.notify('Sanction level updated.');
+			// 						$scope.$emit('refresh');
+			// 					}, function(){
+			// 						return;
+			// 					})
+			// 			},
+			// 		},
+			// 		{
+			// 			'label': 'Delete',
+			// 			'icon': 'mdi-delete',
+			// 			'show': true,
+			// 			action: function(data){
+			// 				var dialog = {};
+			// 				dialog.title = 'Delete';
+			// 				dialog.message = 'Delete ' + data.name + ' sanction level?'
+			// 				dialog.ok = 'Delete';
+			// 				dialog.cancel = 'Cancel';
+
+			// 				Helper.confirm(dialog)
+			// 					.then(function(){
+			// 						Helper.delete('/sanction-level/' + data.id)
+			// 							.success(function(){
+			// 								Helper.notify('Sanction level deleted.');
+			// 								$scope.$emit('refresh');
+			// 							})
+			// 							.error(function(){
+			// 								Helper.error();
+			// 							});
+			// 					}, function(){
+			// 						return;
+			// 					})
+			// 			},
+			// 		},
+			// 	],
+			// 	'sort': [
+			// 		{
+			// 			'label': 'Name',
+			// 			'type': 'name',
+			// 			'sortReverse': false,
+			// 		},
+			// 		{
+			// 			'label': 'Description',
+			// 			'type': 'description',
+			// 			'sortReverse': false,
+			// 		},
+			// 		{
+			// 			'label': 'Recently added',
+			// 			'type': 'created_at',
+			// 			'sortReverse': false,
+			// 		},
+			// 	],
+			// 	action: function(current){
+			// 		setInit(current);
+			// 	},
+			// },
 		];
 
 		setInit($scope.subheader.navs[0]);

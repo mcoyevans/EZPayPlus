@@ -17,9 +17,8 @@ class CreateTaxCodesTable extends Migration
             $table->increments('id');
             $table->string('code');
             $table->string('description');
-            $table->float('excemption');
+            $table->float('exemption');
             $table->float('dependent');
-            $table->timestamps();
         });
     }
 

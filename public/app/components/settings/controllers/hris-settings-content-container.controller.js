@@ -61,13 +61,13 @@ settings
 				data.current = $scope.subheader.current;
 
 				// condition for checking if the delete button can be allowed
-				if( ((data.current.label == 'Departments' || data.current.label == 'Job Categories' || data.current.label == 'Labor Types') && data.positions.length) || (data.current.label == 'Positions' && data.deployments.length) || (data.current.label == 'Deductions' && data.employees.length) || (data.current.label == 'Sanctions' && data.sanction_levels) )
+				if( ((data.current.label == 'Departments' || data.current.label == 'Job Categories' || data.current.label == 'Labor Types') && data.positions.length) || (data.current.label == 'Positions' && data.employees.length) || (data.current.label == 'Batches' && data.employees.length) || (data.current.label == 'Deductions' && data.employees.length) || (data.current.label == 'Sanctions' && data.sanction_levels) )
 				{
 					// disable the delete button
 					data.current.menu[1].show = false;
 				}
 				// otherwise
-				else if( ((data.current.label == 'Departments' || data.current.label == 'Job Categories' || data.current.label == 'Labor Types') && !data.positions.length) || (data.current.label == 'Positions' && !data.deployments.length) || (data.current.label == 'Deductions' && !data.employees.length) || (data.current.label == 'Sanctions' && !data.sanction_levels) )
+				else if( ((data.current.label == 'Departments' || data.current.label == 'Job Categories' || data.current.label == 'Labor Types') && !data.positions.length) || (data.current.label == 'Positions' && !data.employees.length) || (data.current.label == 'Batches' && !data.employees.length) || (data.current.label == 'Deductions' && !data.employees.length) || (data.current.label == 'Sanctions' && !data.sanction_levels) )
 				{
 					// enable the delete button
 					data.current.menu[1].show = true;

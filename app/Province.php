@@ -20,4 +20,9 @@ class Province extends Model
     {
     	return $this->hasMany('App\Company');
     }
+
+    public function employees()
+    {
+        return $this->hasMany('App\Employee');
+    }
 }

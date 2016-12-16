@@ -17,6 +17,7 @@ class CreateAllowanceTypesTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('description');
+            $table->integer('de_minimis_id')->unsigned()->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

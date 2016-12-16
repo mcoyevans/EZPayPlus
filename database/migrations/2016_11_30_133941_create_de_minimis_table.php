@@ -1,9 +1,10 @@
 <?php
 
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSantionLevelsTable extends Migration
+class CreateDeMinimisTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,13 +13,12 @@ class CreateSantionLevelsTable extends Migration
      */
     public function up()
     {
-        Schema::create('santion_levels', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
+        Schema::create('de_minimis', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
             $table->text('description');
-            $table->integer('sanction_id')->unsigned();
-            $table->timestamps();
+            $table->float('maximum_amount_per_month')->nullable();
+            $table->float('percentage_of_basic_minimum_wage')->nullable();
         });
     }
 
@@ -29,6 +29,6 @@ class CreateSantionLevelsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('santion_levels');
+        Schema::dropIfExists('de_minimis');
     }
 }

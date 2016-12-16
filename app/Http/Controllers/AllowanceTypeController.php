@@ -119,6 +119,7 @@ class AllowanceTypeController extends Controller
 
             $allowance_type->name = $request->name;
             $allowance_type->description = $request->description;
+            $allowance_type->de_minimis_id = $request->de_minimis_id;
 
             $allowance_type->save();
         });
@@ -177,6 +178,7 @@ class AllowanceTypeController extends Controller
 
             $allowance_type->name = $request->name;
             $allowance_type->description = $request->description;
+            $allowance_type->de_minimis_id = $request->de_minimis_id;
 
             $allowance_type->save();
         });

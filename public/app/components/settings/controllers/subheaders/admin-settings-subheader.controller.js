@@ -7,92 +7,92 @@ settings
 		}
 
 		$scope.subheader.navs = [
-			{
-				'label':'Branches',
-				'url': '/branch/enlist',
-				'request': {
-					'withTrashed': true,
-					'paginate':20,
-				},
-				'fab': {
-					'controller':'createBranchDialogController',
-					'template':'/app/components/settings/templates/dialogs/branch-form-dialog.template.html',
-					'message': 'Branch saved.'
-				},
-				'menu': [
-					{
-						'label': 'Edit',
-						'icon': 'mdi-pencil',
-						'show':true,
-						action: function(data){
-							Helper.set(data);
+			// {
+			// 	'label':'Branches',
+			// 	'url': '/branch/enlist',
+			// 	'request': {
+			// 		'withTrashed': true,
+			// 		'paginate':20,
+			// 	},
+			// 	'fab': {
+			// 		'controller':'createBranchDialogController',
+			// 		'template':'/app/components/settings/templates/dialogs/branch-form-dialog.template.html',
+			// 		'message': 'Branch saved.'
+			// 	},
+			// 	'menu': [
+			// 		{
+			// 			'label': 'Edit',
+			// 			'icon': 'mdi-pencil',
+			// 			'show':true,
+			// 			action: function(data){
+			// 				Helper.set(data);
 
-							var dialog = {};
-							dialog.controller = 'editBranchDialogController';
-							dialog.template = '/app/components/settings/templates/dialogs/branch-form-dialog.template.html';
+			// 				var dialog = {};
+			// 				dialog.controller = 'editBranchDialogController';
+			// 				dialog.template = '/app/components/settings/templates/dialogs/branch-form-dialog.template.html';
 
-							Helper.customDialog(dialog)
-								.then(function(){
-									Helper.notify('Branch updated.');
-									$scope.$emit('refresh');
-								}, function(){
-									return;
-								})
-						},
-					},
-					{
-						'label': 'Delete',
-						'icon': 'mdi-delete',
-						'show':true,
-						action: function(data){
-							var dialog = {};
-							dialog.title = 'Delete';
-							dialog.message = 'Delete ' + data.name + ' branch?'
-							dialog.ok = 'Delete';
-							dialog.cancel = 'Cancel';
+			// 				Helper.customDialog(dialog)
+			// 					.then(function(){
+			// 						Helper.notify('Branch updated.');
+			// 						$scope.$emit('refresh');
+			// 					}, function(){
+			// 						return;
+			// 					})
+			// 			},
+			// 		},
+			// 		{
+			// 			'label': 'Delete',
+			// 			'icon': 'mdi-delete',
+			// 			'show':true,
+			// 			action: function(data){
+			// 				var dialog = {};
+			// 				dialog.title = 'Delete';
+			// 				dialog.message = 'Delete ' + data.name + ' branch?'
+			// 				dialog.ok = 'Delete';
+			// 				dialog.cancel = 'Cancel';
 
-							Helper.confirm(dialog)
-								.then(function(){
-									Helper.delete('/branch/' + data.id)
-										.success(function(){
-											Helper.notify('Branch deleted.');
-											$scope.$emit('refresh');
-										})
-										.error(function(){
-											Helper.error();
-										});
-								}, function(){
-									return;
-								})
-						},
-					},
-				],
-				'sort': [
-					{
-						'label': 'Name',
-						'type': 'name',
-						'sortReverse': false,
-					},
-					{
-						'label': 'Description',
-						'type': 'description',
-						'sortReverse': false,
-					},
-					{
-						'label': 'GL Account',
-						'type': 'gl_account',
-						'sortReverse': false,
-					},
-					{
-						'label': 'Recently added',
-						'type': 'created_at',
-						'sortReverse': false,
-					},
-				],
-				action: function(current){
-					setInit(current);
-				},
-			},
+			// 				Helper.confirm(dialog)
+			// 					.then(function(){
+			// 						Helper.delete('/branch/' + data.id)
+			// 							.success(function(){
+			// 								Helper.notify('Branch deleted.');
+			// 								$scope.$emit('refresh');
+			// 							})
+			// 							.error(function(){
+			// 								Helper.error();
+			// 							});
+			// 					}, function(){
+			// 						return;
+			// 					})
+			// 			},
+			// 		},
+			// 	],
+			// 	'sort': [
+			// 		{
+			// 			'label': 'Name',
+			// 			'type': 'name',
+			// 			'sortReverse': false,
+			// 		},
+			// 		{
+			// 			'label': 'Description',
+			// 			'type': 'description',
+			// 			'sortReverse': false,
+			// 		},
+			// 		{
+			// 			'label': 'GL Account',
+			// 			'type': 'gl_account',
+			// 			'sortReverse': false,
+			// 		},
+			// 		{
+			// 			'label': 'Recently added',
+			// 			'type': 'created_at',
+			// 			'sortReverse': false,
+			// 		},
+			// 	],
+			// 	action: function(current){
+			// 		setInit(current);
+			// 	},
+			// },
 			{
 				'label':'House Banks',
 				'url': '/house-bank/enlist',
@@ -195,6 +195,58 @@ settings
 					},
 				],
 			},
+			// Bir Tax Table
+			{
+				'label':'BIR Tax Table',
+				'url': '/tax/enlist',
+				'request': {
+					'with': [
+						{
+							'relation' : 'tax_code',
+							'withTrashed': false,
+						},
+					],
+					'paginate':200
+				},
+				action: function(current){
+					setInit(current);
+				},
+				'table': 'tax',
+			},
+			{
+				'label':'SSS Table',
+				'url': '/sss/enlist',
+				'request': {
+					'paginate':20,
+				},
+				action: function(current){
+					setInit(current);
+				},
+				'table': 'sss',
+			},
+			{
+				'label':'HDMF Table',
+				'url': '/pagibig/enlist',
+				'request': {
+					'paginate':20,
+				},
+				action: function(current){
+					setInit(current);
+				},
+				'table': 'pagibig',
+			},
+			{
+				'label':'Philhealth Table',
+				'url': '/philhealth/enlist',
+				'request': {
+					'paginate':20,
+				},
+				action: function(current){
+					setInit(current);
+				},
+				'table': 'philhealth',
+			},
+			// User Groups
 			{
 				'label':'User Groups',
 				'url': '/group/enlist',
@@ -285,6 +337,7 @@ settings
 					setInit(current);
 				},
 			},
+			// Users
 			{
 				'label':'Users',
 				'url': '/user/enlist',

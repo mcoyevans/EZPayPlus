@@ -177,6 +177,7 @@ class UserController extends Controller
             $user->email = $request->email;
             $user->password = bcrypt($request->password);
             $user->group_id = $request->group_id;
+            $user->super_user = false;
 
             $user->save();
         }

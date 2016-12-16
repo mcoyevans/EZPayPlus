@@ -22,7 +22,9 @@ class PositionController extends Controller
      */
     public function checkDuplicate(Request $request)
     {
-        $duplicate = $request->has('id') ? Position::where('name', $request->name)->where('department_id', $request->department_id)->where('job_category_id', $request->job_category_id)->where('labor_type_id', $request->labor_type_id)->whereNotIn('id', [$request->id])->first() : Position::where('name', $request->name)->where('department_id', $request->department_id)->where('job_category_id', $request->job_category_id)->where('labor_type_id', $request->labor_type_id)->first();
+        // $duplicate = $request->has('id') ? Position::where('name', $request->name)->where('department_id', $request->department_id)->where('job_category_id', $request->job_category_id)->where('labor_type_id', $request->labor_type_id)->whereNotIn('id', [$request->id])->first() : Position::where('name', $request->name)->where('department_id', $request->department_id)->where('job_category_id', $request->job_category_id)->where('labor_type_id', $request->labor_type_id)->first();
+
+        $duplicate = $request->has('id') ? Position::where('name', $request->name)->whereNotIn('id', [$request->id])->first() : Position::where('name', $request->name)->first();
 
         return response()->json($duplicate ? true : false);
     }
@@ -47,6 +49,11 @@ class PositionController extends Controller
                 if(!$request->input('with')[$i]['withTrashed'])
                 {
                     $positions->with($request->input('with')[$i]['relation']);
+                }
+                else{
+                    $positions->with([$request->input('with')[$i]['relation'] => function($query){
+                        $query->withTrashed();
+                    }]);
                 }
             }
         }
@@ -102,7 +109,9 @@ class PositionController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $duplicate = Position::where('name', $request->name)->where('department_id', $request->department_id)->where('job_category_id', $request->job_category_id)->where('labor_type_id', $request->labor_type_id)->first();
+        // $duplicate = Position::where('name', $request->name)->where('department_id', $request->department_id)->where('job_category_id', $request->job_category_id)->where('labor_type_id', $request->labor_type_id)->first();
+
+        $duplicate = Position::where('name', $request->name)->first();
 
         if($duplicate)
         {
@@ -112,9 +121,9 @@ class PositionController extends Controller
         $this->validate($request, [
             'name' => 'required',
             'description' => 'required',
-            'department_id' => 'required|numeric',
-            'job_category_id' => 'required|numeric',
-            'labor_type_id' => 'required|numeric',
+            // 'department_id' => 'required|numeric',
+            // 'job_category_id' => 'required|numeric',
+            // 'labor_type_id' => 'required|numeric',
         ]);
 
         DB::transaction(function() use($request){
@@ -122,9 +131,9 @@ class PositionController extends Controller
 
             $position->name = $request->name;
             $position->description = $request->description;
-            $position->department_id = $request->department_id;
-            $position->job_category_id = $request->job_category_id;
-            $position->labor_type_id = $request->labor_type_id;
+            // $position->department_id = $request->department_id;
+            // $position->job_category_id = $request->job_category_id;
+            // $position->labor_type_id = $request->labor_type_id;
 
             $position->save();
         });
@@ -166,7 +175,9 @@ class PositionController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $duplicate = Position::whereNotIn('id', [$id])->where('name', $request->name)->where('department_id', $request->department_id)->where('job_category_id', $request->job_category_id)->where('labor_type_id', $request->labor_type_id)->first();
+        // $duplicate = Position::whereNotIn('id', [$id])->where('name', $request->name)->where('department_id', $request->department_id)->where('job_category_id', $request->job_category_id)->where('labor_type_id', $request->labor_type_id)->first();
+
+        $duplicate = Position::whereNotIn('id', [$id])->where('name', $request->name)->first();
 
         if($duplicate)
         {
@@ -176,9 +187,9 @@ class PositionController extends Controller
         $this->validate($request, [
             'name' => 'required',
             'description' => 'required',
-            'department_id' => 'required|numeric',
-            'job_category_id' => 'required|numeric',
-            'labor_type_id' => 'required|numeric',
+            // 'department_id' => 'required|numeric',
+            // 'job_category_id' => 'required|numeric',
+            // 'labor_type_id' => 'required|numeric',
         ]);
 
         DB::transaction(function() use($request, $id){
@@ -186,9 +197,9 @@ class PositionController extends Controller
 
             $position->name = $request->name;
             $position->description = $request->description;
-            $position->department_id = $request->department_id;
-            $position->job_category_id = $request->job_category_id;
-            $position->labor_type_id = $request->labor_type_id;
+            // $position->department_id = $request->department_id;
+            // $position->job_category_id = $request->job_category_id;
+            // $position->labor_type_id = $request->labor_type_id;
 
             $position->save();
         });
@@ -207,11 +218,11 @@ class PositionController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $positions = Position::with('deployments')->where('id', $id)->first();
+        $position = Position::with('employees')->where('id', $id)->first();
 
-        if(!count($positions->deployments))
+        if(!count($position->employees))
         {
-            $positions->delete();
+            $position->delete();
 
             return;
         }

@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 
+use App\TaxCode;
+
 class TaxCodeController extends Controller
 {
     /**
@@ -15,7 +17,7 @@ class TaxCodeController extends Controller
      */
     public function index()
     {
-        //
+        return TaxCode::all();
     }
 
     /**

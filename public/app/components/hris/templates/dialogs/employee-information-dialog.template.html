@@ -1,0 +1,247 @@
+<md-dialog aria-label="Employee Information Form"  flex flex-gt-sm="50" flex-gt-md="35" ng-cloak>
+    <form name="employeeInformationForm">
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2 class="white-text">{{employee.last_name}}, {{employee.first_name}} {{employee.middle_name.charAt(0)}}.</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <md-icon class="mdi mdi-close mdi-24px" aria-label="Close dialog"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content flex layout-wrap>
+            <md-tabs md-dynamic-height md-border-bottom>
+                <!-- Primary -->
+                <md-tab label="Primary">
+                    <md-content class="md-padding">
+                        <md-list>
+                            <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm>
+                                <div class="md-avatar" layout="row" layout-align="center center">
+                                    <md-icon class="mdi mdi-account-card-details grey"></md-icon>
+                                </div>
+                                <div class="md-list-item-text">
+                                    <h3>{{employee.employee_number}}</h3>
+                                    <p>Employee Number</p>
+                                </div>
+                            </md-list-item>
+                            <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm>
+                                <div class="md-avatar" layout="row" layout-align="center center">
+                                    <md-icon class="mdi mdi-face grey"></md-icon>
+                                </div>
+                                <div class="md-list-item-text">
+                                    <h3>{{employee.last_name}}, {{employee.first_name}} {{employee.middle_name}}</h3>
+                                    <p>Employee Name</p>
+                                </div>
+                            </md-list-item>
+                            <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm>
+                                <div class="md-avatar" layout="row" layout-align="center center">
+                                    <md-icon class="mdi mdi-gender-male-female grey"></md-icon>
+                                </div>
+                                <div class="md-list-item-text">
+                                    <h3>{{employee.sex}}</h3>
+                                    <p>Gender</p>
+                                </div>
+                            </md-list-item>
+                            <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm>
+                                <div class="md-avatar" layout="row" layout-align="center center">
+                                    <md-icon class="mdi mdi-cake grey"></md-icon>
+                                </div>
+                                <div class="md-list-item-text">
+                                    <h3>{{employee.birthdate | date: 'MMMM dd, yyyy'}} - {{employee.age}} years old</h3>
+                                    <p>Birthdate</p>
+                                </div>
+                            </md-list-item>
+                            <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm>
+                                <div class="md-avatar" layout="row" layout-align="center center">
+                                    <md-icon class="mdi mdi-account-box grey"></md-icon>
+                                </div>
+                                <div class="md-list-item-text">
+                                    <h3>{{employee.civil_status}}</h3>
+                                    <p>Civil Status</p>
+                                </div>
+                            </md-list-item>
+                            <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm>
+                                <div class="md-avatar" layout="row" layout-align="center center">
+                                    <md-icon class="mdi mdi-account-multiple grey"></md-icon>
+                                </div>
+                                <div class="md-list-item-text">
+                                    <h3>{{employee.batch.name}}</h3>
+                                    <p>Batch</p>
+                                </div>
+                            </md-list-item>
+                        </md-list>
+                    </md-content>
+                </md-tab>
+                <!-- Employment -->
+                <md-tab label="Employment">
+                    <md-content class="md-padding">
+                        <md-list>
+                            <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm>
+                                <div class="md-avatar" layout="row" layout-align="center center">
+                                    <md-icon class="mdi mdi-source-branch grey"></md-icon>
+                                </div>
+                                <div class="md-list-item-text">
+                                    <h3>{{employee.branch.name}}</h3>
+                                    <p>Branch</p>
+                                </div>
+                            </md-list-item>
+                            <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm>
+                                <div class="md-avatar" layout="row" layout-align="center center">
+                                    <md-icon class="mdi mdi-currency-usd grey"></md-icon>
+                                </div>
+                                <div class="md-list-item-text">
+                                    <h3>{{employee.cost_center.name}}</h3>
+                                    <p>Cost Center</p>
+                                </div>
+                            </md-list-item>
+                            <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm>
+                                <div class="md-avatar" layout="row" layout-align="center center">
+                                    <md-icon class="mdi mdi-tie grey"></md-icon>
+                                </div>
+                                <div class="md-list-item-text">
+                                    <h3>{{employee.position.name}}</h3>
+                                    <p>Position</p>
+                                </div>
+                            </md-list-item>
+                            <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm>
+                                <div class="md-avatar" layout="row" layout-align="center center">
+                                    <md-icon class="mdi mdi-calendar grey"></md-icon>
+                                </div>
+                                <div class="md-list-item-text">
+                                    <h3>{{employee.date_hired | date: 'MMMM dd, yyyy'}}</h3>
+                                    <p>Date Hired</p>
+                                </div>
+                            </md-list-item>
+                            <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm>
+                                <h2 class="md-avatar" layout="row" layout-align="center center">
+                                    <span class="md-headline secondary-text">S</span>
+                                </h2>
+                                <div class="md-list-item-text">
+                                    <h3>{{employee.employment_status}}</h3>
+                                    <p>Employment Status</p>
+                                </div>
+                            </md-list-item>
+                        </md-list>
+                    </md-content>
+                </md-tab>
+                <!-- Personal -->
+                <md-tab label="Personal">
+                    <md-content class="md-padding">
+                        <md-list>
+                            <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm>
+                                <div class="md-avatar" layout="row" layout-align="center center">
+                                    <md-icon class="mdi mdi-home grey"></md-icon>
+                                </div>
+                                <div class="md-list-item-text">
+                                    <h3>{{employee.street_address}}, {{employee.city.name}}, {{employee.province.name}}<span ng-if="employee.postal_code">,</span> {{employee.postal_code}}</h3>
+                                    <p>Address</p>
+                                </div>
+                            </md-list-item>
+                            <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm>
+                                <div class="md-avatar" layout="row" layout-align="center center">
+                                    <md-icon class="mdi mdi-email grey"></md-icon>
+                                </div>
+                                <div class="md-list-item-text">
+                                    <h3>{{employee.email}}</h3>
+                                    <p>Email</p>
+                                </div>
+                            </md-list-item>
+                            <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm ng-if="employee.telephone_number">
+                                <div class="md-avatar" layout="row" layout-align="center center">
+                                    <md-icon class="mdi mdi-phone grey"></md-icon>
+                                </div>
+                                <div class="md-list-item-text">
+                                    <h3>{{employee.telephone_number}}</h3>
+                                    <p>Telephone Number</p>
+                                </div>
+                            </md-list-item>
+                            <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm ng-if="employee.mobile_number">
+                                <div class="md-avatar" layout="row" layout-align="center center">
+                                    <md-icon class="mdi mdi-cellphone grey"></md-icon>
+                                </div>
+                                <div class="md-list-item-text">
+                                    <h3>{{employee.mobile_number}}</h3>
+                                    <p>Mobile Number</p>
+                                </div>
+                            </md-list-item>
+                            <md-list-item class="md-2-line">
+                                <h2 class="md-avatar" layout="row" layout-align="center center">
+                                    <span class="md-headline secondary-text">P</span>
+                                </h2>
+                                <div class="md-list-item-text">
+                                    <h3>{{employee.pagibig}}</h3>
+                                    <p>Pag-IBIG</p>
+                                </div>
+                            </md-list-item>
+                            <md-list-item class="md-2-line">
+                                <h2 class="md-avatar" layout="row" layout-align="center center">
+                                    <span class="md-headline secondary-text">P</span>
+                                </h2>
+                                <div class="md-list-item-text">
+                                    <h3>{{employee.philhealth}}</h3>
+                                    <p>PhilHealth</p>
+                                </div>
+                            </md-list-item>
+                            <md-list-item class="md-2-line">
+                                <h2 class="md-avatar" layout="row" layout-align="center center">
+                                    <span class="md-headline secondary-text">S</span>
+                                </h2>
+                                <div class="md-list-item-text">
+                                    <h3>{{employee.sss}}</h3>
+                                    <p>SSS</p>
+                                </div>
+                            </md-list-item>
+                            <md-list-item class="md-2-line">
+                                <h2 class="md-avatar" layout="row" layout-align="center center">
+                                    <span class="md-headline secondary-text">T</span>
+                                </h2>
+                                <div class="md-list-item-text">
+                                    <h3>{{employee.tin}}</h3>
+                                    <p>TIN</p>
+                                </div>
+                            </md-list-item>
+                        </md-list>
+                    </md-content>
+                </md-tab>
+                <!-- Salary -->
+                <md-tab label="Salary">
+                    <md-content class="md-padding">
+                        <md-subheader class="md-no-sticky">Additional Earnings</md-subheader>
+                        <md-list ng-if="employee.allowance_types.length">
+                            <md-list-item class="md-2-line" ng-repeat="item in employee.allowance_types">
+                                <h2 class="md-avatar" layout="row" layout-align="center center">
+                                    <span class="md-headline secondary-text">{{item.name.charAt(0)}}</span>
+                                </h2>
+                                <div class="md-list-item-text">
+                                    <h3>{{item.pivot.amount}} - <span ng-if="item.pivot.on_hold">On Hold</span> <span ng-if="item.pivot.first_cut_off">1st</span><span ng-if="item.pivot.second_cut_off">, 2nd</span><span ng-if="item.pivot.third_cut_off">, 3rd</span><span ng-if="item.pivot.fourth_cut_off">, 4th</span><span ng-if="!item.pivot.on_hold"> cut-off</span></h3>
+                                    <p>{{item.name}}</p>
+                                </div>
+                            </md-list-item>
+                        </md-list>
+                        <md-subheader class="md-no-sticky">Additional Deductions</md-subheader>
+                        <md-list ng-if="employee.deduction_types.length">
+                            <md-list-item class="md-2-line" ng-repeat="item in employee.deduction_types">
+                                <h2 class="md-avatar" layout="row" layout-align="center center">
+                                    <span class="md-headline secondary-text">{{item.name.charAt(0)}}</span>
+                                </h2>
+                                <div class="md-list-item-text">
+                                    <h3>{{item.pivot.amount}} - <span ng-if="item.pivot.on_hold">On Hold</span> <span ng-if="item.pivot.first_cut_off">1st</span>, <span ng-if="item.pivot.second_cut_off">2nd</span><span ng-if="item.pivot.third_cut_off">, 3rd</span>, <span ng-if="item.pivot.fourth_cut_off">4th</span> <span ng-if="!item.pivot.on_hold">cut-off</span></h3>
+                                    <p>{{item.name}}</p>
+                                </div>
+                            </md-list-item>
+                        </md-list>
+                    </md-content>
+                </md-tab>
+            </md-tabs>
+        </md-dialog-content>
+    </form>
+    <div layout="row" layout-align="end center" ng-if="!employee.deleted_at">   
+        <md-button ng-if="!busy" class="md-primary" aria-label="Edit" ng-click="edit()">
+            Edit
+        </md-button>
+        <md-button ng-if="!busy" class="md-primary" aria-label="Edit" ng-click="delete()">
+            Delete
+        </md-button>
+        <md-progress-circular ng-if="busy" md-mode="indeterminate" class="md-primary" md-diameter="60"></md-progress-circular>
+    </div>
+</md-dialog>

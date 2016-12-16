@@ -26,6 +26,7 @@ class BranchController extends Controller
 
         return response()->json($duplicate ? true : false);
     }
+    
     /**
      * Display a listing of the resource with parameters.
      *
@@ -60,7 +61,7 @@ class BranchController extends Controller
      */
     public function index()
     {
-        //
+        return Branch::all();
     }
 
     /**
@@ -110,7 +111,6 @@ class BranchController extends Controller
         {
             abort(403, 'Unauthorized action.');
         }
-
     }
 
     /**

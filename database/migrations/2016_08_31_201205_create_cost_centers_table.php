@@ -18,7 +18,6 @@ class CreateCostCentersTable extends Migration
             $table->string('name');
             $table->text('description');
             $table->string('gl_account')->unique();
-            $table->integer('company_id')->unsigned();
             $table->timestamps();
             $table->softDeletes();
         });

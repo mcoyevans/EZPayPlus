@@ -37,7 +37,9 @@ class TimeInterpretationsTableSeeder extends Seeder
         		'special_holiday_rest_day_rate' => 1.500,
         		'special_holiday_rest_day_night_differential' => 1.650, 
         		'special_holiday_rest_day_overtime' => 1.950,
-        		'special_holiday_rest_day_overtime_night_differential' => 2.145 
+        		'special_holiday_rest_day_overtime_night_differential' => 2.145,
+                'created_at' => Carbon\Carbon::now(),
+                'updated_at' => Carbon\Carbon::now()
         	],
         	[
         		'name' => 'Monthly',
@@ -64,7 +66,9 @@ class TimeInterpretationsTableSeeder extends Seeder
         		'special_holiday_rest_day_rate' => 1.500,
         		'special_holiday_rest_day_night_differential' => 1.650, 
         		'special_holiday_rest_day_overtime' => 1.950,
-        		'special_holiday_rest_day_overtime_night_differential' => 2.145 
+        		'special_holiday_rest_day_overtime_night_differential' => 2.145,
+                'created_at' => Carbon\Carbon::now(),
+                'updated_at' => Carbon\Carbon::now() 
         	],
         ]);
     }

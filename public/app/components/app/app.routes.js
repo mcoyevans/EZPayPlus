@@ -22,7 +22,72 @@ app
 					// 	templateUrl: '/app/shared/templates/subheaders/dashboard-subheader.template.html',
 					// },
 					'content@main':{
-						// templateUrl: '/app/shared/templates/content/dashboard-content.template.html',
+						// templateUrl: '/app/components/app/templates/content/dashboard-content.template.html',
+					}
+				}
+			})
+			.state('main.hris', {
+				url: 'hris',
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/2')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'hrisContentContainerController',
+					},
+					'toolbar@main.hris': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'hrisToolbarController',
+					},
+					'left-sidenav@main.hris': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'subheader@main.hris': {
+						templateUrl: '/app/components/hris/templates/subheaders/hris-subheader.template.html',
+						controller: 'hrisSubheaderController',
+					},
+					'content@main.hris':{
+						templateUrl: '/app/components/hris/templates/content/hris-content.template.html',
+					}
+				}
+			})
+			.state('main.manage-employee', {
+				url: 'employee/{employeeID}',
+				params: {'employeeID':null},
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/2')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'manageEmployeeContentContainerController',
+					},
+					'toolbar@main.manage-employee': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'manageEmployeeToolbarController',
+					},
+					'left-sidenav@main.manage-employee': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'content@main.manage-employee':{
+						templateUrl: '/app/components/hris/templates/content/manage-employee-content.template.html',
 					}
 				}
 			})
@@ -91,6 +156,40 @@ app
 					},
 					'content@main.hris-settings':{
 						templateUrl: '/app/components/settings/templates/content/hris-settings-content.template.html',
+					}
+				}
+			})
+			.state('main.payroll-settings', {
+				url: 'settings/payroll',
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/1')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'payrollSettingsContentContainerController',
+					},
+					'toolbar@main.payroll-settings': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'payrollSettingsToolbarController',
+					},
+					'left-sidenav@main.payroll-settings': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'subheader@main.payroll-settings': {
+						templateUrl: '/app/components/settings/templates/subheaders/payroll-settings-subheader.template.html',
+						controller: 'payrollSettingsSubheaderController',
+					},
+					'content@main.payroll-settings':{
+						templateUrl: '/app/components/settings/templates/content/payroll-settings-content.template.html',
 					}
 				}
 			})
