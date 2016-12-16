@@ -1,90 +1,25 @@
 <div infinite-scroll='type.paginateLoad()' infinite-scroll-distance="1" infinite-scroll-disabled="type.busy" infinite-scroll-parent ng-if="type.show">
-	<!-- Biometrics -->
-	<md-list ng-if="subheader.current.label == 'Biometrics'">
+	<md-list ng-if="subheader.current.label != 'Time Interpretations'">
 		<md-list-item class="md-3-line" ng-repeat="type in type.items | filter: toolbar.searchText | orderBy:sortType:sortReverse" ng-if="showInactive || !type.deleted_at" ng-click="listItemAction(type)">
 			<h2 class="md-avatar" ng-class="type.deleted_at ? 'accent-bg': 'primary-bg'" layout="row" layout-align="center center">
 				<span class="md-headline white-text">{{type.name.charAt(0).toUpperCase()}}</span>
 			</h2>
 			<div class="md-list-item-text">
-				<h3>{{type.name}}</h3>
-				<h4></span> {{type.description}} {{type.email}}</h4>
+				<h3>{{type.name}} - {{type.description}}</h3>
+				<h4>
+                    <span>Working days per year: {{type.working_days_per_year}} day<span ng-if="type.working_days_per_year > 1">s</span> |</span>
+                    <span>Working hours per day: {{type.working_hours_per_day}} hour<span ng-if="type.working_hours_per_day > 1">s</span> |</span>
+                    <span>Pay Frequency: {{type.pay_frequency}} |</span>
+                    <span>Time Interpretation: {{type.time_interpretation.name}}</span>            
+                </h4>
 				<p>
-					<span ng-if="type.paid">Paid</span>
-					<span ng-if="type.convertible"> | Convertible</span>
-					<span ng-if="type.department">Department: {{type.department.name}} - {{type.department.description}} |</span>
-					<span ng-if="type.department">Job Category: {{type.job_category.name}} - {{type.job_category.description}} |</span>
-					<span ng-if="type.department">Labor Type: {{type.labor_type.name}} - {{type.labor_type.description}}</span>
-					<span ng-if="type.sanction_type">Sanction: {{type.sanction_type.name}} - {{type.sanction_type.description}}</span>
+                    <span ng-repeat="item in type.government_contributions">{{item.name}}: <span ng-if="item.first_cut_off">1st,</span> <span ng-if="item.second_cut_off">2nd,</span> <span ng-if="item.third_cut_off">3rd,</span> <span ng-if="item.fourth_cut_off">4th</span> <span ng-if="!$last">|</span> </span>
 				</p>
 			</div>
 		</md-list-item>
 	</md-list>
 	<!-- Time Interpretations -->
-	<md-card ng-if="subheader.current.label == 'Time Interpretations'" ng-repeat="type in type.items | filter: toolbar.searchText">
-        <md-card-header>
-          	<md-card-header-text layout="row" layout-align="space-between center">
-            	<span class="md-title">{{type.name}}</span>
-            	<md-button class="md-icon-button" ng-click="listItemAction(type)">
-            		<md-icon class="mdi mdi-dots-vertical grey"></md-icon>
-            		<md-tooltip>Menu</md-tooltip>
-            	</md-button>
-          	</md-card-header-text>
-        </md-card-header>
-        <md-card-content>
-          	<table class="table">
-          		<tr>
-          			<td colspan="3"></td>
-          			<td colspan="2">Greater than 8 hours</td>
-          			<td colspan="2">Worked on rest day</td>
-          			<td colspan="2">Greater than 8 hours</td>
-          		</tr>
-          		<tr>
-          			<th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">Days</th>
-          			<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">RWH</th>
-          			<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">Night Diff</th>
-          			<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">OT Hr.</th>
-          			<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">OT Night Diff.</th>
-          			<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">RWH</th>
-          			<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">Night Diff</th>
-          			<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">OT Hr.</th>
-          			<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">OT Night Diff.</th>
-          		</tr>
-          		<tr>
-          			<td class="col-xs-2 col-sm-2 col-md-2 col-lg-2">Regular Days</td>
-          			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.regular_working_hours}}</td>
-          			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.night_differential}}</td>
-          			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.overtime}}</td>
-          			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.overtime_night_differential}}</td>
-          			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.rest_day_rate}}</td>
-          			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.rest_day_night_differential}}</td>
-          			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.rest_day_overtime}}</td>
-          			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.rest_day_overtime_night_differential}}</td>
-          		</tr>
-          		<tr>
-          			<td class="col-xs-2 col-sm-2 col-md-2 col-lg-2">Special Holidays</td>
-          			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.special_holiday_rate}}</td>
-          			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.special_holiday_night_differential}}</td>
-          			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.special_holiday_overtime}}</td>
-          			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.special_holiday_overtime_night_differential}}</td>
-          			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.special_holiday_rest_day_rate}}</td>
-          			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.special_holiday_rest_day_night_differential}}</td>
-          			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.special_holiday_rest_day_overtime}}</td>
-          			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.special_holiday_rest_day_overtime_night_differential}}</td>
-          		</tr>
-          		<tr>
-          			<td class="col-xs-2 col-sm-2 col-md-2 col-lg-2">Regular Holidays</td>
-          			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.regular_holiday_rate}}</td>
-          			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.regular_holiday_night_differential}}</td>
-          			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.regular_holiday_overtime}}</td>
-          			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.regular_holiday_overtime_night_differential}}</td>
-          			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.regular_holiday_rest_day_rate}}</td>
-          			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.regular_holiday_rest_day_night_differential}}</td>
-          			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.regular_holiday_rest_day_overtime}}</td>
-          			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.regular_holiday_rest_day_overtime_night_differential}}</td>
-          		</tr>
-          	</table>
-        </md-card-content>
-	</md-card>
+    <div ng-include="'/app/components/settings/templates/content/time-interpretations.template.html'" ng-if="subheader.current.label == 'Time Interpretations'" layout="row" layout-align="center center" flex></div>
 </div>
 <div layout="row" layout-align="center center" layout-padding layout-margin ng-if="isLoading">
 	<md-progress-circular class="md-primary" md-diameter="60"></md-progress-circular>

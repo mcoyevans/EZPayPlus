@@ -219,6 +219,12 @@ Route::group(['prefix' => 'employee'], function(){
 	Route::post('check-duplicate', 'EmployeeController@checkDuplicate');
 });
 
+/* Payroll */
+Route::group(['prefix' => 'payroll'], function(){
+	Route::post('enlist', 'PayrollController@enlist');
+	Route::post('check-duplicate', 'PayrollController@checkDuplicate');
+});
+
 /* Payroll Period */
 Route::group(['prefix' => 'payroll-period'], function(){
 	Route::post('enlist', 'PayrollPeriodController@enlist');

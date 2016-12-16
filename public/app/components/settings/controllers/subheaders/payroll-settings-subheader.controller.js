@@ -91,6 +91,16 @@ settings
 				'label':'Payroll Configuration',
 				'url': '/payroll/enlist',
 				'request' : {
+					'with': [
+						{
+							'relation': 'government_contributions',
+							'withTrashed': false
+						},
+						{
+							'relation': 'time_interpretation',
+							'withTrashed': false
+						},
+					],
 					'paginate':20,
 				},
 				'fab': {

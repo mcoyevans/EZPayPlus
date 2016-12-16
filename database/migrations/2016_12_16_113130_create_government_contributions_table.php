@@ -1,9 +1,10 @@
 <?php
 
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePayrollPeriodsTable extends Migration
+class CreateGovernmentContributionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,14 +13,13 @@ class CreatePayrollPeriodsTable extends Migration
      */
     public function up()
     {
-        Schema::create('payroll_periods', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
+        Schema::create('government_contributions', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('cut_off');
-            $table->string('month');
-            $table->dateTime('cut_off_start');
-            $table->dateTime('cut_off_end');
-            $table->dateTime('payout');
+            $table->string('name');
+            $table->boolean('first_cut_off');
+            $table->boolean('second_cut_off');
+            $table->boolean('third_cut_off');
+            $table->boolean('fourth_cut_off');
             $table->integer('payroll_id')->unsigned();
             $table->timestamps();
         });
@@ -32,6 +32,6 @@ class CreatePayrollPeriodsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('payroll_periods');
+        Schema::dropIfExists('government_contributions');
     }
 }

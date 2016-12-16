@@ -20,4 +20,14 @@ class Payroll extends Model
     {
     	return $this->hasMany('App\Employee');
     }
+
+    public function payroll_periods()
+    {
+        return $this->hasMany('App\PayrollPeriod');
+    }
+
+    public function government_contributions()
+    {
+        return $this->hasMany('App\GovernmentContribution');
+    }
 }

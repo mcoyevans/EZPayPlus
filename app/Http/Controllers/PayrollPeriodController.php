@@ -22,11 +22,11 @@ class PayrollPeriodController extends Controller
      */
     public function enlist(Request $request)
     {
-        $employees = PayrollPeriod::query();
+        $payroll_periods = PayrollPeriod::query();
 
         if($request->has('withTrashed'))
         {
-            $employees->withTrashed();
+            $payroll_periods->withTrashed();
         }
 
         if($request->has('with'))
@@ -34,10 +34,10 @@ class PayrollPeriodController extends Controller
             for ($i=0; $i < count($request->with); $i++) { 
                 if(!$request->input('with')[$i]['withTrashed'])
                 {
-                    $employees->with($request->input('with')[$i]['relation']);
+                    $payroll_periods->with($request->input('with')[$i]['relation']);
                 }
                 else{
-                    $employees->with([$request->input('with')[$i]['relation'] => function($query){
+                    $payroll_periods->with([$request->input('with')[$i]['relation'] => function($query){
                         $query->withTrashed();
                     }]);
                 }
@@ -47,26 +47,21 @@ class PayrollPeriodController extends Controller
         if($request->has('where'))
         {
             for ($i=0; $i < count($request->where); $i++) { 
-                $employees->where($request->input('where')[$i]['label'], $request->input('where')[$i]['condition'], $request->input('where')[$i]['value']);
+                $payroll_periods->where($request->input('where')[$i]['label'], $request->input('where')[$i]['condition'], $request->input('where')[$i]['value']);
             }
-        }
-
-        if($request->has('search'))
-        {
-            $employees->where('first_name', 'like', '%'.$request->search.'%')->orWhere('middle_name', 'like', '%'.$request->search.'%')->orWhere('last_name', 'like', '%'.$request->search.'%')->orWhere('employee_number', '=', $request->search);
         }
 
         if($request->has('paginate'))
         {
-            return $employees->paginate($request->paginate);
+            return $payroll_periods->paginate($request->paginate);
         }
 
         if($request->has('first'))
         {
-            return $employees->first();
+            return $payroll_periods->first();
         }
 
-        return $employees->get();
+        return $payroll_periods->get();
     }
 
     /**

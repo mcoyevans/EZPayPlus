@@ -54,6 +54,10 @@ md-nav-bar {
   /* White */
   color: #ffffff; }
 
+.red-text {
+  /* Red */
+  color: #F44336; }
+
 .main-text {
   /* Dark Text */
   color: #212121; }

@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class PayrollPeriod extends Model
+class GovernmentContribution extends Model
 {
     public function payroll()
     {
