@@ -16,6 +16,39 @@ use Gate;
 class PayrollPeriodController extends Controller
 {
     /**
+     * Checks the time start and end availability.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function checkDuplicate(Request $request)
+    {
+        $start = Carbon::parse($request->start_cut_off);
+        $end = Carbon::parse($request->end_cut_off);
+
+        $new = PayrollPeriod::where('payroll_id', $request->payroll_id)->where(function($query) use($start, $end){
+            // in between
+            $query->where('start_cut_off', '<=', $start)->where('end_cut_off', '>=', $end);
+            // overlap on start
+            $query->orWhereBetween('start_cut_off', [$start, $end]);
+            // overlap on end
+            $query->orWhereBetween('end_cut_off', [$start, $end]);
+        })->first();
+
+        $existing = PayrollPeriod::where('payroll_id', $request->payroll_id)->whereNotIn('id', [$request->id])->where(function($query) use($start, $end){
+            // in between
+            $query->where('start_cut_off', '<=', $start)->where('end_cut_off', '>=', $end);
+            // overlap on start
+            $query->orWhereBetween('start_cut_off', [$start, $end]);
+            // overlap on end
+            $query->orWhereBetween('end_cut_off', [$start, $end]);
+        })->first();
+
+        $payroll_period = $request->id ? $existing : $new;
+
+        return response()->json($payroll_period ? true : false);
+    }
+
+    /**
      * Display a listing of the resource with parameters.
      *
      * @return \Illuminate\Http\Response
@@ -48,6 +81,13 @@ class PayrollPeriodController extends Controller
         {
             for ($i=0; $i < count($request->where); $i++) { 
                 $payroll_periods->where($request->input('where')[$i]['label'], $request->input('where')[$i]['condition'], $request->input('where')[$i]['value']);
+            }
+        }
+
+        if($request->has('orderBy'))
+        {
+            for ($i=0; $i < count($request->orderBy); $i++) { 
+                $payroll_periods->orderBy($request->input('orderBy')[$i]['column'], $request->input('orderBy')[$i]['order']);
             }
         }
 
@@ -92,7 +132,43 @@ class PayrollPeriodController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        if(Gate::forUser($request->user())->denies('settings-access'))
+        {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $this->validate($request, [
+            'payroll_id' => 'required',
+            'start_cut_off' => 'required',
+            'end_cut_off' => 'required',
+            'payout' => 'required',
+        ]);
+
+        $start = Carbon::parse($request->start_cut_off);
+        $end = Carbon::parse($request->end_cut_off);
+
+        $duplicate = PayrollPeriod::where('payroll_id', $request->payroll_id)->where(function($query) use($start, $end){
+            // in between
+            $query->where('start_cut_off', '<=', $start)->where('end_cut_off', '>=', $end);
+            // overlap on start
+            $query->orWhereBetween('start_cut_off', [$start, $end]);
+            // overlap on end
+            $query->orWhereBetween('end_cut_off', [$start, $end]);
+        })->first();
+
+        if($duplicate)
+        {
+            return response()->json(true);
+        }
+
+        $payroll_period = new PayrollPeriod;
+
+        $payroll_period->payroll_id = $request->payroll_id;
+        $payroll_period->start_cut_off = Carbon::parse($request->start_cut_off);
+        $payroll_period->end_cut_off = Carbon::parse($request->end_cut_off);
+        $payroll_period->payout = Carbon::parse($request->payout);
+
+        $payroll_period->save();
     }
 
     /**
@@ -126,7 +202,43 @@ class PayrollPeriodController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        if(Gate::forUser($request->user())->denies('settings-access'))
+        {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $this->validate($request, [
+            'payroll_id' => 'required',
+            'start_cut_off' => 'required',
+            'end_cut_off' => 'required',
+            'payout' => 'required',
+        ]);
+
+        $start = Carbon::parse($request->start_cut_off);
+        $end = Carbon::parse($request->end_cut_off);
+
+        $duplicate = PayrollPeriod::whereNotIn('id', [$id])->where('payroll_id', $request->payroll_id)->where(function($query) use($start, $end){
+            // in between
+            $query->where('start_cut_off', '<=', $start)->where('end_cut_off', '>=', $end);
+            // overlap on start
+            $query->orWhereBetween('start_cut_off', [$start, $end]);
+            // overlap on end
+            $query->orWhereBetween('end_cut_off', [$start, $end]);
+        })->first();
+
+        if($duplicate)
+        {
+            return response()->json(true);
+        }
+
+        $payroll_period = PayrollPeriod::find($id);
+
+        $payroll_period->payroll_id = $request->payroll_id;
+        $payroll_period->start_cut_off = Carbon::parse($request->start_cut_off);
+        $payroll_period->end_cut_off = Carbon::parse($request->end_cut_off);
+        $payroll_period->payout = Carbon::parse($request->payout);
+
+        $payroll_period->save();
     }
 
     /**
@@ -137,6 +249,11 @@ class PayrollPeriodController extends Controller
      */
     public function destroy($id)
     {
-        //
+        if(Gate::forUser(Auth::user())->denies('settings-access'))
+        {
+            abort(403, 'Unauthorized action.');
+        }
+
+        PayrollPeriod::where('id', $id)->delete();
     }
 }

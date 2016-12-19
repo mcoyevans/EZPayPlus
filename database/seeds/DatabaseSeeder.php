@@ -33,5 +33,6 @@ class DatabaseSeeder extends Seeder
         $this->call(DeMinimisTableSeeder::class);
         $this->call(DeductionTypesTableSeeder::class);
         $this->call(AllowanceTypesTableSeeder::class);
+        $this->call(PayrollsTableSeeder::class);
     }
 }

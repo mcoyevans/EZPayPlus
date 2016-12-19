@@ -57,6 +57,30 @@ class PayrollController extends Controller
             }
         }
 
+        if($request->has('withCount'))
+        {
+            for ($i=0; $i < count($request->withCount); $i++) { 
+                if($request->input('withCount')[$i]['whereBetween'])
+                {
+                    $payroll->withCount(['payroll_periods' => function($query) use($request, $i){
+                        $query->whereBetween('start_cut_off', [Carbon::parse('first day of '. $request->input('withCount')[$i]['whereBetween']), Carbon::parse('last day of '. $request->input('withCount')[$i]['whereBetween'])]);
+                    }]);
+
+                    continue;
+                }
+
+                if(!$request->input('withCount')[$i]['withTrashed'])
+                {
+                    $payroll->withCount($request->input('withCount')[$i]['relation']);
+                }
+                else{
+                    $payroll->withCount([$request->input('withCount')[$i]['relation'] => function($query){
+                        $query->withTrashed();
+                    }]);
+                }
+            }
+        }
+
         if($request->has('where'))
         {
             for ($i=0; $i < count($request->where); $i++) { 
@@ -84,7 +108,7 @@ class PayrollController extends Controller
      */
     public function index()
     {
-        //
+        return Payroll::all();
     }
 
     /**

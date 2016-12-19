@@ -33,6 +33,13 @@ settings
 						'withTrashed': false,
 					},
 				],
+				'where': [
+					{
+						'label': 'id',
+						'condition': '=',
+						'value': $scope.config.id,
+					},
+				],
 				'first': true,
 			}
 

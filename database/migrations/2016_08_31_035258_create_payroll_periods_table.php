@@ -15,12 +15,10 @@ class CreatePayrollPeriodsTable extends Migration
         Schema::create('payroll_periods', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
-            $table->string('cut_off');
-            $table->string('month');
-            $table->dateTime('cut_off_start');
-            $table->dateTime('cut_off_end');
-            $table->dateTime('payout');
             $table->integer('payroll_id')->unsigned();
+            $table->dateTime('start_cut_off');
+            $table->dateTime('end_cut_off');
+            $table->dateTime('payout');
             $table->timestamps();
         });
     }

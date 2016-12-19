@@ -1,0 +1,67 @@
+<md-dialog aria-label="Payroll Period Form"  flex flex-gt-sm="50" ng-cloak>
+    <form name="payrollPeriodForm">
+        <md-toolbar >
+            <div class="md-toolbar-tools">
+                <h2 class="white-text">Payroll Period</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <md-icon class="mdi mdi-close mdi-24px" aria-label="Close dialog"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content flex layout-padding layout-wrap>
+            <md-subheader class="md-accent" ng-if="error">Oops! Something went wrong! An error occured. Please try again.</md-subheader>
+            <md-subheader class="md-accent" ng-if="duplicate">Payroll period has conflict with other payroll period(s).</md-subheader>
+            <md-subheader class="md-accent" ng-if="limit">Payroll has reached its maximum number of cut offs for this period.</md-subheader>
+            <div layout="row" layout-wrap flex>
+                <!-- Payroll -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Payroll</label>
+                    <md-select name="Payroll" ng-model="payroll_period.payroll_id" required ng-disabled="busy || !payrolls.length" ng-change="checkCutOffs()">
+                        <md-option ng-repeat="payroll in payrolls" value="{{payroll.id}}">{{payroll.name}} - {{payroll.description}}</md-option>
+                    </md-select>
+                    <div ng-messages="payrollPeriodForm.Payroll.$error" ng-if="payrollPeriodForm.Payroll.$touched">
+                        <div ng-message="required">Payroll is required.</div>
+                    </div>
+                </md-input-container>
+            </div>
+            <div layout="row" layout-wrap flex>
+                <!-- Start Cutoff -->
+                <div flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <h4>Start cut-off</h4>
+                    <md-datepicker name="StartCutOff" ng-model="payroll_period.start_cut_off" md-placeholder="Enter date" md-max-date="today" required ng-change="checkCutOffs('start')"></md-datepicker>
+                    <div class="validation-messages" ng-messages="payrollPeriodForm.StartCutOff.$error" ng-if="payrollPeriodForm.StartCutOff.$touched">
+                        <div ng-message="valid">The entered value is not a date.</div>
+                        <div ng-message="required">Start cut-off is required.</div>
+                    </div>
+                </div>
+                <!-- End Cutoff -->
+                <div flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <h4>End cut-off</h4>
+                    <md-datepicker name="EndCutOff" ng-model="payroll_period.end_cut_off" md-placeholder="Enter date" required md-min-date="payroll_period.start_cut_off" md-max-date="today" ng-change="checkCutOffs('end')"></md-datepicker>
+                    <div class="validation-messages" ng-messages="payrollPeriodForm.EndCutOff.$error" ng-if="payrollPeriodForm.EndCutOff.$touched">
+                        <div ng-message="valid">The entered value is not a date.</div>
+                        <div ng-message="required">End cutoff is required.</div>
+                        <div ng-message="mindate">End cut-off cannot be earlier than start cutoff.</div>
+                    </div>
+                </div>
+                <!-- Payout -->
+                <div flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <h4>Payout</h4>
+                    <md-datepicker name="Payout" ng-model="payroll_period.payout" md-placeholder="Enter date" required md-min-date="payroll_period.end_cut_off" ng-change="checkCutOffs()"></md-datepicker>
+                    <div class="validation-messages" ng-messages="payrollPeriodForm.Payout.$error" ng-if="payrollPeriodForm.Payout.$touched">
+                        <div ng-message="valid">The entered value is not a date.</div>
+                        <div ng-message="required">Payout is required.</div>
+                        <div ng-message="mindate">Payout cannot be earlier than end cutoff.</div>
+                    </div>
+                </div>
+            </div>
+        </md-dialog-content>
+    </form>
+    <div layout="row" layout-align="end center">   
+        <md-button ng-if="!busy" class="md-primary" aria-label="Submit" ng-click="submit()">
+            Save
+        </md-button>
+        <md-progress-circular ng-if="busy" md-mode="indeterminate" class="md-primary" md-diameter="60"></md-progress-circular>
+    </div>
+</md-dialog>

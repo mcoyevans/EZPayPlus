@@ -174,6 +174,18 @@ settings
 				'label':'Payroll Period',
 				'url': '/payroll-period/enlist',
 				'request' : {
+					'with': [
+						{
+							'relation': 'payroll',
+							'withTrashed': true,
+						}
+					],
+					'orderBy': [
+						{
+							'column': 'start_cut_off',
+							'order': 'asc'
+						}
+					],
 					'paginate':20,
 				},
 				'fab': {
@@ -218,7 +230,7 @@ settings
 						action: function(data){
 							var dialog = {};
 							dialog.title = 'Delete';
-							dialog.message = 'Delete ' + data.name + ' payroll period?'
+							dialog.message = 'Delete ' + new Date(data.start_cut_off).toLocaleDateString() + ' to ' + new Date(data.end_cut_off).toLocaleDateString() + ' payroll period?'
 							dialog.ok = 'Delete';
 							dialog.cancel = 'Cancel';
 
@@ -236,6 +248,28 @@ settings
 									return;
 								})
 						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Start Cut Off',
+						'type': 'start_cut_off',
+						'sortReverse': false,
+					},
+					{
+						'label': 'End Cut Off',
+						'type': 'end_cut_off',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Payout',
+						'type': 'payout',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
 					},
 				],
 				action: function(current){

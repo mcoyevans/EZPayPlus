@@ -87,6 +87,9 @@ settings
 		/* Formats every data in the paginated call */
 		var pushItem = function(data){
 			data.created_at = new Date(data.created_at);
+			data.start_cut_off = data.start_cut_off ? new Date(data.start_cut_off) : null;
+			data.end_cut_off = data.end_cut_off ? new Date(data.end_cut_off) : null;
+			data.payout = data.start_cut_off ? new Date(data.payout) : null;
 
 			var item = {};
 
