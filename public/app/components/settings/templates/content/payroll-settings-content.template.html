@@ -2,10 +2,10 @@
 	<md-list ng-if="subheader.current.label != 'Time Interpretations'">
 		<md-list-item class="md-3-line" ng-repeat="type in type.items | filter: toolbar.searchText | orderBy:sortType:sortReverse" ng-if="showInactive || !type.deleted_at" ng-click="listItemAction(type)">
 			<h2 class="md-avatar" ng-class="type.deleted_at ? 'accent-bg': 'primary-bg'" layout="row" layout-align="center center">
-				<span class="md-headline white-text">{{type.name.charAt(0).toUpperCase()}} {{type.payroll.name.charAt(0).toUpperCase()}}</span>
+				<span class="md-headline white-text">{{type.name.charAt(0).toUpperCase()}} {{type.payroll.name.charAt(0).toUpperCase()}} <span ng-if="subheader.current.label == 'Holidays'">{{type.description.charAt(0).toUpperCase()}}</span></span>
 			</h2>
 			<div class="md-list-item-text">
-				<h3>{{type.name}} {{type.payroll.name}} - {{type.description}} {{type.payroll.description}}</h3>
+				<h3>{{type.name}} {{type.payroll.name}} <span ng-if="type.name || type.payroll.name">-</span> {{type.description}} {{type.payroll.description}}</h3>
 				<h4>
                     <span ng-if="type.working_days_per_year">Working days per year: {{type.working_days_per_year}} day<span ng-if="type.working_days_per_year > 1">s</span> |</span>
                     <span ng-if="type.working_hours_per_day">Working hours per day: {{type.working_hours_per_day}} hour<span ng-if="type.working_hours_per_day > 1">s</span> |</span>
@@ -14,9 +14,13 @@
                     <span ng-if="type.start_cut_off">Start Cut-off: {{type.start_cut_off | date: 'EEEE, MMM. dd, yyyy'}} |</span>
                     <span ng-if="type.end_cut_off">End Cut-off: {{type.end_cut_off | date: 'EEEE, MMM. dd, yyyy'}} |</span>
                     <span ng-if="type.payout">Payout: {{type.payout | date: 'EEEE, MMM. dd, yyyy'}}</span>
+                    <span ng-if="type.date">{{type.date | date: 'EEEE, MMM. dd, yyyy'}}</span>
+                    <span ng-if="type.type">({{type.type}})</span>
                 </h4>
 				<p>
                     <span ng-repeat="item in type.government_contributions">{{item.name}}: <span ng-if="item.first_cut_off">1st,</span> <span ng-if="item.second_cut_off">2nd,</span> <span ng-if="item.third_cut_off">3rd,</span> <span ng-if="item.fourth_cut_off">4th</span> <span ng-if="!$last">|</span> </span>
+                    <span ng-if="type.branches.length">Branch<span ng-if="type.branches.length > 1">es</span>: <span ng-repeat="item in type.branches"> {{item.name}}<span ng-if="!$last">,</span></span></span>
+                    <span ng-if="type.cost_centers.length"><span ng-if="type.branches.length">|</span> Cost Center<span ng-if="type.cost_centers.length > 1">s</span>: <span ng-repeat="item in type.cost_centers"> {{item.name}}<span ng-if="!$last">,</span></span></span>
 				</p>
 			</div>
 		</md-list-item>

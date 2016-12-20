@@ -88,6 +88,11 @@ class PayrollController extends Controller
             }
         }
 
+        if($request->has('search'))
+        {
+            $payroll->where('name', 'like', '%'. $request->search. '%')->orWhere('description', 'like', '%'. $request->search. '%');
+        }
+
         if($request->has('paginate'))
         {
             return $payroll->paginate($request->paginate);

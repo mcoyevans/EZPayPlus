@@ -1,0 +1,70 @@
+<md-dialog aria-label="Holiday Form"  flex flex-gt-sm="50" ng-cloak>
+    <form name="holidayForm">
+        <md-toolbar >
+            <div class="md-toolbar-tools">
+                <h2 class="white-text">Holiday</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <md-icon class="mdi mdi-close mdi-24px" aria-label="Close dialog"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content flex layout-padding layout-wrap>
+            <md-subheader class="md-accent" ng-if="error">Oops! Something went wrong! An error occured. Please try again.</md-subheader>
+            <div layout="row" layout-wrap flex>
+                <!-- Description -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Description</label>
+                    <input type="text" name="Description" ng-model="holiday.description" required ng-disabled="busy" ng-change="checkDuplicate()">
+                    <div class="pattern" ng-if="duplicate">Holiday already exists.</div>
+                    <div ng-messages="holidayForm.Description.$error" ng-if="holidayForm.Description.$touched">
+                        <div ng-message="required">Description is required.</div>
+                    </div>
+                </md-input-container>
+            </div>
+            <div layout="row" layout-wrap flex>
+                <!-- Date -->
+                <div flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <h4>Date</h4>
+                    <md-datepicker name="Date" ng-model="holiday.date" md-placeholder="Enter date" required ng-change="checkDuplicate()"></md-datepicker>
+                    <div class="validation-messages" ng-messages="holidayForm.Date.$error" ng-if="holidayForm.Date.$touched">
+                        <div ng-message="valid">The entered value is not a date.</div>
+                        <div ng-message="required">Date is required.</div>
+                    </div>
+                </div>
+                <!-- Type -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Type</label>
+                    <md-select name="Type" ng-model="holiday.type" required ng-disabled="busy">
+                        <md-option ng-repeat="type in types" value="{{type}}">{{type}}</md-option>
+                    </md-select>
+                    <div ng-messages="holidayForm.Type.$error" ng-if="holidayForm.Type.$touched">
+                        <div ng-message="required">Type is required.</div>
+                    </div>
+                </md-input-container>
+            </div>
+            <!-- Branches -->
+            <md-subheader class="md-no-sticky">Branches</md-subheader>
+            <md-progress-circular ng-if="branches_count" md-mode="indeterminate" class="md-primary" md-diameter="40"></md-progress-circular>
+            <div layout="row" layout-wrap flex ng-if="!branches_count">
+                <md-checkbox flex-xs="100" flex-sm="100" flex-md="45" flex-gt-md="30" ng-repeat="branch in branches" ng-model="holiday.branches[$index]" aria-label="{{branch.name}}" ng-true-value="{{branch}}" ng-false-value="null">
+                    {{branch.name}}                    
+                </md-checkbox>
+            </div>
+            <!-- Cost Centers -->
+            <md-subheader class="md-no-sticky">Cost Centers</md-subheader>
+            <md-progress-circular ng-if="cost_centers_count" md-mode="indeterminate" class="md-primary" md-diameter="40"></md-progress-circular>
+            <div layout="row" layout-wrap flex ng-if="!cost_centers_count">
+                <md-checkbox flex-xs="100" flex-sm="100" flex-md="45" flex-gt-md="30" ng-repeat="cost_center in cost_centers" ng-model="holiday.cost_centers[$index]" aria-label="{{cost_center.name}}" ng-true-value="{{cost_center}}" ng-false-value="null">
+                    {{cost_center.name}}                    
+                </md-checkbox>
+            </div>
+        </md-dialog-content>
+    </form>
+    <div layout="row" layout-align="end center">   
+        <md-button ng-if="!busy" class="md-primary" aria-label="Submit" ng-click="submit()">
+            Save
+        </md-button>
+        <md-progress-circular ng-if="busy" md-mode="indeterminate" class="md-primary" md-diameter="60"></md-progress-circular>
+    </div>
+</md-dialog>

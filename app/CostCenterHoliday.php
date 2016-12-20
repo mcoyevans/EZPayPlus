@@ -4,13 +4,13 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class BranchHoliday extends Model
+class CostCenterHoliday extends Model
 {
-	protected $table = 'branch_holiday';
+	protected $table = 'cost_center_holiday';
 
-    public function branch()
+    public function cost_center()
     {
-    	return $this->belongsTo('App\Branch');
+    	return $this->belongsTo('App\CostCenter');
     }
 
     public function holiday()

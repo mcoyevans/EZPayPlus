@@ -281,6 +281,17 @@ settings
 				'label':'Holidays',
 				'url': '/holiday/enlist',
 				'request' : {
+					'withTrashed': true,
+					'with': [
+						{		
+							'relation': 'branches',
+							'withTrashed': true,
+						},
+						{		
+							'relation': 'cost_centers',
+							'withTrashed': true,
+						},
+					],
 					'paginate':20,
 				},
 				'fab': {
@@ -325,7 +336,7 @@ settings
 						action: function(data){
 							var dialog = {};
 							dialog.title = 'Delete';
-							dialog.message = 'Delete ' + data.name + ' holiday?'
+							dialog.message = 'Delete ' + data.description + ' holiday?'
 							dialog.ok = 'Delete';
 							dialog.cancel = 'Cancel';
 
@@ -343,6 +354,23 @@ settings
 									return;
 								})
 						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Date',
+						'type': 'date',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
 					},
 				],
 				action: function(current){

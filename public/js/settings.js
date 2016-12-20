@@ -437,13 +437,25 @@ settings
 			data.created_at = new Date(data.created_at);
 			data.start_cut_off = data.start_cut_off ? new Date(data.start_cut_off) : null;
 			data.end_cut_off = data.end_cut_off ? new Date(data.end_cut_off) : null;
-			data.payout = data.start_cut_off ? new Date(data.payout) : null;
+			data.payout = data.payout ? new Date(data.payout) : null;
+			data.date = data.date ? new Date(data.date) : null;
 
 			var item = {};
 
-			item.display = data.name;
-			item.description = data.description;
-			item.gl_account = data.gl_account;
+			if($scope.subheader.current.label == 'Payroll Period')
+			{
+				item.display = data.payroll.name;
+			}
+			else if($scope.subheader.current.label == 'Holidays')
+			{
+				item.display = data.description;
+			}
+			else{
+				item.display = data.name;
+				item.description = data.description;
+				item.gl_account = data.gl_account;
+			}
+
 
 			$scope.toolbar.items.push(item);
 		}
@@ -1618,6 +1630,218 @@ settings
 						$scope.busy = false;
 						$scope.error = true;
 					});
+			}
+		}
+	}]);
+settings
+	.controller('holidayDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.config = Helper.fetch();
+
+		$scope.holiday = {};
+
+		$scope.types = ['Regular Holiday', 'Special Non-Working Holiday']
+
+		if($scope.config.action == 'create')
+		{
+			$scope.holiday.date = new Date();
+
+			$scope.holiday.branches = [];
+			$scope.holiday.cost_centers = [];
+
+			Helper.get('/branch')
+				.success(function(data){
+					$scope.branches = data;
+				})
+
+			Helper.get('/cost-center')
+				.success(function(data){
+					$scope.cost_centers = data;
+				})
+		}
+
+		else if($scope.config.action == 'edit')
+		{
+			var query = {
+				'where': [
+					{
+						'label': 'id',
+						'condition': '=',
+						'value': $scope.config.id,
+					},
+				],
+				'first': true,
+			}
+
+			Helper.post('/holiday/enlist', query)
+				.success(function(data){
+					data.date = new Date(data.date);
+
+					$scope.holiday = data;
+
+					$scope.holiday.branches = [];
+					$scope.holiday.cost_centers = [];
+
+					Helper.get('/branch')
+						.success(function(data){
+							$scope.branches = data;
+
+							$scope.branches_count = $scope.branches.length;
+							angular.forEach($scope.branches, function(item, key){
+								$scope.holiday.branches.push(null);
+
+								var query = {};
+								query.with = [
+									{
+										'relation':'branch',
+										'withTrashed': false,
+									},
+								];
+								query.where = [
+									{
+										'label': 'holiday_id',
+										'condition': '=',
+										'value': $scope.config.id,
+									},
+									{
+										'label': 'branch_id',
+										'condition': '=',
+										'value': item.id,
+									},
+								];
+								query.first = true;
+
+								Helper.post('/branch-holiday/enlist', query)
+									.success(function(data){
+										$scope.branches_count--;
+										if(data)
+										{
+											$scope.holiday.branches.splice(key, 1, data.branch);
+										}
+									});
+							});
+						})
+
+					Helper.get('/cost-center')
+						.success(function(data){
+							$scope.cost_centers = data;
+
+							$scope.cost_centers_count = $scope.cost_centers.length;
+							angular.forEach($scope.cost_centers, function(item, key){
+								$scope.holiday.cost_centers.push(null);
+
+								var query = {};
+								query.with = [
+									{
+										'relation':'cost_center',
+										'withTrashed': false,
+									},
+								];
+								query.where = [
+									{
+										'label': 'holiday_id',
+										'condition': '=',
+										'value': $scope.config.id,
+									},
+									{
+										'label': 'cost_center_id',
+										'condition': '=',
+										'value': item.id,
+									},
+								];
+								query.first = true;
+
+								Helper.post('/cost-center-holiday/enlist', query)
+									.success(function(data){
+										$scope.cost_centers_count--;
+										if(data)
+										{
+											$scope.holiday.cost_centers.splice(key, 1, data.cost_center);
+										}
+									});
+							});
+						})
+				})
+				.error(function(){
+					Helper.error();
+				})
+		}
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			$scope.holiday.date = $scope.holiday.date.toLocaleDateString();
+
+			Helper.post('/holiday/check-duplicate', $scope.holiday)
+				.success(function(data){
+					$scope.duplicate = data;
+
+					$scope.holiday.date = new Date($scope.holiday.date);
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.holidayForm.$invalid){
+				angular.forEach($scope.holidayForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+
+			angular.forEach($scope.holiday.branches, function(item){
+
+			});
+
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+
+				$scope.holiday.date = $scope.holiday.date.toLocaleDateString();
+
+				if($scope.config.action == 'create')
+				{
+					Helper.post('/holiday', $scope.holiday)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+
+							$scope.holiday.date = new Date($scope.holiday.date);
+						});
+				}
+				if($scope.config.action == 'edit')
+				{
+					Helper.put('/holiday/' + $scope.config.id, $scope.holiday)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+
+							$scope.holiday.date = new Date($scope.holiday.date);
+						});
+				}
 			}
 		}
 	}]);
@@ -4400,6 +4624,17 @@ settings
 				'label':'Holidays',
 				'url': '/holiday/enlist',
 				'request' : {
+					'withTrashed': true,
+					'with': [
+						{		
+							'relation': 'branches',
+							'withTrashed': true,
+						},
+						{		
+							'relation': 'cost_centers',
+							'withTrashed': true,
+						},
+					],
 					'paginate':20,
 				},
 				'fab': {
@@ -4444,7 +4679,7 @@ settings
 						action: function(data){
 							var dialog = {};
 							dialog.title = 'Delete';
-							dialog.message = 'Delete ' + data.name + ' holiday?'
+							dialog.message = 'Delete ' + data.description + ' holiday?'
 							dialog.ok = 'Delete';
 							dialog.cancel = 'Cancel';
 
@@ -4462,6 +4697,23 @@ settings
 									return;
 								})
 						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Date',
+						'type': 'date',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
 					},
 				],
 				action: function(current){

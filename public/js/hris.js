@@ -402,7 +402,7 @@ hris
 					});
 				});
 
-				Helper.alert('Oops!', 'Kindly check form for errors.')
+				Helper.alert('Oops!', 'Kindly check form for errors.');
 
 				return;
 			}
@@ -410,6 +410,32 @@ hris
 			if(!$scope.duplicate)
 			{
 				$scope.busy = true;
+
+				var allowance_unchecked = true;
+
+				angular.forEach($scope.employee.allowance_types, function(item, key){
+					if(item.first_cut_off || item.second_cut_off || item.third_cut_off || item.fourth_cut_off || item.on_hold)
+					{
+						allowance_unchecked = false;
+					}
+				});
+
+				var deduction_unchecked = true;
+
+				angular.forEach($scope.employee.deduction_types, function(item, key){
+					if(item.first_cut_off || item.second_cut_off || item.third_cut_off || item.fourth_cut_off || item.on_hold)
+					{
+						deduction_unchecked = false;
+					}
+				});
+
+				if(deduction_unchecked || allowance_unchecked)
+				{
+					Helper.alert('Oops!', 'Kindly check form for errors.')
+
+					return;
+				}
+
 				Helper.preload();
 
 				$scope.employee.birthdate = $scope.employee.birthdate.toLocaleDateString();
@@ -441,50 +467,6 @@ hris
 				}
 				else
 				{
-					angular.forEach($scope.employee.allowance_types, function(item, key){
-						if(!item.first_cut_off){
-							delete item.first_cut_off;
-						}
-
-						if(!item.second_cut_off){
-							delete item.second_cut_off;
-						}
-
-						if(!item.third_cut_off){
-							delete item.third_cut_off;
-						}
-
-						if(!item.fourth_cut_off){
-							delete item.fourth_cut_off;
-						}
-
-						if(!item.on_hold){
-							delete item.on_hold;
-						}
-					});
-
-					angular.forEach($scope.employee.deduction_types, function(item, key){
-						if(!item.first_cut_off){
-							delete item.first_cut_off;
-						}
-
-						if(!item.second_cut_off){
-							delete item.second_cut_off;
-						}
-
-						if(!item.third_cut_off){
-							delete item.third_cut_off;
-						}
-
-						if(!item.fourth_cut_off){
-							delete item.fourth_cut_off;
-						}
-
-						if(!item.on_hold){
-							delete item.on_hold;
-						}
-					});
-
 					Helper.put('/employee/' + $stateParams.employeeID, $scope.employee)
 						.success(function(duplicate){
 							Helper.stop();

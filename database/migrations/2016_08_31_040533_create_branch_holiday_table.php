@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateHolidaysTable extends Migration
+class CreateBranchHolidayTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,14 +12,12 @@ class CreateHolidaysTable extends Migration
      */
     public function up()
     {
-        Schema::create('holidays', function (Blueprint $table) {
+        Schema::create('branch_holiday', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
-            $table->dateTime('date');
-            $table->string('description');
-            $table->string('type');
+            $table->integer('branch_id')->unsigned();
+            $table->integer('holiday_id')->unsigned();
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -30,6 +28,6 @@ class CreateHolidaysTable extends Migration
      */
     public function down()
     {
-        Schema::drop('holidays');
+        Schema::drop('branch_holiday');
     }
 }

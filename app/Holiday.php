@@ -15,4 +15,9 @@ class Holiday extends Model
     {
     	return $this->belongsToMany('App\Branch');
     }
+
+    public function cost_centers()
+    {
+    	return $this->belongsToMany('App\CostCenter');
+    }
 }

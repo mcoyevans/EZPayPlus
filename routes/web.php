@@ -24,9 +24,11 @@ Route::resource('allowance-type', 'AllowanceTypeController');
 Route::resource('biometric', 'BiometricController');
 Route::resource('batch', 'BatchController');
 Route::resource('branch', 'BranchController');
+Route::resource('branch-holiday', 'BranchHolidayController');
 Route::resource('city', 'CityController');
 Route::resource('company', 'CompanyController');
 Route::resource('cost-center', 'CostCenterController');
+Route::resource('cost-center-holiday', 'CostCenterHolidayController');
 Route::resource('country', 'CountryController');
 Route::resource('currency', 'CurrencyController');
 Route::resource('deduction-type', 'DeductionTypeController');
@@ -229,4 +231,22 @@ Route::group(['prefix' => 'payroll'], function(){
 Route::group(['prefix' => 'payroll-period'], function(){
 	Route::post('enlist', 'PayrollPeriodController@enlist');
 	Route::post('check-duplicate', 'PayrollPeriodController@checkDuplicate');
+});
+
+/* Holiday */
+Route::group(['prefix' => 'holiday'], function(){
+	Route::post('enlist', 'HolidayController@enlist');
+	Route::post('check-duplicate', 'HolidayController@checkDuplicate');
+});
+
+/* Branch Holiday */
+Route::group(['prefix' => 'branch-holiday'], function(){
+	Route::post('enlist', 'BranchHolidayController@enlist');
+	Route::post('check-duplicate', 'BranchHolidayController@checkDuplicate');
+});
+
+/* Cost Center Holiday */
+Route::group(['prefix' => 'cost-center-holiday'], function(){
+	Route::post('enlist', 'CostCenterHolidayController@enlist');
+	Route::post('check-duplicate', 'CostCenterHolidayController@checkDuplicate');
 });

@@ -1,9 +1,10 @@
 <?php
 
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateBranchHolidaysTable extends Migration
+class CreateCostCenterHolidayTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,10 +13,9 @@ class CreateBranchHolidaysTable extends Migration
      */
     public function up()
     {
-        Schema::create('branch_holidays', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
+        Schema::create('cost_center_holiday', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('branch_id')->unsigned();
+            $table->integer('cost_center_id')->unsigned();
             $table->integer('holiday_id')->unsigned();
             $table->timestamps();
         });
@@ -28,6 +28,6 @@ class CreateBranchHolidaysTable extends Migration
      */
     public function down()
     {
-        Schema::drop('branch_holidays');
+        Schema::dropIfExists('cost_center_holiday');
     }
 }

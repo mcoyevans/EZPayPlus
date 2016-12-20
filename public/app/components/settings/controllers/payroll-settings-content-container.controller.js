@@ -89,13 +89,25 @@ settings
 			data.created_at = new Date(data.created_at);
 			data.start_cut_off = data.start_cut_off ? new Date(data.start_cut_off) : null;
 			data.end_cut_off = data.end_cut_off ? new Date(data.end_cut_off) : null;
-			data.payout = data.start_cut_off ? new Date(data.payout) : null;
+			data.payout = data.payout ? new Date(data.payout) : null;
+			data.date = data.date ? new Date(data.date) : null;
 
 			var item = {};
 
-			item.display = data.name;
-			item.description = data.description;
-			item.gl_account = data.gl_account;
+			if($scope.subheader.current.label == 'Payroll Period')
+			{
+				item.display = data.payroll.name;
+			}
+			else if($scope.subheader.current.label == 'Holidays')
+			{
+				item.display = data.description;
+			}
+			else{
+				item.display = data.name;
+				item.description = data.description;
+				item.gl_account = data.gl_account;
+			}
+
 
 			$scope.toolbar.items.push(item);
 		}
