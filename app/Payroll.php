@@ -30,4 +30,9 @@ class Payroll extends Model
     {
         return $this->hasMany('App\GovernmentContribution');
     }
+
+    public function payroll_process()
+    {
+        return $this->hasMany('App\PayrollProcess');
+    }
 }

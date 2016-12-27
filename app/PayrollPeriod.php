@@ -10,4 +10,9 @@ class PayrollPeriod extends Model
     {
     	return $this->belongsTo('App\Payroll');
     }
+
+    public function payroll_process()
+    {
+    	return $this->hasMany('App\PayrollProcess');
+    }
 }

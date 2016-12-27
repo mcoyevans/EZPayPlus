@@ -84,6 +84,24 @@ class PayrollPeriodController extends Controller
             }
         }
 
+        if($request->has('whereDoesntHave'))
+        {
+            for ($i=0; $i < count($request->whereDoesntHave); $i++) { 
+                $payroll_periods->whereDoesntHave($request->input('whereDoesntHave')[$i]['relation'], function($query) use($request, $i){
+                    for ($j=0; $j < count($request->input('whereDoesntHave')[$i]['where']); $j++) { 
+                        $query->where($request->input('whereDoesntHave')[$i]['where'][$j]['label'], $request->input('whereDoesntHave')[$i]['where'][$j]['condition'], $request->input('whereDoesntHave')[$i]['where'][$j]['value']);
+                    }
+                });
+            }
+        }
+
+        if($request->has('orWhere'))
+        {
+            for ($i=0; $i < count($request->orWhere); $i++) { 
+                $payroll_periods->orWhere($request->input('orWhere')[$i]['label'], $request->input('orWhere')[$i]['condition'], $request->input('orWhere')[$i]['value']);
+            }
+        }
+
         if($request->has('orderBy'))
         {
             for ($i=0; $i < count($request->orderBy); $i++) { 

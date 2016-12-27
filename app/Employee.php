@@ -70,4 +70,9 @@ class Employee extends Model
     {
         return $this->belongsTo('App\TimeInterpretation');
     }
+
+    public function payroll_entries()
+    {
+        return $this->hasMany('App\PayrollEntry');
+    }
 }

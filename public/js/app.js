@@ -67,6 +67,40 @@ app
 					}
 				}
 			})
+			.state('main.payroll', {
+				url: 'payroll',
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/3')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'payrollContentContainerController',
+					},
+					'toolbar@main.payroll': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'payrollToolbarController',
+					},
+					'left-sidenav@main.payroll': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'subheader@main.payroll': {
+						templateUrl: '/app/components/payroll/templates/subheaders/payroll-subheader.template.html',
+						controller: 'payrollSubheaderController',
+					},
+					'content@main.payroll':{
+						templateUrl: '/app/components/payroll/templates/content/payroll-content.template.html',
+					}
+				}
+			})
 			.state('main.manage-employee', {
 				url: 'employee/{employeeID}',
 				params: {'employeeID':null},
