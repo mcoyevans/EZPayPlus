@@ -1,0 +1,27 @@
+<!-- Icons -->
+<md-subheader>
+    <md-button class="md-icon-button" ng-click="refresh()">
+        <md-icon class="mdi grey mdi-refresh"></md-icon>
+        <md-tooltip hide-xs hide-sm hide-md>Refresh</md-tooltip>
+    </md-button>
+	<!-- Filter / Sort By -->
+	<md-menu ng-if="subheader.current.sort || subheader.current.request.withTrashed">
+        <md-button aria-label="Open filters" class="md-icon-button" ng-click="$mdOpenMenu($event)">
+            <md-icon class="mdi mdi-sort-variant grey"></md-icon>
+            <md-tooltip hide-xs hide-sm hide-md>Sort By</md-tooltip>
+        </md-button>
+        <md-menu-content width="4">
+            <md-subheader ng-if="subheader.current.sort">Sort By</md-subheader>
+            <md-menu-item ng-repeat="item in subheader.current.sort">
+              	<md-button aria-label="{{item.label}}" flex ng-click="subheader.sortBy(item)">
+              		<div layout="row">
+	                	<span>{{item.label}}</span>
+	                	<span flex></span>
+	                	<md-icon ng-show="!item.sortReverse && sortType == item.type" class="mdi mdi-chevron-down grey"></md-icon>
+						        <md-icon ng-show="item.sortReverse && sortType == item.type" class="mdi mdi-chevron-up grey"></md-icon>
+              		</div>
+              	</md-button>
+            </md-menu-item>
+        </md-menu-content>
+    </md-menu>
+</md-subheader>

@@ -1,22 +1,46 @@
 <div infinite-scroll='type.paginateLoad()' infinite-scroll-distance="1" infinite-scroll-disabled="type.busy" infinite-scroll-parent ng-if="type.show">
-	<md-list ng-if="subheader.current.label != 'Time Interpretations'">
-		<md-list-item class="md-3-line" ng-repeat="type in type.items | filter: toolbar.searchText | orderBy:sortType:sortReverse" ng-if="showInactive || !type.deleted_at" ng-click="listItemAction(type)">
-			<h2 class="md-avatar" ng-class="type.deleted_at ? 'accent-bg': 'primary-bg'" layout="row" layout-align="center center">
-				<span class="md-headline white-text">{{type.payroll.name.charAt(0).toUpperCase()}}</span></span>
-			</h2>
-			<div class="md-list-item-text">
-				<h3>{{type.payroll.name}} - {{type.payroll.description}}</h3>
-				<h4>
-                    <span ng-if="type.payroll_period.start_cut_off">Start Cut-off: {{type.payroll_period.start_cut_off | date: 'EEE, MMM. dd, yyyy'}} |</span>
-                    <span ng-if="type.payroll_period.end_cut_off">End Cut-off: {{type.payroll_period.end_cut_off | date: 'EEE, MMM. dd, yyyy'}} |</span>
-                    <span ng-if="type.payroll_period.payout">Payout: {{type.payroll_period.payout | date: 'EEE, MMM. dd, yyyy'}}</span>
-                </h4>
-				<p>
-                    
-				</p>
-			</div>
-		</md-list-item>
-	</md-list>
+	<div ng-if="type.items.length" flex flex-gt-md="90">
+		<md-list>
+			<md-list-item class="md-3-line" ng-repeat="type in type.items | filter: toolbar.searchText | orderBy:sortType:sortReverse" ng-if="showInactive || !type.deleted_at" ng-click="view(type)">
+				<h2 class="md-avatar" ng-class="type.deleted_at ? 'accent-bg': 'primary-bg'" layout="row" layout-align="center center">
+					<span class="md-headline white-text">{{type.payroll.name.charAt(0).toUpperCase()}}</span></span>
+				</h2>
+				<div class="md-list-item-text">
+					<h3>{{type.payroll.name}} - {{type.payroll.description}}</h3>
+					<h4>
+	                    <span ng-if="type.payroll_period.start_cut_off">Start Cut-off: {{type.payroll_period.start_cut_off | date: 'EEE, MMM. dd, yyyy'}} |</span>
+	                    <span ng-if="type.payroll_period.end_cut_off">End Cut-off: {{type.payroll_period.end_cut_off | date: 'EEE, MMM. dd, yyyy'}} |</span>
+	                    <span ng-if="type.payroll_period.payout">Payout: {{type.payroll_period.payout | date: 'EEE, MMM. dd, yyyy'}}</span>
+	                </h4>
+					<p>
+	                    
+					</p>
+				</div>
+				<md-menu ng-if="!type.deleted_at || !type.locked">
+					<md-button aria-label="Menu" class="md-icon-button" ng-click="$mdOpenMenu($event)">
+			            <md-icon class="mdi mdi-dots-vertical grey"></md-icon>
+			            <md-tooltip>{{type.payroll.name}} - {{type.payroll.description}}</md-tooltip>
+			        </md-button>
+
+			        <md-menu-content width="4">
+						<md-subheader class="md-no-sticky">{{type.payroll.name}} - {{type.payroll.description}}</md-subheader>
+						<!-- Edit -->
+			            <md-menu-item>
+				            <md-button aria-label="Edit" ng-click="edit(type)" flex>
+				                Edit
+				            </md-button>
+			        	</md-menu-item>
+			        	<md-menu-item>
+				            <!-- Delete -->
+				            <md-button aria-label="Delete" ng-click="delete(type)" flex>
+				                Delete
+				            </md-button>
+			        	</md-menu-item>
+			        </md-menu-content>
+				</md-menu>
+			</md-list-item>
+		</md-list>
+	</div>
 </div>
 <div layout="row" layout-align="center center" layout-padding layout-margin ng-if="isLoading">
 	<md-progress-circular class="md-primary" md-diameter="60"></md-progress-circular>

@@ -1,0 +1,28 @@
+<div infinite-scroll='model.paginateLoad()' infinite-scroll-distance="1" infinite-scroll-disabled="model.busy" infinite-scroll-parent ng-if="model.show">
+	<div ng-if="model.items.length" flex flex-gt-md="90">
+		<md-list>
+			<md-list-item class="md-3-line" ng-repeat="model in model.items | filter: toolbar.searchText | orderBy:sortType:sortReverse" ng-if="showInactive || !model.deleted_at" ng-click="view(model)">
+				<h2 class="md-avatar" ng-class="model.deleted_at ? 'accent-bg': 'primary-bg'" layout="row" layout-align="center center">
+					<span class="md-headline white-text"></span></span>
+				</h2>
+				<div class="md-list-item-text">
+					<h3></h3>
+					<h4>
+	                    
+					<p>
+	                    
+					</p>
+				</div>
+			</md-list-item>
+		</md-list>
+	</div>
+</div>
+<div layout="row" layout-align="center center" layout-padding layout-margin ng-if="isLoading">
+	<md-progress-circular class="md-primary" md-diameter="60"></md-progress-circular>
+</div>
+<div layout-padding layout-margin ng-if="!model.items.length && model.show && !model.no_matches">
+	Nothing to display.
+</div>
+<div layout-padding layout-margin ng-if="model.no_matches && model.show">
+	<p>No results matching <strong class="accent-text">"{{query.searchText}}"</strong> were found.</p>
+</div>

@@ -53,7 +53,7 @@ Route::resource('payroll-process', 'PayrollProcessController');
 Route::resource('payroll-entry', 'PayrollEntryController');
 Route::resource('payroll-entry-allowance', 'PayrollEntryAllowanceController');
 Route::resource('payroll-entry-deduction', 'PayrollEntryDeductionController');
-Route::resource('payroll-entry-government-contribution', 'PayrollEntryGovernmentContributionController');
+Route::resource('payroll-entry-gov-deduction', 'PayrollEntryGovernmentContributionController');
 Route::resource('payslip', 'PayslipController');
 Route::resource('philhealth', 'PhilhealthController');
 Route::resource('position', 'PositionController');
@@ -256,8 +256,14 @@ Route::group(['prefix' => 'cost-center-holiday'], function(){
 	Route::post('check-duplicate', 'CostCenterHolidayController@checkDuplicate');
 });
 
-/* Payroll Process Holiday */
+/* Payroll Process */
 Route::group(['prefix' => 'payroll-process'], function(){
 	Route::post('enlist', 'PayrollProcessController@enlist');
 	Route::post('check-duplicate', 'PayrollProcessController@checkDuplicate');
+});
+
+/* Payroll Entry */
+Route::group(['prefix' => 'payroll-entry'], function(){
+	Route::post('enlist', 'PayrollEntryController@enlist');
+	Route::post('check-duplicate', 'PayrollEntryController@checkDuplicate');
 });

@@ -67,6 +67,17 @@ class EmployeeController extends Controller
             }
         }
 
+        if($request->has('whereDoesntHave'))
+        {
+            for ($i=0; $i < count($request->whereDoesntHave); $i++) { 
+                $employees->whereDoesntHave($request->input('whereDoesntHave')[$i]['relation'], function($query) use($request, $i){
+                    for ($j=0; $j < count($request->input('whereDoesntHave')[$i]['where']); $j++) { 
+                        $query->where($request->input('whereDoesntHave')[$i]['where'][$j]['label'], $request->input('whereDoesntHave')[$i]['where'][$j]['condition'], $request->input('whereDoesntHave')[$i]['where'][$j]['value']);
+                    }
+                });
+            }
+        }
+
         if($request->has('search'))
         {
             $employees->where('first_name', 'like', '%'.$request->search.'%')->orWhere('middle_name', 'like', '%'.$request->search.'%')->orWhere('last_name', 'like', '%'.$request->search.'%')->orWhere('employee_number', '=', $request->search);

@@ -163,7 +163,37 @@ class PayrollProcessController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        if(Gate::forUser($request->user())->denies('payroll'))
+        {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $duplicate = PayrollProcess::whereNotIn('id', $id)->where('batch_id', $request->batch_id)->where('payroll_id', $request->payroll_id)->where('payroll_period_id', $request->payroll_period_id)->first();
+
+        if($duplicate)
+        {
+            return response()->json(true);
+        }
+
+        $this->validate($request, [
+            'batch_id' => 'required',
+            'payroll_id' => 'required',
+            'payroll_period_id' => 'required',
+        ]);
+
+        $payroll_process = PayrollProcess::find($id);
+
+        if($payroll_process->locked)
+        {
+            abort(403, 'Payroll process is already locked');
+        }
+
+        $payroll_process->batch_id = $request->batch_id;
+        $payroll_process->payroll_id = $request->payroll_id;
+        $payroll_process->payroll_period_id = $request->payroll_period_id;
+        $payroll_process->locked = false;
+
+        $payroll_process->save();
     }
 
     /**
@@ -174,6 +204,13 @@ class PayrollProcessController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $payroll_process = PayrollProcess::find($id);
+        
+        if(Gate::forUser(Auth::user())->denies('payroll') || $payroll_process->locked)
+        {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $payroll_process->delete();
     }
 }

@@ -1,5 +1,5 @@
 payroll
-	.controller('payrollSubheaderController', ['$scope', 'Helper', function($scope, Helper){
+	.controller('payrollSubheaderController', ['$scope', '$state', 'Helper', function($scope, $state, Helper){
 		var setInit = function(data){
 			Helper.set(data);
 
@@ -9,7 +9,7 @@ payroll
 		$scope.subheader.navs = [
 			// Payroll Process
 			{
-				'label':'Payroll Process',
+				'label':'Payroll Processes',
 				'url': '/payroll-process/enlist',
 				'request' : {
 					'with' : [
@@ -70,7 +70,7 @@ payroll
 						action: function(data){
 							var dialog = {};
 							dialog.title = 'Delete';
-							dialog.message = 'Delete ' + data.name + ' payroll process?'
+							dialog.message = 'Delete ' + new Date(data.payroll_period.start_cut_off).toLocaleDateString() + ' - ' + new Date(data.payroll_period.end_cut_off).toLocaleDateString() + ' payroll process?'
 							dialog.ok = 'Delete';
 							dialog.cancel = 'Cancel';
 
@@ -90,11 +90,14 @@ payroll
 						},
 					},
 				],
+				view: function(data){
+					$state.go('main.payroll-process', {payrollProcessID: data.id});
+				},
 				action: function(current){
 					setInit(current);
 				},
 			},
-			// Payroll Configuration
+			// 13th Month Pay Process
 			{
 				'label':'Payroll Configuration',
 				'url': '/payroll/enlist',

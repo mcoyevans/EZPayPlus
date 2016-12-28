@@ -39,6 +39,18 @@ payroll
 			$scope.init(current);
 			$scope.$broadcast('close');
 			$scope.showInactive = false;
+
+			$scope.view = function(data){
+				$scope.subheader.current.view(data);
+			}
+
+			$scope.edit = function(data){
+				$scope.subheader.current.menu[0].action(data);
+			}
+
+			$scope.delete = function(data){
+				$scope.subheader.current.menu[1].action(data);
+			}
 		});
 
 		/* Action originates from toolbar */
@@ -55,25 +67,9 @@ payroll
 			$scope.refresh();
 		});
 
-		$scope.listItemAction = function(data){
-			if(!data.deleted_at)
-			{
-				data.current = $scope.subheader.current;
-
-				Helper.set(data);
-
-				var dialog = {};
-				dialog.controller = 'listItemActionsDialogController';
-				dialog.template = '/app/shared/templates/dialogs/list-item-actions-dialog.template.html';
-				dialog.fullScreen = false;
-
-				Helper.customDialog(dialog);
-			}
-		}
-
 		/* Formats every data in the paginated call */
 		var pushItem = function(data){
-			if($scope.subheader.current.label == 'Payroll Process')
+			if($scope.subheader.current.label == 'Payroll Processes')
 			{
 				data.payroll_period.start_cut_off = new Date(data.payroll_period.start_cut_off);
 				data.payroll_period.end_cut_off = new Date(data.payroll_period.end_cut_off);

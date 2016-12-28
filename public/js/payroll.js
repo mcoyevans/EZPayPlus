@@ -40,6 +40,18 @@ payroll
 			$scope.init(current);
 			$scope.$broadcast('close');
 			$scope.showInactive = false;
+
+			$scope.view = function(data){
+				$scope.subheader.current.view(data);
+			}
+
+			$scope.edit = function(data){
+				$scope.subheader.current.menu[0].action(data);
+			}
+
+			$scope.delete = function(data){
+				$scope.subheader.current.menu[1].action(data);
+			}
 		});
 
 		/* Action originates from toolbar */
@@ -56,25 +68,9 @@ payroll
 			$scope.refresh();
 		});
 
-		$scope.listItemAction = function(data){
-			if(!data.deleted_at)
-			{
-				data.current = $scope.subheader.current;
-
-				Helper.set(data);
-
-				var dialog = {};
-				dialog.controller = 'listItemActionsDialogController';
-				dialog.template = '/app/shared/templates/dialogs/list-item-actions-dialog.template.html';
-				dialog.fullScreen = false;
-
-				Helper.customDialog(dialog);
-			}
-		}
-
 		/* Formats every data in the paginated call */
 		var pushItem = function(data){
-			if($scope.subheader.current.label == 'Payroll Process')
+			if($scope.subheader.current.label == 'Payroll Processes')
 			{
 				data.payroll_period.start_cut_off = new Date(data.payroll_period.start_cut_off);
 				data.payroll_period.end_cut_off = new Date(data.payroll_period.end_cut_off);
@@ -156,6 +152,356 @@ payroll
 
   			$scope.init($scope.subheader.current);
 		};
+	}]);
+payroll
+	.controller('payrollEntryContentContainerController', ['$scope', '$state', '$stateParams', 'Helper', function($scope, $state, $stateParams, Helper){
+		$scope.$emit('closeSidenav');
+
+		var payrollProcessID = $stateParams.payrollProcessID;
+
+		$scope.form = {}
+
+		$scope.payroll_entry = {};
+
+		/*
+		 * Object for toolbar
+		 *
+		*/
+		$scope.toolbar = {};
+
+
+		/*
+		 * Object for fab
+		 *
+		*/
+		$scope.fab = {};
+		$scope.fab.icon = 'mdi-check';
+		$scope.fab.label = 'Submit';
+		$scope.fab.show = true;
+
+		$scope.fab.action = function(){
+			if($scope.form.payrollEntryForm.$invalid){
+				angular.forEach($scope.form.payrollEntryForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				Helper.alert('Oops!', 'Kindly check form for errors.');
+
+				return;
+			}
+
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+
+				Helper.preload();
+
+				if(!$stateParams.payrollEntryID)
+				{
+					Helper.post('/payroll-entry', $scope.payroll_entry)
+						.success(function(duplicate){
+							Helper.stop();
+
+							if(duplicate){
+								$scope.duplicate = duplicate;
+								$scope.busy = false;
+								return;
+							}
+
+							$state.go('main.payroll-process', {'payrollProcessID': payrollProcessID});
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+
+							Helper.error();
+						});
+				}
+				else
+				{
+					Helper.put('/payroll-entry/' + $stateParams.payrollEntryID, $scope.payroll_entry)
+						.success(function(duplicate){
+							Helper.stop();
+
+							if(duplicate){
+								$scope.duplicate = duplicate;
+								$scope.busy = false;
+								return;
+							}
+
+							$state.go('main.payroll-process', {'payrollProcessID': $stateParams.payrollProcessID});
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+
+							Helper.error();
+						});
+				}
+			}
+		}
+
+		$scope.init = function(){
+			Helper.get('/branch')
+				.success(function(data){
+					$scope.branches = data;
+				})
+
+			Helper.get('/cost-center')
+				.success(function(data){
+					$scope.cost_centers = data;
+				})			
+
+			var payroll_process_query = {
+				'with': [
+					{
+						'relation': 'batch',
+						'withTrashed': false,
+					},
+					{
+						'relation': 'payroll',
+						'withTrashed': false,
+					},
+					{
+						'relation': 'payroll_period',
+						'withTrashed': false,
+					},
+				],
+				'where': [
+					{
+						'label': 'id',
+						'condition': '=',
+						'value': payrollProcessID,
+					}
+				],
+				'first': true,
+			}
+
+			Helper.post('/payroll-process/enlist', payroll_process_query)
+				.success(function(data){
+					data.payroll_period.start_cut_off = new Date(data.payroll_period.start_cut_off);
+					data.payroll_period.end_cut_off = new Date(data.payroll_period.end_cut_off);
+					data.payroll_period.payout = new Date(data.payroll_period.payout);
+
+					$scope.payroll_process = data;
+
+					var employee_query = {
+						'with': [
+							{
+								'relation': 'allowance_types',
+								'withTrashed': false,
+							},
+							{
+								'relation': 'deduction_types',
+								'withTrashed': false,
+							},
+						],
+						'where': [
+							{
+								'label': 'batch_id',
+								'condition': '=',
+								'value': $scope.payroll_process.batch_id,
+							},
+						],
+						'whereDoesntHave': [
+							{
+								'relation': 'payroll_entries',
+								'where': [
+									{
+										'label': 'payroll_process_id',
+										'condition': '=',
+										'value': $scope.payroll_process.id,
+									},
+								],
+							},
+						],
+					}
+
+					Helper.post('/employee/enlist', employee_query)
+						.success(function(data){
+							$scope.employees = data;
+						})
+				})
+				.error(function(){
+					Helper.error();
+				})
+		}();
+	}]);
+payroll
+	.controller('payrollProcessContentContainerController', ['$scope', '$state', '$stateParams', 'Helper', function($scope, $state, $stateParams, Helper){
+		$scope.$emit('closeSidenav');
+
+		/*
+		 * Object for toolbar
+		 *
+		*/
+		$scope.toolbar = {};
+
+		var payrollProcessID = $stateParams.payrollProcessID;
+
+		var query = {
+			'with': [
+				{
+					'relation': 'payroll',
+					'withTrashed': true,
+				},
+				{
+					'relation': 'payroll_period',
+					'withTrashed': false,
+				},
+			],
+			'where': [
+				{
+					'label': 'id',
+					'condition': '=',
+					'value' : payrollProcessID,
+				}
+			],
+			'first' : true,
+		}
+
+		Helper.post('/payroll-process/enlist', query)
+			.success(function(data){
+				if(!data)
+				{
+					return $state.go('page-not-found');
+				}
+
+				$scope.payroll_process = data;
+
+				$scope.toolbar.parentState = data.payroll.name;
+				$scope.toolbar.childState = new Date(data.payroll_period.start_cut_off).toLocaleDateString() + ' - ' + new Date(data.payroll_period.end_cut_off).toLocaleDateString();
+
+			})
+
+		/*
+		 * Object for subheader
+		 *
+		*/
+		$scope.subheader = {};
+		$scope.subheader.show = true;
+
+		$scope.subheader.toggleActive = function(){
+			$scope.showInactive = !$scope.showInactive;
+		}
+		$scope.subheader.sortBy = function(filter){
+			filter.sortReverse = !filter.sortReverse;			
+			$scope.sortType = filter.type;
+			$scope.sortReverse = filter.sortReverse;
+		}
+		
+		/*
+		 * Object for fab
+		 *
+		*/
+		$scope.fab = {};
+		$scope.fab.icon = 'mdi-plus';
+
+		$scope.fab.label = 'Payroll Entry';
+
+		$scope.fab.action = function(){
+			$state.go('main.payroll-entry', {'payrollProcessID': payrollProcessID});
+		}
+
+		/* Action originates from toolbar */
+		$scope.$on('search', function(){
+			$scope.request.search = $scope.toolbar.searchText;
+			$scope.refresh();
+			$scope.showInactive = true;
+		});
+
+		/* Listens for any request for refresh */
+		$scope.$on('refresh', function(){
+			$scope.request.search = null;
+			$scope.$broadcast('close');
+			$scope.refresh();
+		});
+
+		/* Formats every data in the paginated call */
+		var pushItem = function(data){
+			
+		}
+
+		$scope.init = function(query){
+			$scope.model = {};
+			$scope.model.items = [];
+			$scope.toolbar.items = [];
+
+			// 2 is default so the next page to be loaded will be page 2 
+			$scope.model.page = 2;
+
+			Helper.post('/payroll-entry/enlist', query)
+				.success(function(data){
+					$scope.model.details = data;
+					$scope.model.items = data.data;
+					$scope.model.show = true;
+
+					$scope.fab.show = true;
+
+					if(data.data.length){
+						// iterate over each record and set the format
+						angular.forEach(data.data, function(item){
+							pushItem(item);
+						});
+					}
+
+					$scope.model.paginateLoad = function(){
+						// kills the function if ajax is busy or pagination reaches last page
+						if($scope.model.busy || ($scope.model.page > $scope.model.details.last_page)){
+							$scope.isLoading = false;
+							return;
+						}
+						/**
+						 * Executes pagination call
+						 *
+						*/
+						// sets to true to disable pagination call if still busy.
+						$scope.model.busy = true;
+						$scope.isLoading = true;
+						// Calls the next page of pagination.
+						Helper.post('/birthday/enlist' + '?page=' + $scope.model.page, query)
+							.success(function(data){
+								// increment the page to set up next page for next AJAX Call
+								$scope.model.page++;
+
+								// iterate over each data then splice it to the data array
+								angular.forEach(data.data, function(item, key){
+									pushItem(item);
+									$scope.model.items.push(item);
+								});
+
+								// Enables again the pagination call for next call.
+								$scope.model.busy = false;
+								$scope.isLoading = false;
+							});
+					}
+				});
+		}
+
+		$scope.refresh = function(){
+			$scope.isLoading = true;
+  			$scope.model.show = false;
+
+  			$scope.init($scope.request);
+		};
+
+		$scope.request = {};
+
+		$scope.request.paginate = 20;
+
+		$scope.request.with = [
+			{
+				'relation':'employee',
+				'withTrashed': false,
+			},
+		];	
+
+		$scope.isLoading = true;
+		$scope.$broadcast('close');
+
+		$scope.init($scope.request);
 	}]);
 payroll
 	.controller('payrollProcessDialogController', ['$scope', 'Helper', function($scope, Helper){
@@ -358,7 +704,7 @@ payroll
 			})
 	}]);
 payroll
-	.controller('payrollSubheaderController', ['$scope', 'Helper', function($scope, Helper){
+	.controller('payrollSubheaderController', ['$scope', '$state', 'Helper', function($scope, $state, Helper){
 		var setInit = function(data){
 			Helper.set(data);
 
@@ -368,7 +714,7 @@ payroll
 		$scope.subheader.navs = [
 			// Payroll Process
 			{
-				'label':'Payroll Process',
+				'label':'Payroll Processes',
 				'url': '/payroll-process/enlist',
 				'request' : {
 					'with' : [
@@ -429,7 +775,7 @@ payroll
 						action: function(data){
 							var dialog = {};
 							dialog.title = 'Delete';
-							dialog.message = 'Delete ' + data.name + ' payroll process?'
+							dialog.message = 'Delete ' + new Date(data.payroll_period.start_cut_off).toLocaleDateString() + ' - ' + new Date(data.payroll_period.end_cut_off).toLocaleDateString() + ' payroll process?'
 							dialog.ok = 'Delete';
 							dialog.cancel = 'Cancel';
 
@@ -449,11 +795,14 @@ payroll
 						},
 					},
 				],
+				view: function(data){
+					$state.go('main.payroll-process', {payrollProcessID: data.id});
+				},
 				action: function(current){
 					setInit(current);
 				},
 			},
-			// Payroll Configuration
+			// 13th Month Pay Process
 			{
 				'label':'Payroll Configuration',
 				'url': '/payroll/enlist',
@@ -747,6 +1096,97 @@ payroll
 		];
 
 		setInit($scope.subheader.navs[0]);
+	}]);
+payroll
+	.controller('payrollEntryToolbarController', ['$scope', '$filter', function($scope, $filter){
+		$scope.toolbar.childState = 'Payroll Entry';
+
+		$scope.$on('close', function(){
+			$scope.hideSearchBar();
+		});
+
+		$scope.toolbar.getItems = function(query){
+			var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items;
+			return results;
+		}
+
+		$scope.toolbar.hideSearchIcon = true;
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.model.busy = true;
+			$scope.searchBar = true;
+			$scope.showInactive = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.searchBar = false;
+			$scope.toolbar.searchText = '';
+			$scope.toolbar.searchItem = '';
+			/* Cancels the paginate when the user sent a query */
+			if($scope.searched){
+				$scope.model.page = 1;
+				$scope.model.no_matches = false;
+				$scope.model.items = [];
+				$scope.searched = false;
+				$scope.$emit('refresh');
+			}
+		};
+
+		$scope.searchUserInput = function(){
+			$scope.$emit('search');
+			$scope.searched = true;
+		};
+	}]);
+payroll
+	.controller('payrollProcessToolbarController', ['$scope', '$filter', function($scope, $filter){
+		$scope.$on('close', function(){
+			$scope.hideSearchBar();
+		});
+
+		$scope.toolbar.getItems = function(query){
+			var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items;
+			return results;
+		}
+
+		$scope.toolbar.searchAll = true;
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.model.busy = true;
+			$scope.searchBar = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.searchBar = false;
+			$scope.toolbar.searchText = '';
+			$scope.toolbar.searchItem = '';
+			/* Cancels the paginate when the user sent a query */
+			if($scope.searched){
+				$scope.model.page = 1;
+				$scope.model.no_matches = false;
+				$scope.model.items = [];
+				$scope.searched = false;
+				$scope.$emit('refresh');
+			}
+		};
+
+		$scope.searchUserInput = function(){
+			$scope.$emit('search');
+			$scope.searched = true;
+		};
 	}]);
 payroll
 	.controller('payrollToolbarController', ['$scope', '$filter', function($scope, $filter){
