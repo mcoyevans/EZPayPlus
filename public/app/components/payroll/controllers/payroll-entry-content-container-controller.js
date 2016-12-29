@@ -88,6 +88,43 @@ payroll
 			}
 		}
 
+		$scope.setEmployee = function(){
+			$scope.payroll_entry.allowances = [];
+			$scope.payroll_entry.deductions = [];
+
+			angular.forEach($scope.payroll_entry.employee.allowance_types, function(item, key){
+				var allowance = {};
+
+				allowance.name = item.name;
+				allowance.description = item.description;
+				allowance.amount = item.pivot.amount;
+				allowance.employee_allowance_type_id = item.pivot.id;
+
+				$scope.payroll_entry.allowances[key] = allowance;
+			});
+
+			angular.forEach($scope.payroll_entry.employee.deduction_types, function(item, key){
+				var deduction = {};
+
+				deduction.name = item.name;
+				deduction.description = item.description;
+				deduction.amount = item.pivot.amount;
+				deduction.employee_deduction_type_id = item.pivot.id;
+
+				$scope.payroll_entry.deductions[key] = deduction;
+			});
+
+			$scope.daily_rate = ($scope.payroll_entry.employee.basic_salary * 12) / $scope.payroll_process.payroll.working_days_per_year;
+			$scope.hourly_rate = ($scope.payroll_entry.employee.basic_salary * 12) / $scope.payroll_process.payroll.working_days_per_year / $scope.payroll_process.payroll.working_hours_per_day;
+
+			console.log($scope.hourly_rate);
+		}
+
+		$scope.removeAllowance = function(idx){
+			$scope.payroll_entry.employee.allowance_types.splice(idx, 1);
+			$scope.payroll_entry.allowances.splice(idx, 1);
+		}
+
 		$scope.init = function(){
 			Helper.get('/branch')
 				.success(function(data){
@@ -106,7 +143,7 @@ payroll
 						'withTrashed': false,
 					},
 					{
-						'relation': 'payroll',
+						'relation': 'payroll.time_interpretation',
 						'withTrashed': false,
 					},
 					{
@@ -132,15 +169,38 @@ payroll
 
 					$scope.payroll_process = data;
 
+					if(data.payroll.pay_frequency == 'Weekly')
+					{
+						$scope.basic_pay_factory = 4;
+					}
+					else if(data.payroll.pay_frequency == 'Semi-monthly')
+					{
+						$scope.basic_pay_factory = 2;						
+					}
+					else if(data.payroll.pay_frequency == 'Monthly')
+					{
+						$scope.basic_pay_factory = 1;						
+					}
+
+					$scope.max_regular_hours = data.payroll.working_hours_per_day * data.payroll.working_days_per_week * 4 / $scope.basic_pay_factory;
+
 					var employee_query = {
 						'with': [
 							{
-								'relation': 'allowance_types',
+								'relation': 'allowance_types.de_minimis',
 								'withTrashed': false,
 							},
 							{
 								'relation': 'deduction_types',
 								'withTrashed': false,
+							},
+							{
+								'relation': 'tax_code',
+								'withTrashed': false,	
+							},
+							{
+								'relation': 'position',
+								'withTrashed': false,	
 							},
 						],
 						'where': [

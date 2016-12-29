@@ -19,6 +19,7 @@ class CreatePayrollsTable extends Migration
             $table->text('description');
             $table->float('working_days_per_year');
             $table->float('working_hours_per_day');
+            $table->integer('working_days_per_week');
             $table->string('pay_frequency');
             $table->integer('time_interpretation_id')->unsigned();
             $table->timestamps();

@@ -149,6 +149,7 @@ class PayrollController extends Controller
         $this->validate($request, [
             'name' => 'required',
             'working_days_per_year' => 'required|numeric',
+            'working_days_per_week' => 'required|numeric',
             'working_hours_per_day' => 'required|numeric',
             'pay_frequency' => 'required',
             'time_interpretation_id' => 'required',
@@ -161,6 +162,7 @@ class PayrollController extends Controller
             $payroll->name = $request->name;
             $payroll->description = $request->description;
             $payroll->working_days_per_year = $request->working_days_per_year;
+            $payroll->working_days_per_week = $request->working_days_per_week;
             $payroll->working_hours_per_day = $request->working_hours_per_day;
             $payroll->pay_frequency = $request->pay_frequency;
             $payroll->time_interpretation_id = $request->time_interpretation_id;
@@ -229,6 +231,7 @@ class PayrollController extends Controller
         $this->validate($request, [
             'name' => 'required',
             'working_days_per_year' => 'required|numeric',
+            'working_days_per_week' => 'required|numeric',
             'working_hours_per_day' => 'required|numeric',
             'pay_frequency' => 'required',
             'time_interpretation_id' => 'required',
@@ -241,6 +244,7 @@ class PayrollController extends Controller
             $payroll->name = $request->name;
             $payroll->description = $request->description;
             $payroll->working_days_per_year = $request->working_days_per_year;
+            $payroll->working_days_per_week = $request->working_days_per_week;
             $payroll->working_hours_per_day = $request->working_hours_per_day;
             $payroll->pay_frequency = $request->pay_frequency;
             $payroll->time_interpretation_id = $request->time_interpretation_id;

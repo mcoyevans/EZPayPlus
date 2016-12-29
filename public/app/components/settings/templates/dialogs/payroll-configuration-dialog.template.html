@@ -40,12 +40,22 @@
                         <div ng-message="max">Working days per year cannot be higher than 365.</div>
                     </div>
                 </md-input-container>
+                <!-- Working Days per Week -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Working Days per Week</label>
+                    <input type="number" name="WorkDaysPerWeek" required ng-model="payroll.working_days_per_week" min="0" max="7" ng-disabled="busy">
+                    <div ng-messages="payrollForm.WorkDaysPerWeek.$error" ng-if="payrollForm.WorkDaysPerWeek.$touched">
+                        <div ng-message="required">Working days per week is required.</div>
+                        <div ng-message="min">Working days per week cannot be lower than 0.</div>
+                        <div ng-message="max">Working days per week cannot be more than 7.</div>
+                    </div>
+                </md-input-container>
                 <!-- Working Hours per Day -->
                 <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
                     <label>Working Hours per Day</label>
                     <input type="number" name="WorkHoursPerDay" required ng-model="payroll.working_hours_per_day" min="0" max="8" ng-disabled="busy">
                     <div ng-messages="payrollForm.WorkHoursPerDay.$error" ng-if="payrollForm.WorkHoursPerDay.$touched">
-                        <div ng-message="required">Working days per year is required.</div>
+                        <div ng-message="required">Working hours per day is required.</div>
                         <div ng-message="min">Working hours per day cannot be lower than 0.</div>
                         <div ng-message="max">Working hours per day cannot be more than 8.</div>
                     </div>
