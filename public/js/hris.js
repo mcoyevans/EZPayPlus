@@ -438,7 +438,12 @@ hris
 
 				Helper.preload();
 
-				$scope.employee.birthdate = $scope.employee.birthdate.toLocaleDateString();
+				var date_back_up = {};
+
+				date_back_up.birthdate = new Date($scope.employee.birthdate);
+				date_back_up.date_hired = new Date($scope.employee.date_hired);
+
+				$scope.employee.birthdate = $scope.employee.birthdate.toDateString();
 				$scope.employee.date_hired = $scope.employee.date_hired.toDateString();
 
 				if(!$stateParams.employeeID)
@@ -456,8 +461,8 @@ hris
 							$state.go('main.hris');
 						})
 						.error(function(){
-							$scope.employee.birthdate = new Date($scope.employee.birthdate);
-							$scope.employee.date_hired = new Date($scope.employee.date_hired);
+							$scope.employee.birthdate = new Date(date_back_up.birthdate);
+							$scope.employee.date_hired = new Date(date_back_up.date_hired);
 
 							$scope.busy = false;
 							$scope.error = true;
@@ -480,8 +485,8 @@ hris
 							$state.go('main.hris');
 						})
 						.error(function(){
-							$scope.employee.birthdate = new Date($scope.employee.birthdate);
-							$scope.employee.date_hired = new Date($scope.employee.date_hired);
+							$scope.employee.birthdate = date_back_up.birthdate;
+							$scope.employee.date_hired = date_back_up.date_hired;
 
 							$scope.busy = false;
 							$scope.error = true;

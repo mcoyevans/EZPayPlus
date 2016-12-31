@@ -116,8 +116,6 @@ payroll
 
 			$scope.daily_rate = ($scope.payroll_entry.employee.basic_salary * 12) / $scope.payroll_process.payroll.working_days_per_year;
 			$scope.hourly_rate = ($scope.payroll_entry.employee.basic_salary * 12) / $scope.payroll_process.payroll.working_days_per_year / $scope.payroll_process.payroll.working_hours_per_day;
-
-			console.log($scope.hourly_rate);
 		}
 
 		$scope.removeAllowance = function(idx){
@@ -171,18 +169,59 @@ payroll
 
 					if(data.payroll.pay_frequency == 'Weekly')
 					{
-						$scope.basic_pay_factory = 4;
+						$scope.basic_pay_factor = 4;
 					}
 					else if(data.payroll.pay_frequency == 'Semi-monthly')
 					{
-						$scope.basic_pay_factory = 2;						
+						$scope.basic_pay_factor = 2;						
 					}
 					else if(data.payroll.pay_frequency == 'Monthly')
 					{
-						$scope.basic_pay_factory = 1;						
+						$scope.basic_pay_factor = 1;						
 					}
 
-					$scope.max_regular_hours = data.payroll.working_hours_per_day * data.payroll.working_days_per_week * 4 / $scope.basic_pay_factory;
+					$scope.max_rest_day_hours = $scope.payroll_process.payroll.working_hours_per_day * (7 - $scope.payroll_process.payroll.working_days_per_week) * 4 / $scope.basic_pay_factor;
+
+					var holiday_query = {
+						'whereBetween': [
+							{
+								'label': 'date',
+								'start': new Date(data.payroll_period.start_cut_off).toDateString(),
+								'end': new Date(data.payroll_period.end_cut_off).toDateString(),
+							},
+						]
+					}
+
+					Helper.post('/holiday/enlist', holiday_query)
+						.success(function(data){
+							if(data.length)
+							{
+								$scope.regular_holidays = [];
+								$scope.special_holidays = [];
+
+								angular.forEach(data, function(item){
+									item.date = new Date(item.date);
+
+									if(item.type == 'Regular Holiday'){
+										$scope.regular_holidays.push(item)
+									}
+									else if(item.type == 'Special Non-working Holiday')
+									{
+										$scope.special_holidays.push(item)
+									}
+								});
+
+								$scope.max_regular_hours = $scope.payroll_process.payroll.working_hours_per_day * $scope.payroll_process.payroll.working_days_per_week * 4 / $scope.basic_pay_factor - data.length * $scope.payroll_process.payroll.working_hours_per_day;
+							}
+							else{
+								$scope.max_regular_hours = $scope.payroll_process.payroll.working_hours_per_day * $scope.payroll_process.payroll.working_days_per_week * 4 / $scope.basic_pay_factor;
+							}
+							
+
+							$scope.holidays = data;
+
+						})
+
 
 					var employee_query = {
 						'with': [

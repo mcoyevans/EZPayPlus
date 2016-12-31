@@ -41,7 +41,7 @@ payroll
 				$scope.payroll_process = data;
 
 				$scope.toolbar.parentState = data.payroll.name;
-				$scope.toolbar.childState = new Date(data.payroll_period.start_cut_off).toLocaleDateString() + ' - ' + new Date(data.payroll_period.end_cut_off).toLocaleDateString();
+				$scope.toolbar.childState = new Date(data.payroll_period.start_cut_off).toDateString() + ' - ' + new Date(data.payroll_period.end_cut_off).toDateString();
 
 			})
 

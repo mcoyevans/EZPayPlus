@@ -63,6 +63,20 @@ class HolidayController extends Controller
             }
         }
 
+        if($request->has('whereBetween'))
+        {
+            for ($i=0; $i < count($request->whereBetween); $i++) { 
+                if($request->input('whereBetween')[$i]['label'] == 'date')
+                {
+                    $holidays->whereBetween($request->input('whereBetween')[$i]['label'], [Carbon::parse($request->input('whereBetween')[$i]['start']), Carbon::parse($request->input('whereBetween')[$i]['end'])]);
+
+                    continue;
+                }
+
+                $holidays->whereBetween($request->input('whereBetween')[$i]['label'], [$request->input('whereBetween')[$i]['start'], $request->input('whereBetween')[$i]['end']]);
+            }
+        }
+
         if($request->has('search'))
         {
             $holidays->where('description', 'like', '%'. $request->search. '%');

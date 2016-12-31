@@ -1775,13 +1775,17 @@ settings
 		}		
 
 		$scope.checkDuplicate = function(){
-			$scope.holiday.date = $scope.holiday.date.toLocaleDateString();
+			var back_up_date = {}
+
+			back_up_date.date = new Date($scope.holiday.date);
+
+			$scope.holiday.date = $scope.holiday.date.toDateString();
 
 			Helper.post('/holiday/check-duplicate', $scope.holiday)
 				.success(function(data){
 					$scope.duplicate = data;
 
-					$scope.holiday.date = new Date($scope.holiday.date);
+					$scope.holiday.date = new Date(back_up_date.date);
 				})
 		}
 
@@ -1804,7 +1808,11 @@ settings
 			{
 				$scope.busy = true;
 
-				$scope.holiday.date = $scope.holiday.date.toLocaleDateString();
+				var back_up_date = {}
+
+				back_up_date.date = new Date($scope.holiday.date);
+
+				$scope.holiday.date = $scope.holiday.date.toDateString();
 
 				if($scope.config.action == 'create')
 				{
@@ -1821,7 +1829,7 @@ settings
 							$scope.busy = false;
 							$scope.error = true;
 
-							$scope.holiday.date = new Date($scope.holiday.date);
+							$scope.holiday.date = new Date(back_up_date.date);
 						});
 				}
 				if($scope.config.action == 'edit')
@@ -1839,7 +1847,7 @@ settings
 							$scope.busy = false;
 							$scope.error = true;
 
-							$scope.holiday.date = new Date($scope.holiday.date);
+							$scope.holiday.date = new Date(back_up_date.date);
 						});
 				}
 			}
@@ -2289,17 +2297,23 @@ settings
 		}
 
 		$scope.checkDuplicate = function(){
-			$scope.payroll_period.start_cut_off = $scope.payroll_period.start_cut_off.toLocaleDateString();
-			$scope.payroll_period.end_cut_off = $scope.payroll_period.end_cut_off.toLocaleDateString();
-			$scope.payroll_period.payout = $scope.payroll_period.payout.toLocaleDateString();
+			var back_up_date = {}
+
+			back_up_date.start_cut_off = new Date($scope.payroll_period.start_cut_off);
+			back_up_date.end_cut_off = new Date($scope.payroll_period.end_cut_off);
+			back_up_date.payout = new Date($scope.payroll_period.payout);
+
+			$scope.payroll_period.start_cut_off = $scope.payroll_period.start_cut_off.toDateString();
+			$scope.payroll_period.end_cut_off = $scope.payroll_period.end_cut_off.toDateString();
+			$scope.payroll_period.payout = $scope.payroll_period.payout.toDateString();
 
 			Helper.post('/payroll-period/check-duplicate', $scope.payroll_period)
 				.success(function(data){
 					$scope.duplicate = data;
 
-					$scope.payroll_period.start_cut_off = new Date($scope.payroll_period.start_cut_off);
-					$scope.payroll_period.end_cut_off = new Date($scope.payroll_period.end_cut_off);
-					$scope.payroll_period.payout = new Date($scope.payroll_period.payout);
+					$scope.payroll_period.start_cut_off = new Date(back_up_date.start_cut_off);
+					$scope.payroll_period.end_cut_off = new Date(back_up_date.end_cut_off);
+					$scope.payroll_period.payout = new Date(back_up_date.payout);
 				})
 		}
 
@@ -2318,9 +2332,15 @@ settings
 			{
 				$scope.busy = true;
 
-				$scope.payroll_period.start_cut_off = $scope.payroll_period.start_cut_off.toLocaleDateString();
-				$scope.payroll_period.end_cut_off = $scope.payroll_period.end_cut_off.toLocaleDateString();
-				$scope.payroll_period.payout = $scope.payroll_period.payout.toLocaleDateString();
+				var back_up_date = {}
+
+				back_up_date.start_cut_off = new Date($scope.payroll_period.start_cut_off);
+				back_up_date.end_cut_off = new Date($scope.payroll_period.end_cut_off);
+				back_up_date.payout = new Date($scope.payroll_period.payout);
+
+				$scope.payroll_period.start_cut_off = $scope.payroll_period.start_cut_off.toDateString();
+				$scope.payroll_period.end_cut_off = $scope.payroll_period.end_cut_off.toDateString();
+				$scope.payroll_period.payout = $scope.payroll_period.payout.toDateString();
 
 				if($scope.config.action == 'create')
 				{
@@ -2337,9 +2357,9 @@ settings
 							$scope.busy = false;
 							$scope.error = true;
 
-							$scope.payroll_period.start_cut_off = new Date($scope.payroll_period.start_cut_off);
-							$scope.payroll_period.end_cut_off = new Date($scope.payroll_period.end_cut_off);
-							$scope.payroll_period.payout = new Date($scope.payroll_period.payout);
+							$scope.payroll_period.start_cut_off = new Date(back_up_date.start_cut_off);
+							$scope.payroll_period.end_cut_off = new Date(back_up_date.end_cut_off);
+							$scope.payroll_period.payout = new Date(back_up_date.payout);
 						});
 				}
 				if($scope.config.action == 'edit')
@@ -2357,9 +2377,9 @@ settings
 							$scope.busy = false;
 							$scope.error = true;
 
-							$scope.payroll_period.start_cut_off = new Date($scope.payroll_period.start_cut_off);
-							$scope.payroll_period.end_cut_off = new Date($scope.payroll_period.end_cut_off);
-							$scope.payroll_period.payout = new Date($scope.payroll_period.payout);
+							$scope.payroll_period.start_cut_off = new Date(back_up_date.start_cut_off);
+							$scope.payroll_period.end_cut_off = new Date(back_up_date.end_cut_off);
+							$scope.payroll_period.payout = new Date(back_up_date.payout);
 						});
 				}
 			}

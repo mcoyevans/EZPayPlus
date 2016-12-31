@@ -1,5 +1,5 @@
 <form name="form.payrollEntryForm" layout="row" layout-align="center center">
-	<div layout="row" flex flex-gt-md="80" layout-padding>
+	<div flex flex-gt-md="80" layout-padding>
 		<md-content flex>
 			<md-list>
 				<md-list-item class="md-3-line">
@@ -54,6 +54,7 @@
 				<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
                     <label>Regular Hours</label>
                     <input type="number" name="RegularWorkingHours" required ng-model="payroll_entry.regular_working_hours" min="0" max="{{max_regular_hours}}" ng-disabled="busy">
+                    <div class="hint" ng-if="form.payrollEntryForm.RegularWorkingHours.$untouched || form.payrollEntryForm.RegularWorkingHours.$valid">Max regular work hours for this cut off is {{max_regular_hours}}.</div>
                     <div ng-messages="form.payrollEntryForm.RegularWorkingHours.$error" ng-if="form.payrollEntryForm.RegularWorkingHours.$touched">
                         <div ng-message="required">Regular working hours is required.</div>
                         <div ng-message="min">Regular working hours cannot be less than 0.</div>
@@ -76,13 +77,26 @@
                         <div ng-message="min">Night Differential cannot be less than 0.</div>
                     </div>
                 </md-input-container>
+                <!-- Overtime Night Differential -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Overtime Night Differential</label>
+                    <input type="number" name="OvertimeNightDifferential" ng-model="payroll_entry.overtime_night_differential" min="0" ng-disabled="busy">
+                    <div ng-messages="form.payrollEntryForm.OvertimeNightDifferential.$error" ng-if="form.payrollEntryForm.OvertimeNightDifferential.$touched">
+                        <div ng-message="min">Overtime Night Differential cannot be less than 0.</div>
+                    </div>
+                </md-input-container>
 			</div>
 			<!-- Regular Holiday -->
-			<md-subheader class="md-no-sticky primary-text">Regular Holiday</md-subheader>
-			<div layout="row" layout-wrap flex>
+            <md-switch class="md-primary" ng-model="regular_holiday" aria-label="Regular Holiday" ng-show="regular_holidays.length">
+                <p ng-class="regular_holiday ? 'primary-text': 'seconday-text'">
+                    <span>Regular Holiday</span> 
+                    <span ng-repeat="item in regular_holidays"> <span ng-if="$first">-</span> {{item.description}} ({{item.date | date: 'EEE. MMM. dd'}}) <span ng-if="!$last">,</span></span>
+                </p>
+            </md-switch>
+			<div layout="row" layout-wrap flex ng-if="regular_holiday">
 				<!-- Regular Holiday Hours -->
 				<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
-                    <label>Regular Holiday Hours</label>
+                    <label>Regular Hours</label>
                     <input type="number" name="RegularHolidayRegularWorkingHours" ng-model="payroll_entry.regular_holiday" min="0" ng-disabled="busy">
                     <div ng-messages="form.payrollEntryForm.RegularHolidayRegularWorkingHours.$error" ng-if="form.payrollEntryForm.RegularHolidayRegularWorkingHours.$touched">
                         <div ng-message="min">Regular Holiday Regular working hours cannot be less than 0.</div>
@@ -90,7 +104,7 @@
                 </md-input-container>
                 <!-- Regular Holiday Overtime -->
 				<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
-                    <label>Regular Holiday Overtime</label>
+                    <label>Overtime</label>
                     <input type="number" name="RegularHolidayOvertime" ng-model="payroll_entry.regular_holiday_overtime" min="0" ng-disabled="busy">
                     <div ng-messages="form.payrollEntryForm.RegularHolidayOvertime.$error" ng-if="form.payrollEntryForm.RegularHolidayOvertime.$touched">
                         <div ng-message="min">Regular Holiday Overtime cannot be less than 0.</div>
@@ -98,19 +112,32 @@
                 </md-input-container>
                 <!-- Regular Holiday Night Differential -->
 				<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
-                    <label>Regular Holiday Night Differential</label>
+                    <label>Night Differential</label>
                     <input type="number" name="RegularHolidayNightDifferential" ng-model="payroll_entry.regular_holiday_night_differential" min="0" ng-disabled="busy">
                     <div ng-messages="form.payrollEntryForm.RegularHolidayNightDifferential.$error" ng-if="form.payrollEntryForm.RegularHolidayNightDifferential.$touched">
                         <div ng-message="min">Regular Holiday Night Differential cannot be less than 0.</div>
                     </div>
                 </md-input-container>
+                <!-- Regular Holiday Overtime Night Differential -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Overtime Night Differential</label>
+                    <input type="number" name="RegularHolidayOvertimeNightDifferential" ng-model="payroll_entry.regular_holiday_overtime_night_differential" min="0" ng-disabled="busy">
+                    <div ng-messages="form.payrollEntryForm.RegularHolidayOvertimeNightDifferential.$error" ng-if="form.payrollEntryForm.RegularHolidayOvertimeNightDifferential.$touched">
+                        <div ng-message="min">Regular Holiday Overtime Night Differential cannot be less than 0.</div>
+                    </div>
+                </md-input-container>
 			</div>
 			<!-- Special Holiday -->
-			<md-subheader class="md-no-sticky primary-text">Special Holiday</md-subheader>
-			<div layout="row" layout-wrap flex>
+			<md-switch class="md-primary" ng-model="special_holiday" aria-label="Special Holiday" ng-show="special_holidays.length">
+                <p ng-class="special_holiday ? 'primary-text': 'seconday-text'">
+                    <span>Special Holiday</span> 
+                    <span ng-repeat="item in special_holidays"> <span ng-if="$first">-</span> {{item.description}} ({{item.date | date: 'EEE. MMM. dd'}}) <span ng-if="!$last">,</span></span>
+                </p>
+            </md-switch>
+			<div layout="row" layout-wrap flex ng-if="special_holiday">
 				<!-- Special Holiday Hours -->
 				<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
-                    <label>Special Holiday Hours</label>
+                    <label>Regular Hours</label>
                     <input type="number" name="SpecialHolidayRegularWorkingHours" ng-model="payroll_entry.special_holiday" min="0" ng-disabled="busy">
                     <div ng-messages="form.payrollEntryForm.SpecialHolidayRegularWorkingHours.$error" ng-if="form.payrollEntryForm.SpecialHolidayRegularWorkingHours.$touched">
                         <div ng-message="min">Special Holiday Regular working hours cannot be less than 0.</div>
@@ -118,7 +145,7 @@
                 </md-input-container>
                 <!-- Special Holiday Overtime -->
 				<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
-                    <label>Special Holiday Overtime</label>
+                    <label>Overtime</label>
                     <input type="number" name="SpecialHolidayOvertime" ng-model="payroll_entry.special_holiday_overtime" min="0" ng-disabled="busy">
                     <div ng-messages="form.payrollEntryForm.SpecialHolidayOvertime.$error" ng-if="form.payrollEntryForm.SpecialHolidayOvertime.$touched">
                         <div ng-message="min">Special Holiday Overtime cannot be less than 0.</div>
@@ -126,27 +153,38 @@
                 </md-input-container>
                 <!-- Special Holiday Night Differential -->
 				<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
-                    <label>Special Holiday Night Differential</label>
+                    <label>Night Differential</label>
                     <input type="number" name="SpecialHolidayNightDifferential" ng-model="payroll_entry.special_holiday_night_differential" min="0" ng-disabled="busy">
                     <div ng-messages="form.payrollEntryForm.SpecialHolidayNightDifferential.$error" ng-if="form.payrollEntryForm.SpecialHolidayNightDifferential.$touched">
                         <div ng-message="min">Special Holiday Night Differential cannot be less than 0.</div>
                     </div>
                 </md-input-container>
+                <!-- Special Holiday Overtime Night Differential -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Overtime Night Differential</label>
+                    <input type="number" name="SpecialHolidayOvertimeNightDifferential" ng-model="payroll_entry.special_holiday_overtime_night_differential" min="0" ng-disabled="busy">
+                    <div ng-messages="form.payrollEntryForm.SpecialHolidayOvertimeNightDifferential.$error" ng-if="form.payrollEntryForm.SpecialHolidayOvertimeNightDifferential.$touched">
+                        <div ng-message="min">Special Holiday Overtime Night Differential cannot be less than 0.</div>
+                    </div>
+                </md-input-container>
 			</div>
 			<!-- Rest Day -->
-			<md-subheader class="md-no-sticky primary-text">Rest Day</md-subheader>
-			<div layout="row" layout-wrap flex>
+			<md-switch class="md-primary" ng-model="rest_day" aria-label="Rest Day">
+                <span ng-class="rest_day ? 'primary-text': 'seconday-text'">Rest Day</span>
+            </md-switch>
+			<div layout="row" layout-wrap flex ng-if="rest_day">
 				<!-- Rest Day Regular Hours -->
 				<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
-                    <label>Rest Day Regular Hours</label>
-                    <input type="number" name="RestDayRegularWorkingHours" ng-model="payroll_entry.rest_day" min="0" ng-disabled="busy">
+                    <label>Regular Hours</label>
+                    <input type="number" name="RestDayRegularWorkingHours" ng-model="payroll_entry.rest_day" min="0" max={{max_rest_day_hours}} ng-disabled="busy">
+                    <div class="hint" ng-if="form.payrollEntryForm.RestDayRegularWorkingHours.$untouched || form.payrollEntryForm.RestDayRegularWorkingHours.$valid">Max rest day work hours for this cut off is {{max_rest_day_hours}}.</div>
                     <div ng-messages="form.payrollEntryForm.RestDayRegularWorkingHours.$error" ng-if="form.payrollEntryForm.RestDayRegularWorkingHours.$touched">
                         <div ng-message="min">Rest Day Regular working hours cannot be less than 0.</div>
                     </div>
                 </md-input-container>
                 <!-- Rest Day Overtime -->
 				<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
-                    <label>Rest Day Overtime</label>
+                    <label>Overtime</label>
                     <input type="number" name="RestDayOvertime" ng-model="payroll_entry.rest_day_overtime" min="0" ng-disabled="busy">
                     <div ng-messages="form.payrollEntryForm.RestDayOvertime.$error" ng-if="form.payrollEntryForm.RestDayOvertime.$touched">
                         <div ng-message="min">Rest Day Overtime cannot be less than 0.</div>
@@ -154,19 +192,32 @@
                 </md-input-container>
                 <!-- Rest Day Night Differential -->
 				<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
-                    <label>Rest Day Night Differential</label>
+                    <label>Night Differential</label>
                     <input type="number" name="RestDayNightDifferential" ng-model="payroll_entry.rest_day_night_differential" min="0" ng-disabled="busy">
                     <div ng-messages="form.payrollEntryForm.RestDayNightDifferential.$error" ng-if="form.payrollEntryForm.RestDayNightDifferential.$touched">
                         <div ng-message="min">Rest Day Night Differential cannot be less than 0.</div>
                     </div>
                 </md-input-container>
+                <!-- Rest Day Overtime Night Differential -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Overtime Night Differential</label>
+                    <input type="number" name="RestDayOvertimeNightDifferential" ng-model="payroll_entry.rest_day_overtime_night_differential" min="0" ng-disabled="busy">
+                    <div ng-messages="form.payrollEntryForm.RestDayOvertimeNightDifferential.$error" ng-if="form.payrollEntryForm.RestDayOvertimeNightDifferential.$touched">
+                        <div ng-message="min">Rest Day Overtime Night Differential cannot be less than 0.</div>
+                    </div>
+                </md-input-container>
 			</div>
 			<!-- Regular Holiday Rest Day -->
-			<md-subheader class="md-no-sticky primary-text">Regular Holiday Rest Day</md-subheader>
-			<div layout="row" layout-wrap flex>
+			<md-switch class="md-primary" ng-model="regular_holiday_rest_day" aria-label="Regular Holiday Rest Day" ng-show="regular_holidays.length">
+                <p ng-class="regular_holiday_rest_day ? 'primary-text': 'seconday-text'">
+                    <span>Regular Holiday Rest Day</span> 
+                    <span ng-repeat="item in regular_holidays"> <span ng-if="$first">-</span> {{item.description}} ({{item.date | date: 'EEE. MMM. dd'}}) <span ng-if="!$last">,</span></span>
+                </p>
+            </md-switch>
+			<div layout="row" layout-wrap flex ng-if="regular_holiday_rest_day">
 				<!-- Regular Holiday Rest Day Hours -->
 				<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
-                    <label>Regular Holiday Rest Day</label>
+                    <label>Regular Hours</label>
                     <input type="number" name="RegularHolidayRestDayWorkingHours" ng-model="payroll_entry.regular_holiday_rest_day" min="0" ng-disabled="busy">
                     <div ng-messages="form.payrollEntryForm.RegularHolidayRestDayWorkingHours.$error" ng-if="form.payrollEntryForm.RegularHolidayRestDayWorkingHours.$touched">
                         <div ng-message="min">Regular Holiday Rest Day working hours cannot be less than 0.</div>
@@ -174,7 +225,7 @@
                 </md-input-container>
                 <!-- Regular Holiday Rest Day Overtime -->
 				<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
-                    <label>Regular Holiday Rest Day Overtime</label>
+                    <label>Overtime</label>
                     <input type="number" name="RegularHolidayRestDayOvertime" ng-model="payroll_entry.regular_holiday_rest_day_overtime" min="0" ng-disabled="busy">
                     <div ng-messages="form.payrollEntryForm.RegularHolidayRestDayOvertime.$error" ng-if="form.payrollEntryForm.RegularHolidayRestDayOvertime.$touched">
                         <div ng-message="min">Regular Holiday Rest Day Overtime cannot be less than 0.</div>
@@ -182,19 +233,32 @@
                 </md-input-container>
                 <!-- Regular Holiday Rest Day Night Differential -->
 				<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
-                    <label>Regular Holiday Rest Day Night Differential</label>
+                    <label>Night Differential</label>
                     <input type="number" name="RegularHolidayRestDayNightDifferential" ng-model="payroll_entry.regular_holiday_rest_day_night_differential" min="0" ng-disabled="busy">
                     <div ng-messages="form.payrollEntryForm.RegularHolidayRestDayNightDifferential.$error" ng-if="form.payrollEntryForm.RegularHolidayRestDayNightDifferential.$touched">
                         <div ng-message="min">Regular Holiday Rest Day Night Differential cannot be less than 0.</div>
                     </div>
                 </md-input-container>
+                <!-- Regular Holiday Rest Day Overtime Night Differential -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Overtime Night Differential</label>
+                    <input type="number" name="RegularHolidayRestDayOvertimeNightDifferential" ng-model="payroll_entry.regular_holiday_rest_day_overtime_night_differential" min="0" ng-disabled="busy">
+                    <div ng-messages="form.payrollEntryForm.RegularHolidayRestDayOvertimeNightDifferential.$error" ng-if="form.payrollEntryForm.RegularHolidayRestDayOvertimeNightDifferential.$touched">
+                        <div ng-message="min">Regular Holiday Rest Day Overtime Night Differential cannot be less than 0.</div>
+                    </div>
+                </md-input-container>
 			</div>
 			<!-- Special Holiday Rest Day -->
-			<md-subheader class="md-no-sticky primary-text">Special Holiday Rest Day</md-subheader>
-			<div layout="row" layout-wrap flex>
+			<md-switch class="md-primary" ng-model="special_holiday_rest_day" aria-label="Special Holiday Rest Day" ng-show="special_holidays.length">
+                <p ng-class="special_holiday_rest_day ? 'primary-text': 'seconday-text'">
+                    <span>Special Holiday Rest Day</span> 
+                    <span ng-repeat="item in special_holidays"> <span ng-if="$first">-</span> {{item.description}} ({{item.date | date: 'EEE. MMM. dd'}}) <span ng-if="!$last">,</span></span>
+                </p>
+            </md-switch>
+			<div layout="row" layout-wrap flex ng-if="special_holiday_rest_day">
 				<!-- Special Holiday Rest Day Hours -->
 				<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
-                    <label>Special Holiday Rest Day</label>
+                    <label>Regular Hours</label>
                     <input type="number" name="SpecialHolidayRestDayWorkingHours" ng-model="payroll_entry.special_holiday_rest_day" min="0" ng-disabled="busy">
                     <div ng-messages="form.payrollEntryForm.SpecialHolidayRestDayWorkingHours.$error" ng-if="form.payrollEntryForm.SpecialHolidayRestDayWorkingHours.$touched">
                         <div ng-message="min">Special Holiday Rest Day working hours cannot be less than 0.</div>
@@ -202,7 +266,7 @@
                 </md-input-container>
                 <!-- Special Holiday Rest Day Overtime -->
 				<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
-                    <label>Special Holiday Rest Day Overtime</label>
+                    <label>Overtime</label>
                     <input type="number" name="SpecialHolidayRestDayOvertime" ng-model="payroll_entry.special_holiday_rest_day_overtime" min="0" ng-disabled="busy">
                     <div ng-messages="form.payrollEntryForm.SpecialHolidayRestDayOvertime.$error" ng-if="form.payrollEntryForm.SpecialHolidayRestDayOvertime.$touched">
                         <div ng-message="min">Special Holiday Rest Day Overtime cannot be less than 0.</div>
@@ -210,131 +274,138 @@
                 </md-input-container>
                 <!-- Special Holiday Rest Day Night Differential -->
 				<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
-                    <label>Special Holiday Rest Day Night Differential</label>
+                    <label>Night Differential</label>
                     <input type="number" name="SpecialHolidayRestDayNightDifferential" ng-model="payroll_entry.special_holiday_rest_day_night_differential" min="0" ng-disabled="busy">
                     <div ng-messages="form.payrollEntryForm.SpecialHolidayRestDayNightDifferential.$error" ng-if="form.payrollEntryForm.SpecialHolidayRestDayNightDifferential.$touched">
                         <div ng-message="min">Special Holiday Rest Day Night Differential cannot be less than 0.</div>
                     </div>
                 </md-input-container>
+                 <!-- Special Holiday Rest Day Night Differential -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Overtime Night Differential</label>
+                    <input type="number" name="SpecialHolidayRestDayOvertimeNightDifferential" ng-model="payroll_entry.special_holiday_rest_day_overtime_night_differential" min="0" ng-disabled="busy">
+                    <div ng-messages="form.payrollEntryForm.SpecialHolidayRestDayOvertimeNightDifferential.$error" ng-if="form.payrollEntryForm.SpecialHolidayRestDayOvertimeNightDifferential.$touched">
+                        <div ng-message="min">Special Holiday Rest Day Overtime Night Differential cannot be less than 0.</div>
+                    </div>
+                </md-input-container>
 			</div>
 		</md-content>
-		<md-content flex ng-if="payroll_entry.employee">
-			<md-card>
-		        <md-card-title>
-		          	<md-card-title-text>
-		            	<span class="md-headline">Employee Information</span>
-		          	</md-card-title-text>
-		        </md-card-title>
-		        <md-card-content>
-			        <md-list layout="row" layout-wrap>
-		          		<md-list-item class="md-2-line" flex="45">
-		          			<div class="md-list-item-text">
-		          				<h3>{{payroll_entry.employee.employee_number}}</h3>
-		          				<p>Employee Number</p>
-		          			</div>
-		          		</md-list-item>
-		          		<md-list-item class="md-2-line" flex="45">
-		          			<div class="md-list-item-text">
-		          				<h3>{{payroll_entry.employee.last_name}}, {{payroll_entry.employee.first_name}} {{payroll_entry.employee.middle_name}}</h3>
-		          				<p>Employee Name</p>
-		          			</div>
-		          		</md-list-item>
-		          		<md-list-item class="md-2-line" flex="45">
-		          			<div class="md-list-item-text">
-		          				<h3>{{payroll_entry.employee.tax_code.code}} - {{payroll_entry.employee.tax_code.description}}</h3>
-		          				<p>Tax Code</p>
-		          			</div>
-		          		</md-list-item>
-		          		<md-list-item class="md-2-line" flex="45">
-		          			<div class="md-list-item-text">
-		          				<h3>{{payroll_entry.employee.basic_salary | number: 2}}</h3>
-		          				<p>Basic Salary</p>
-		          			</div>
-		          		</md-list-item>
-		          		<md-list-item class="md-2-line" flex="45">
-		          			<div class="md-list-item-text">
-		          				<h3>{{payroll_entry.employee.position.name}} - {{payroll_entry.employee.position.description}}</h3>
-		          				<p>Position</p>
-		          			</div>
-		          		</md-list-item>
-		          		<md-list-item class="md-2-line" flex="45">
-		          			<div class="md-list-item-text">
-		          				<h3>{{payroll_entry.employee.employment_status}}</h3>
-		          				<p>Employment Status</p>
-		          			</div>
-		          		</md-list-item>
-			        </md-list>
-		        </md-card-content>
-		    </md-card>
-		    <md-card>
-		    	<md-card-content>
-		    		<md-tabs md-dynamic-height md-border-bottom>
-						<md-tab label="Earnings">
-							<md-list>
-								<!-- Basic Pay -->
-								<md-list-item class="md-3-line" ng-if="payroll_entry.regular_working_hours">
-									<div class="md-list-item-text">
-										<h3>
-											{{payroll_entry.employee.basic_salary / basic_pay_factory | number: 2 }}
-										</h3>
-										<h4>Regular Basic Pay</h4>
-									</div>
-								</md-list-item>
-								<!-- Overtime -->
-								<md-list-item class="md-3-line" ng-if="payroll_entry.overtime">
-									<div class="md-list-item-text">
-										<h3>
-											{{hourly_rate * payroll_entry.overtime * payroll_process.payroll.time_interpretation.overtime | number: 2}}
-										</h3>
-										<h4>Overtime Pay</h4>
-									</div>
-								</md-list-item>
-								<!-- Night Differential -->
-								<md-list-item class="md-3-line" ng-if="payroll_entry.overtime">
-									<div class="md-list-item-text">
-										<h3>
-											{{hourly_rate * payroll_entry.night_differential * payroll_process.payroll.time_interpretation.night_differential | number: 2}}
-										</h3>
-										<h4>Night Differential Pay</h4>
-									</div>
-								</md-list-item>
-								<!-- Regular Holiday -->
-								<md-list-item class="md-3-line" ng-if="payroll_entry.regular_holiday">
-									<div class="md-list-item-text">
-										<h3>
-											<span ng-if="payroll_entry.regular_holiday == payroll_process.payroll.working_hours_per_day">{{daily_rate}}</span>
-											<span ng-if="payroll_entry.regular_holiday > payroll_process.payroll.working_hours_per_day">{{daily_rate + ((payroll_entry.regular_holiday - payroll_process.payroll.working_hours_per_day) * hourly_rate * payroll_process.payroll.time_interpretation.regular_holiday_rate) | number: 2}}</span>
-										</h3>
-										<h4>Regular Holiday Pay</h4>
-									</div>
-								</md-list-item>
-							</md-list>
-							<md-subheader>Additional Earnings</md-subheader>
-							<md-list>
-								<md-list-item class="md-3-line" ng-repeat="allowance in payroll_entry.allowances">
-									<div class="md-list-item-text">
-										<h3>{{allowance.name}}</h3>
-										<h4>{{allowance.description}}</h4>
-										<p>{{allowance.amount}}</p>
-									</div>
-								</md-list-item>
-							</md-list>
-						</md-tab>
-						<md-tab label="Deductions">
-							<md-subheader>Additional Deductions</md-subheader>
-							<md-list>
-								<md-list-item class="md-3-line" ng-repeat="deduction in payroll_entry.deductions">
-									<div class="md-list-item-text">
-										<h3>{{deduction.name}}</h3>
-										<h4>{{deduction.description}}</h4>
-										<p>{{deduction.amount}}</p>
-									</div>
-								</md-list-item>
-							</md-list>
-						</md-tab>
-		    		</md-tabs>
-		    	</md-card-content>
-		    </md-card>
-		</md-content>
-	</div>
+        <md-content flex ng-if="payroll_entry.employee">
+            <md-tabs md-dynamic-height md-border-bottom>
+                <md-tab label="Employee Information">
+                    <md-list layout="row" layout-wrap>
+                        <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm="45">
+                            <div class="md-list-item-text">
+                                <h3>{{payroll_entry.employee.employee_number}}</h3>
+                                <p>Employee Number</p>
+                            </div>
+                        </md-list-item>
+                        <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm="45">
+                            <div class="md-list-item-text">
+                                <h3>{{payroll_entry.employee.last_name}}, {{payroll_entry.employee.first_name}} {{payroll_entry.employee.middle_name}}</h3>
+                                <p>Employee Name</p>
+                            </div>
+                        </md-list-item>
+                        <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm="45">
+                            <div class="md-list-item-text">
+                                <h3>{{payroll_entry.employee.tax_code.code}} - {{payroll_entry.employee.tax_code.description}}</h3>
+                                <p>Tax Code</p>
+                            </div>
+                        </md-list-item>
+                        <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm="45">
+                            <div class="md-list-item-text">
+                                <h3>{{payroll_entry.employee.basic_salary | number: 2}}</h3>
+                                <p>Basic Salary</p>
+                            </div>
+                        </md-list-item>
+                        <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm="45">
+                            <div class="md-list-item-text">
+                                <h3>{{payroll_entry.employee.position.name}} - {{payroll_entry.employee.position.description}}</h3>
+                                <p>Position</p>
+                            </div>
+                        </md-list-item>
+                        <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm="45">
+                            <div class="md-list-item-text">
+                                <h3>{{payroll_entry.employee.employment_status}}</h3>
+                                <p>Employment Status</p>
+                            </div>
+                        </md-list-item>
+                    </md-list>
+                </md-tab>
+                <md-tab label="Earnings">
+                    <md-list>
+                        <!-- Basic Pay -->
+                        <md-list-item class="md-3-line" ng-if="payroll_entry.regular_working_hours">
+                            <div class="md-list-item-text">
+                                <h3>
+                                    {{payroll_entry.employee.basic_salary / basic_pay_factor | number: 2 }}
+                                </h3>
+                                <h4>Regular Basic Pay</h4>
+                            </div>
+                        </md-list-item>
+                        <!-- Overtime -->
+                        <md-list-item class="md-3-line" ng-if="payroll_entry.overtime">
+                            <div class="md-list-item-text">
+                                <h3>
+                                    {{hourly_rate * payroll_entry.overtime * payroll_process.payroll.time_interpretation.overtime | number: 2}}
+                                </h3>
+                                <h4>Overtime Pay</h4>
+                            </div>
+                        </md-list-item>
+                        <!-- Night Differential -->
+                        <md-list-item class="md-3-line" ng-if="payroll_entry.overtime">
+                            <div class="md-list-item-text">
+                                <h3>
+                                    {{hourly_rate * payroll_entry.night_differential * payroll_process.payroll.time_interpretation.night_differential | number: 2}}
+                                </h3>
+                                <h4>Night Differential Pay</h4>
+                            </div>
+                        </md-list-item>
+                        <!-- Overtime Night Differential -->
+                        <md-list-item class="md-3-line" ng-if="payroll_entry.overtime_night_differential">
+                            <div class="md-list-item-text">
+                                <h3>
+                                    {{hourly_rate * payroll_entry.overtime_night_differential * payroll_process.payroll.time_interpretation.overtime_night_differential | number: 2}}
+                                </h3>
+                                <h4>Overtime Night Differential Pay</h4>
+                            </div>
+                        </md-list-item>
+                        <!-- Regular Holiday -->
+                        <md-list-item class="md-3-line" ng-if="payroll_entry.regular_holiday">
+                            <div class="md-list-item-text">
+                                <h3>
+                                    <span ng-if="payroll_entry.regular_holiday == payroll_process.payroll.working_hours_per_day">{{daily_rate | number: 2}}</span>
+                                    <span ng-if="payroll_entry.regular_holiday > payroll_process.payroll.working_hours_per_day">{{daily_rate + ((payroll_entry.regular_holiday - payroll_process.payroll.working_hours_per_day) * hourly_rate * payroll_process.payroll.time_interpretation.regular_holiday_rate) | number: 2}}</span>
+                                    <span ng-if="payroll_entry.regular_holiday < payroll_process.payroll.working_hours_per_day">{{ payroll_entry.regular_holiday * hourly_rate * payroll_process.payroll.time_interpretation.regular_holiday_rate | number: 2}}</span>
+                                </h3>
+                                <h4>Regular Holiday Pay</h4>
+                            </div>
+                        </md-list-item>
+                    </md-list>
+                    <md-subheader>Additional Earnings</md-subheader>
+                    <md-list>
+                        <md-list-item class="md-3-line" ng-repeat="allowance in payroll_entry.allowances">
+                            <div class="md-list-item-text">
+                                <h3>{{allowance.name}}</h3>
+                                <h4>{{allowance.description}}</h4>
+                                <p>{{allowance.amount}}</p>
+                            </div>
+                        </md-list-item>
+                    </md-list>
+                </md-tab>
+                <md-tab label="Deductions">
+                    <md-subheader>Additional Deductions</md-subheader>
+                    <md-list>
+                        <md-list-item class="md-3-line" ng-repeat="deduction in payroll_entry.deductions">
+                            <div class="md-list-item-text">
+                                <h3>{{deduction.name}}</h3>
+                                <h4>{{deduction.description}}</h4>
+                                <p>{{deduction.amount}}</p>
+                            </div>
+                        </md-list-item>
+                    </md-list>
+                </md-tab>
+            </md-tabs>
+        </md-content>
+    </div>
 </form>
