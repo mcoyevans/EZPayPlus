@@ -271,11 +271,43 @@ payroll
 
 			$scope.daily_rate = ($scope.payroll_entry.employee.basic_salary * 12) / $scope.payroll_process.payroll.working_days_per_year;
 			$scope.hourly_rate = ($scope.payroll_entry.employee.basic_salary * 12) / $scope.payroll_process.payroll.working_days_per_year / $scope.payroll_process.payroll.working_hours_per_day;
+
+			$scope.regularWorkingHoursPay();
+			$scope.overtimePay();
+			$scope.nightDifferentialPay();
+			$scope.overtimeNightDifferentialPay();
 		}
 
-		$scope.removeAllowance = function(idx){
-			$scope.payroll_entry.employee.allowance_types.splice(idx, 1);
-			$scope.payroll_entry.allowances.splice(idx, 1);
+		$scope.setMaxRegularHours = function(){
+			$scope.max_regular_work_hours = ($scope.payroll_entry.regular_working_days - $scope.payroll_entry.days_absent) * $scope.payroll_process.payroll.working_hours_per_day;
+			
+			$scope.payroll_entry.absent = $scope.payroll_entry.days_absent ? $scope.payroll_entry.days_absent * $scope.daily_rate : 0;
+		}
+
+		// Calculating
+		$scope.regularWorkingHoursPay = function(){
+			$scope.payroll_entry.regular_working_hours_pay = $scope.payroll_entry.employee.basic_salary ? $scope.payroll_entry.employee.basic_salary / $scope.basic_pay_factor : null;
+
+			$scope.payroll_entry.tardy = ($scope.max_regular_work_hours - $scope.payroll_entry.regular_working_hours) * $scope.hourly_rate;
+		}
+
+		$scope.overtimePay = function(){
+			$scope.payroll_entry.overtime_pay = $scope.payroll_entry.overtime ? $scope.payroll_entry.overtime * $scope.hourly_rate * $scope.payroll_process.payroll.time_interpretation.overtime : null;
+		}
+
+		$scope.nightDifferentialPay = function(){
+			$scope.payroll_entry.night_differential_pay = $scope.payroll_entry.night_differential ? $scope.payroll_entry.night_differential * $scope.hourly_rate * $scope.payroll_process.payroll.time_interpretation.night_differential : null;
+		}
+
+		$scope.overtimeNightDifferentialPay = function(){
+			$scope.payroll_entry.overtime_night_differential_pay = $scope.payroll_entry.overtime_night_differential ? $scope.hourly_rate * $scope.payroll_entry.overtime_night_differential * $scope.payroll_process.payroll.time_interpretation.overtime_night_differential : null;
+		}
+
+		$scope.regularHolidayPay = function(){
+			var work_days = $scope.payroll_entry.regular_holiday / $scope.payroll_process.payroll.working_hours_per_day;
+			var remaining = $scope.payroll_entry.regular_holiday - (Math.floor(work_days) * $scope.payroll_process.payroll.working_hours_per_day);
+
+			$scope.payroll_entry.regular_holiday_pay = $scope.payroll_entry.regular_holiday ? (Math.floor(work_days) * $scope.daily_rate * $scope.payroll_process.payroll.time_interpretation.regular_holiday_rate) + (remaining * $scope.hourly_rate * $scope.payroll_process.payroll.time_interpretation.regular_holiday_rate) : null;
 		}
 
 		$scope.init = function(){
@@ -320,6 +352,9 @@ payroll
 					data.payroll_period.end_cut_off = new Date(data.payroll_period.end_cut_off);
 					data.payroll_period.payout = new Date(data.payroll_period.payout);
 
+					var timeDiff = Math.abs(data.payroll_period.end_cut_off.getTime() - data.payroll_period.start_cut_off.getTime());
+					$scope.max_regular_working_days = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
+
 					$scope.payroll_process = data;
 
 					if(data.payroll.pay_frequency == 'Weekly')
@@ -335,16 +370,18 @@ payroll
 						$scope.basic_pay_factor = 1;						
 					}
 
-					$scope.max_rest_day_hours = $scope.payroll_process.payroll.working_hours_per_day * (7 - $scope.payroll_process.payroll.working_days_per_week) * 4 / $scope.basic_pay_factor;
-
 					var holiday_query = {
-						'whereBetween': [
-							{
-								'label': 'date',
-								'start': new Date(data.payroll_period.start_cut_off).toDateString(),
-								'end': new Date(data.payroll_period.end_cut_off).toDateString(),
-							},
-						]
+						'whereMonth': 
+						{
+							'label':'date',
+							'value': new Date(data.payroll_period.start_cut_off).getMonth() + 1,
+						},
+						'whereBetweenDay': 
+						{
+							'label': 'date',
+							'start': new Date(data.payroll_period.start_cut_off).getDate(),
+							'end': new Date(data.payroll_period.end_cut_off).getDate(),
+						},
 					}
 
 					Helper.post('/holiday/enlist', holiday_query)
@@ -365,16 +402,12 @@ payroll
 										$scope.special_holidays.push(item)
 									}
 								});
-
-								$scope.max_regular_hours = $scope.payroll_process.payroll.working_hours_per_day * $scope.payroll_process.payroll.working_days_per_week * 4 / $scope.basic_pay_factor - data.length * $scope.payroll_process.payroll.working_hours_per_day;
-							}
-							else{
-								$scope.max_regular_hours = $scope.payroll_process.payroll.working_hours_per_day * $scope.payroll_process.payroll.working_days_per_week * 4 / $scope.basic_pay_factor;
-							}
-							
+							}							
 
 							$scope.holidays = data;
 
+							$scope.max_regular_holiday_regular_hours = $scope.regular_holidays.length * $scope.payroll_process.payroll.working_hours_per_day;
+							$scope.max_special_holiday_regular_hours = $scope.special_holidays.length * $scope.payroll_process.payroll.working_hours_per_day;
 						})
 
 

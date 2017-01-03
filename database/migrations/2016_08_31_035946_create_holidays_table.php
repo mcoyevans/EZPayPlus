@@ -18,6 +18,7 @@ class CreateHolidaysTable extends Migration
             $table->dateTime('date');
             $table->string('description');
             $table->string('type');
+            $table->boolean('repeat');
             $table->timestamps();
             $table->softDeletes();
         });

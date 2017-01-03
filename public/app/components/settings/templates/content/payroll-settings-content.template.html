@@ -14,7 +14,7 @@
                     <span ng-if="type.start_cut_off">Start Cut-off: {{type.start_cut_off | date: 'EEEE, MMM. dd, yyyy'}} |</span>
                     <span ng-if="type.end_cut_off">End Cut-off: {{type.end_cut_off | date: 'EEEE, MMM. dd, yyyy'}} |</span>
                     <span ng-if="type.payout">Payout: {{type.payout | date: 'EEEE, MMM. dd, yyyy'}}</span>
-                    <span ng-if="type.date">{{type.date | date: 'EEEE, MMM. dd, yyyy'}}</span>
+                    <span ng-if="type.date"><span ng-if="!type.repeat">{{type.date | date: 'EEEE, MMM. dd, yyyy'}}</span><span ng-if="type.repeat">{{type.date | date: 'MMM. dd'}}</span></span>
                     <span ng-if="type.type">({{type.type}})</span>
                 </h4>
 				<p>

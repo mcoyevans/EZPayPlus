@@ -77,6 +77,34 @@ class HolidayController extends Controller
             }
         }
 
+        if($request->has('whereMonth'))
+        {
+            $holidays->whereMonth($request->input('whereMonth.label'), $request->input('whereMonth.value'));
+        }
+
+        if($request->has('whereBetweenDay'))
+        {
+            $start = Carbon::createFromDate(null, $request->input('whereMonth.value'), $request->input('whereBetweenDay.start'));
+            $end = Carbon::createFromDate(null, $request->input('whereMonth.value'), $request->input('whereBetweenDay.end'));
+
+            $current = $request->input('whereBetweenDay.start');
+
+            for ($i=0; $i < $start->diffInDays($end) + 1; $i++) { 
+                if($i == 0)
+                {
+                    $holidays->whereDay($request->input('whereBetweenDay.label'), $current);
+                }
+                else{
+                    $holidays->orWhere(function($query) use ($request, $current){
+                        $query->whereMonth($request->input('whereMonth.label'), $request->input('whereMonth.value'));
+                        $query->whereDay($request->input('whereBetweenDay.label'), $current);
+                    });
+                }
+
+                $current++;
+            }
+        }
+
         if($request->has('search'))
         {
             $holidays->where('description', 'like', '%'. $request->search. '%');
@@ -149,6 +177,7 @@ class HolidayController extends Controller
             $holiday->description = $request->description;
             $holiday->type = $request->type;
             $holiday->date = Carbon::parse($request->date);
+            $holiday->repeat = $request->repeat;
 
             $holiday->save();
 
@@ -231,6 +260,7 @@ class HolidayController extends Controller
             $holiday->description = $request->description;
             $holiday->type = $request->type;
             $holiday->date = Carbon::parse($request->date);
+            $holiday->repeat = $request->repeat;
 
             $holiday->save();
 

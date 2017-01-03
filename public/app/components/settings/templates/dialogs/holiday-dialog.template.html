@@ -22,7 +22,7 @@
                     </div>
                 </md-input-container>
             </div>
-            <div layout="row" layout-wrap flex>
+            <div layout="row" layout-wrap flex layout-align="center center">
                 <!-- Date -->
                 <div flex-xs="100" flex-sm="100" flex-gt-sm>
                     <h4>Date</h4>
@@ -42,6 +42,11 @@
                         <div ng-message="required">Type is required.</div>
                     </div>
                 </md-input-container>
+            </div>
+            <div layout="row" flex>
+                <md-checkbox ng-model="holiday.repeat" aria-label="Repeat Holiday" ng-true-value="1" ng-false-value="0" flex>
+                    Repeat every year
+                </md-checkbox>
             </div>
             <!-- Branches -->
             <md-subheader class="md-no-sticky">Branches</md-subheader>
