@@ -16,6 +16,7 @@ class CreatePayrollPeriodsTable extends Migration
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->integer('payroll_id')->unsigned();
+            $table->string('cut_off');
             $table->dateTime('start_cut_off');
             $table->dateTime('end_cut_off');
             $table->dateTime('payout');

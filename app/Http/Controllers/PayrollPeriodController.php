@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 
+use App\Payroll;
 use App\PayrollPeriod;
 
 use Auth;
@@ -179,14 +180,47 @@ class PayrollPeriodController extends Controller
             return response()->json(true);
         }
 
-        $payroll_period = new PayrollPeriod;
+        DB::transaction(function() use($request, $start, $end){
+            $payroll_period = new PayrollPeriod;
 
-        $payroll_period->payroll_id = $request->payroll_id;
-        $payroll_period->start_cut_off = Carbon::parse($request->start_cut_off);
-        $payroll_period->end_cut_off = Carbon::parse($request->end_cut_off);
-        $payroll_period->payout = Carbon::parse($request->payout);
+            $payroll_period->payroll_id = $request->payroll_id;
+            $payroll_period->start_cut_off = Carbon::parse($request->start_cut_off);
+            $payroll_period->end_cut_off = Carbon::parse($request->end_cut_off);
+            $payroll_period->payout = Carbon::parse($request->payout);
+            
+            $payroll = Payroll::findOrFail($request->payroll_id);
 
-        $payroll_period->save();
+            $first_day_of_the_month = Carbon::parse('first day of ' . date_format(date_create($start->toDateString()), 'F') . ' ' . date_format(date_create($start->toDateString()), 'Y'));
+
+            if ($payroll->pay_frequency == 'Weekly') {
+                if($start->between($first_day_of_the_month, $first_day_of_the_month->addDays(6)))
+                {
+                    $payroll_period->cut_off = 'first';
+                }
+            }
+            else if($payroll->pay_frequency == 'Semi-monthly')
+            {   
+                $last_day_of_the_month = Carbon::parse('last day of ' . date_format(date_create($start->toDateString()), 'F') . ' ' . date_format(date_create($start->toDateString()), 'Y'));
+                $middle_of_the_month = Carbon::parse($first_day_of_the_month->average($last_day_of_the_month));
+
+                if($start->lt($middle_of_the_month))
+                {
+                    $payroll_period->cut_off = 'first';
+                }
+                else
+                {
+                    $payroll_period->cut_off = 'second'; 
+                }
+            }
+            else if($payroll->pay_frequency == 'Monthly')
+            {
+                $payroll_period->cut_off = 'first';
+            }
+
+            $payroll_period->save();
+
+        });
+
     }
 
     /**

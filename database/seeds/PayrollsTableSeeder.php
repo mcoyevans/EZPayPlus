@@ -18,7 +18,7 @@ class PayrollsTableSeeder extends Seeder
             'working_hours_per_day' => 8,
         	'working_days_per_week' => 5,
         	'pay_frequency' => 'Semi-monthly',
-        	'time_interpretation_id' => 1,
+        	'time_interpretation_id' => 2,
         ]);
     }
 }

@@ -17,6 +17,8 @@ class CreatePayrollEntriesTable extends Migration
             $table->increments('id');
             $table->integer('payroll_process_id')->unsigned();
             $table->integer('employee_id')->unsigned();
+            $table->float('days_absent')->nullable();
+            $table->float('hours_tardy')->nullable();
             // Time
             $table->float('regular_working_hours');
             $table->float('night_differential');
@@ -68,6 +70,8 @@ class CreatePayrollEntriesTable extends Migration
             $table->float('special_holiday_rest_day_overtime_pay');
             $table->float('special_holiday_rest_day_overtime_night_differential_pay');
 
+            $table->float('tardy')->nullable();
+            $table->float('absent')->nullable();
             $table->float('taxable_income');
             $table->float('gross_pay');
             $table->float('total_deductions');
