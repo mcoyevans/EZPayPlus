@@ -38,6 +38,7 @@ Route::resource('employee', 'EmployeeController');
 Route::resource('employee-allowance-type', 'EmployeeAllowanceTypeController');
 Route::resource('employee-deduction-type', 'EmployeeDeductionTypeController');
 Route::resource('employee-shift-schedule', 'EmployeeShiftScheduleController');
+Route::resource('government-contribution', 'GovernmentContributionController');
 Route::resource('group', 'GroupController');
 Route::resource('group-module', 'GroupModuleController');
 Route::resource('holiday', 'HolidayController');
@@ -266,4 +267,9 @@ Route::group(['prefix' => 'payroll-process'], function(){
 Route::group(['prefix' => 'payroll-entry'], function(){
 	Route::post('enlist', 'PayrollEntryController@enlist');
 	Route::post('check-duplicate', 'PayrollEntryController@checkDuplicate');
+});
+
+/* Government Contribution */
+Route::group(['prefix' => 'government-contribution'], function(){
+	Route::post('enlist', 'GovernmentContributionController@enlist');
 });

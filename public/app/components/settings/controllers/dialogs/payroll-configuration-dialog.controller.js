@@ -4,7 +4,7 @@ settings
 
 		$scope.payroll = {};
 
-		$scope.pay_frequencies = ['Weekly', 'Semi-monthly', 'Monthly'];
+		$scope.pay_frequencies = ['Semi-monthly', 'Monthly'];
 
 		if($scope.config.action == 'create')
 		{

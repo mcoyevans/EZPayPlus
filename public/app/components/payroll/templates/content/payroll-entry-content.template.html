@@ -582,7 +582,7 @@
                             </div>
                         </md-list-item>
                     </md-list>
-                    <md-subheader>Additional Earnings</md-subheader>
+                    <md-subheader ng-if="payroll_entry.allowances.length">Additional Earnings</md-subheader>
                     <md-list>
                         <md-list-item class="md-3-line" ng-repeat="allowance in payroll_entry.allowances">
                             <div class="md-list-item-text">
@@ -614,7 +614,7 @@
                             </div>
                         </md-list-item>
                     </md-list>
-                    <md-subheader>Additional Deductions</md-subheader>
+                    <md-subheader ng-if="payroll_entry.deductions.length">Additional Deductions</md-subheader>
                     <md-list>
                         <md-list-item class="md-3-line" ng-repeat="deduction in payroll_entry.deductions">
                             <div class="md-list-item-text">

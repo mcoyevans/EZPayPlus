@@ -91,27 +91,32 @@ payroll
 		$scope.setEmployee = function(){
 			$scope.payroll_entry.allowances = [];
 			$scope.payroll_entry.deductions = [];
+			$scope.payroll_entry.government_contributions = [];
 
 			angular.forEach($scope.payroll_entry.employee.allowance_types, function(item, key){
-				var allowance = {};
+				if(($scope.payroll_process.payroll_period.cut_off == 'first' && item.pivot.first_cut_off) || ($scope.payroll_process.payroll_period.cut_off == 'second' && item.pivot.second_cut_off)){
+					var allowance = {};
 
-				allowance.name = item.name;
-				allowance.description = item.description;
-				allowance.amount = item.pivot.amount;
-				allowance.employee_allowance_type_id = item.pivot.id;
+					allowance.name = item.name;
+					allowance.description = item.description;
+					allowance.amount = item.pivot.amount;
+					allowance.employee_allowance_type_id = item.pivot.id;
 
-				$scope.payroll_entry.allowances[key] = allowance;
+					$scope.payroll_entry.allowances.push(allowance);
+				}
 			});
 
 			angular.forEach($scope.payroll_entry.employee.deduction_types, function(item, key){
-				var deduction = {};
+				if(($scope.payroll_process.payroll_period.cut_off == 'first' && item.pivot.first_cut_off) || ($scope.payroll_process.payroll_period.cut_off == 'second' && item.pivot.second_cut_off)){
+					var deduction = {};
 
-				deduction.name = item.name;
-				deduction.description = item.description;
-				deduction.amount = item.pivot.amount;
-				deduction.employee_deduction_type_id = item.pivot.id;
-
-				$scope.payroll_entry.deductions[key] = deduction;
+					deduction.name = item.name;
+					deduction.description = item.description;
+					deduction.amount = item.pivot.amount;
+					deduction.employee_deduction_type_id = item.pivot.id;
+					
+					$scope.payroll_entry.deductions.push(deduction);
+				}
 			});
 
 			$scope.daily_rate = ($scope.payroll_entry.employee.basic_salary * 12) / $scope.payroll_process.payroll.working_days_per_year;
@@ -121,6 +126,82 @@ payroll
 			$scope.overtimePay();
 			$scope.nightDifferentialPay();
 			$scope.overtimeNightDifferentialPay();
+			$scope.regularHolidayPay();
+			$scope.regularHolidayOvertimePay();
+			$scope.regularHolidayNightDifferentialPay();
+			$scope.regularHolidayOvertimeNightDifferentialPay();
+			$scope.specialHolidayPay();
+			$scope.specialHolidayOvertimePay();
+			$scope.specialHolidayNightDifferentialPay();
+			$scope.specialHolidayOvertimeNightDifferentialPay();
+			$scope.restDayPay();
+			$scope.restDayOvertimePay();
+			$scope.restDayNightDifferentialPay();
+			$scope.restDayOvertimeNightDifferentialPay();
+			$scope.regularHolidayRestDayPay();
+			$scope.regularHolidayRestDayOvertimePay();
+			$scope.regularHolidayRestDayNightDifferentialPay();
+			$scope.regularHolidayRestDayOvertimeNightDifferentialPay();
+			$scope.specialHolidayRestDayPay();
+			$scope.specialHolidayRestDayOvertimePay();
+			$scope.specialHolidayRestDayNightDifferentialPay();
+			$scope.specialHolidayRestDayOvertimeNightDifferentialPay();
+
+			if($scope.payroll_process.payroll_period.cut_off == 'second')
+			{
+				var previous_payroll_entry_query = {
+					'with': [
+						{
+							'relation': 'employee',
+							'withTrashed': false,
+						},
+						{
+							'relation': 'government_contributions',
+							'withTrashed': false,
+						},
+						{
+							'relation': 'allowances',
+							'withTrashed': false,
+						},
+						{
+							'relation': 'deductions',
+							'withTrashed': false,
+						},
+					],
+					'whereHas': [
+						{
+							'relation': 'payroll_process.payroll_period',
+							'whereMonth': {
+								'label': 'start_cut_off',
+								'value': new Date(data.payroll_period.start_cut_off).getMonth() + 1,
+							},
+							'whereYear': {
+								'label': 'start_cut_off',
+								'value': new Date(data.payroll_period.start_cut_off).getFullYear(),	
+							},
+							'where': [
+								{
+									'label': 'cut_off',
+									'condition': '=',
+									'value': 'first',
+								},
+							],
+						}
+					],
+					'where': [
+						{
+							'label': 'employee_id',
+							'condition': '=',
+							'value': $scope.payroll_entry.employee.id,
+						},
+					],
+				}
+			}
+
+			Helper.post('/payroll-entry/enlist', previous_payroll_entry_query)
+				.success(function(data){
+					$scope.previous_payroll_entry = data;
+				})
 		}
 
 		$scope.setMaxRegularHours = function(){
@@ -128,9 +209,21 @@ payroll
 
 			$scope.max_regular_work_hours = days_worked * $scope.payroll_process.payroll.working_hours_per_day;
 
-			$scope.max_rest_day_work_hours = ($scope.max_regular_working_days - $scope.payroll_entry.regular_working_days - $scope.holidays.length) * $scope.payroll_process.payroll.working_hours_per_day;
+			$scope.max_rest_day_work_hours = ($scope.max_regular_working_days - $scope.payroll_entry.regulor_working_days - $scope.holidays.length) * $scope.payroll_process.payroll.working_hours_per_day;
 			
 			$scope.payroll_entry.absent = $scope.payroll_entry.days_absent ? $scope.payroll_entry.days_absent * $scope.daily_rate : 0;
+		}
+
+		$scope.governmentContributions = function(){
+			angular.forEach($scope.government_contributions, function(contribution){
+				if(contribution.name == 'Withholding Tax')
+				{
+					if($scope.payroll_process.payroll_period.cut_off == 'first')
+					{
+
+					}
+				}
+			});
 		}
 
 		// Calculating
@@ -340,12 +433,47 @@ payroll
 							$scope.max_special_holiday_regular_hours = $scope.special_holidays.length * $scope.payroll_process.payroll.working_hours_per_day;
 						})
 
+					var government_contribution_query = {
+						'where': [
+							{
+								'label': 'payroll_id',
+								'condition': '=',
+								'value': $scope.payroll_process.payroll_id,
+							},
+						],
+					}
+
+					if($scope.payroll_process.payroll_period.cut_off == 'first')
+					{
+						government_contribution_query.where.push(
+							{
+								'label': 'first_cut_off',
+								'condition': '=',
+								'value': 1,
+							}
+						);						
+					}
+					else if($scope.payroll_process.payroll_period.cut_off == 'second')
+					{
+						government_contribution_query.where.push(
+							{
+								'label': 'second_cut_off',
+								'condition': '=',
+								'value': 1,
+							}
+						);	
+					}
+
+					Helper.post('/government-contribution/enlist', government_contribution_query)
+						.success(function(data){
+							$scope.government_contributions = data;
+						})
 
 					var employee_query = {
 						'with': [
 							{
 								'relation': 'allowance_types.de_minimis',
-								'withTrashed': false,
+								'withTrashed': false,	
 							},
 							{
 								'relation': 'deduction_types',

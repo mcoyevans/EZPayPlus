@@ -58,6 +58,11 @@ class PayrollEntryController extends Controller
             }
         }
 
+        if($request->has('whereHas'))
+        {
+            
+        }
+
         if($request->has('paginate'))
         {
             return $payroll_entries->paginate($request->paginate);
