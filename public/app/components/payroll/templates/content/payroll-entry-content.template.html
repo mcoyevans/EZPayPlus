@@ -614,6 +614,15 @@
                             </div>
                         </md-list-item>
                     </md-list>
+                    <md-subheader ng-if="payroll_entry.government_contributions.length && payroll_entry.regular_working_hours_pay">Government Contributions</md-subheader>
+                    <md-list>
+                        <md-list-item class="md-3-line" ng-if="payroll_entry.regular_working_hours_pay" ng-repeat="item in payroll_entry.government_contributions">
+                            <div class="md-list-item-text">
+                                <h3>{{item.name}}</h3>
+                                <h4>{{item.amount}}</h4>
+                            </div>
+                        </md-list-item>
+                    </md-list>
                     <md-subheader ng-if="payroll_entry.deductions.length">Additional Deductions</md-subheader>
                     <md-list>
                         <md-list-item class="md-3-line" ng-repeat="deduction in payroll_entry.deductions">

@@ -7,6 +7,7 @@ payroll
 		$scope.form = {}
 
 		$scope.payroll_entry = {};
+		$scope.payroll_entry.government_contributions = [];
 
 		/*
 		 * Object for toolbar
@@ -91,7 +92,6 @@ payroll
 		$scope.setEmployee = function(){
 			$scope.payroll_entry.allowances = [];
 			$scope.payroll_entry.deductions = [];
-			$scope.payroll_entry.government_contributions = [];
 
 			angular.forEach($scope.payroll_entry.employee.allowance_types, function(item, key){
 				if(($scope.payroll_process.payroll_period.cut_off == 'first' && item.pivot.first_cut_off) || ($scope.payroll_process.payroll_period.cut_off == 'second' && item.pivot.second_cut_off)){
@@ -173,11 +173,11 @@ payroll
 							'relation': 'payroll_process.payroll_period',
 							'whereMonth': {
 								'label': 'start_cut_off',
-								'value': new Date(data.payroll_period.start_cut_off).getMonth() + 1,
+								'value': new Date($scope.payroll_process.payroll_period.start_cut_off).getMonth() + 1,
 							},
 							'whereYear': {
 								'label': 'start_cut_off',
-								'value': new Date(data.payroll_period.start_cut_off).getFullYear(),	
+								'value': new Date($scope.payroll_process.payroll_period.start_cut_off).getFullYear(),	
 							},
 							'where': [
 								{
@@ -196,12 +196,12 @@ payroll
 						},
 					],
 				}
+				
+				Helper.post('/payroll-entry/enlist', previous_payroll_entry_query)
+					.success(function(data){
+						$scope.previous_payroll_entry = data;
+					})
 			}
-
-			Helper.post('/payroll-entry/enlist', previous_payroll_entry_query)
-				.success(function(data){
-					$scope.previous_payroll_entry = data;
-				})
 		}
 
 		$scope.setMaxRegularHours = function(){
@@ -215,15 +215,7 @@ payroll
 		}
 
 		$scope.governmentContributions = function(){
-			angular.forEach($scope.government_contributions, function(contribution){
-				if(contribution.name == 'Withholding Tax')
-				{
-					if($scope.payroll_process.payroll_period.cut_off == 'first')
-					{
-
-					}
-				}
-			});
+			$scope.payroll_entry.taxable_income = $scope.payroll_entry.regular_working_hours_pay - $scope.payroll_entry.tardy - $scope.payroll_entry.absent + $scope.payroll_entry.night_differential_pay + $scope.payroll_entry.overtime_pay + $scope.payroll_entry.overtime_night_differential_pay + $scope.payroll_entry.rest_day_pay + $scope.payroll_entry.rest_day_overtime_pay + $scope.payroll_entry.rest_day_night_differential_pay + $scope.payroll_entry.rest_day_overtime_night_differential_pay + $scope.payroll_entry.regular_holiday_pay + $scope.payroll_entry.regular_holiday_overtime_pay + $scope.payroll_entry.regular_holiday_night_differential_pay + $scope.payroll_entry.regular_holiday_overtime_night_differential_pay + $scope.payroll_entry.regular_holiday_rest_day_pay + $scope.payroll_entry.regular_holiday_rest_day_overtime_pay + $scope.payroll_entry.regular_holiday_rest_day_night_differential_pay + $scope.payroll_entry.regular_holiday_rest_day_overtime_night_differential_pay + $scope.payroll_entry.special_holiday_pay + $scope.payroll_entry.special_holiday_overtime_pay + $scope.payroll_entry.special_holiday_night_differential_pay + $scope.payroll_entry.special_holiday_overtime_night_differential_pay + $scope.payroll_entry.special_holiday_rest_day_pay + $scope.payroll_entry.special_holiday_rest_day_overtime_pay + $scope.payroll_entry.special_holiday_rest_day_night_differential_pay + $scope.payroll_entry.special_holiday_rest_day_overtime_night_differential_pay;
 		}
 
 		// Calculating
@@ -239,98 +231,123 @@ payroll
 
 			$scope.payroll_entry.hours_tardy = $scope.max_regular_work_hours - $scope.payroll_entry.regular_working_hours;
 			$scope.payroll_entry.tardy = $scope.payroll_entry.hours_tardy * $scope.hourly_rate;
+
+			$scope.governmentContributions();
 		}
 
 		$scope.overtimePay = function(){
 			$scope.payroll_entry.overtime_pay = $scope.payroll_entry.overtime ? $scope.payroll_entry.overtime * $scope.hourly_rate * $scope.payroll_process.payroll.time_interpretation.overtime : null;
+			$scope.governmentContributions();
 		}
 
 		$scope.nightDifferentialPay = function(){
 			$scope.payroll_entry.night_differential_pay = $scope.payroll_entry.night_differential ? $scope.payroll_entry.night_differential * $scope.hourly_rate * $scope.payroll_process.payroll.time_interpretation.night_differential : null;
+			$scope.governmentContributions();
 		}
 
 		$scope.overtimeNightDifferentialPay = function(){
 			$scope.payroll_entry.overtime_night_differential_pay = $scope.payroll_entry.overtime_night_differential ? $scope.hourly_rate * $scope.payroll_entry.overtime_night_differential * $scope.payroll_process.payroll.time_interpretation.overtime_night_differential : null;
+			$scope.governmentContributions();
 		}
 
 		$scope.regularHolidayPay = function(){
 			$scope.payroll_entry.regular_holiday_pay = 	$scope.payroll_entry.regular_holiday ? $scope.payroll_entry.regular_holiday * $scope.hourly_rate * $scope.payroll_process.payroll.time_interpretation.regular_holiday_rate : null;
+			$scope.governmentContributions();
 		}
 
 		$scope.regularHolidayOvertimePay = function(){
 			$scope.payroll_entry.regular_holiday_overtime_pay = $scope.payroll_entry.regular_holiday_overtime ? $scope.payroll_entry.regular_holiday_overtime * $scope.hourly_rate * $scope.payroll_process.payroll.time_interpretation.regular_holiday_overtime : null;
+			$scope.governmentContributions();
 		}
 
 		$scope.regularHolidayNightDifferentialPay = function(){
 			$scope.payroll_entry.regular_holiday_night_differential_pay = $scope.payroll_entry.regular_holiday_night_differential ? $scope.payroll_entry.regular_holiday_night_differential * $scope.hourly_rate * $scope.payroll_process.payroll.time_interpretation.regular_holiday_night_differential : null;
+			$scope.governmentContributions();
 		}
 
 		$scope.regularHolidayOvertimeNightDifferentialPay = function(){
 			$scope.payroll_entry.regular_holiday_overtime_night_differential_pay = $scope.payroll_entry.regular_holiday_overtime_night_differential ? $scope.payroll_entry.regular_holiday_overtime_night_differential * $scope.hourly_rate * $scope.payroll_process.payroll.time_interpretation.regular_holiday_overtime_night_differential : null;
+			$scope.governmentContributions();
 		}
 
 		$scope.specialHolidayPay = function(){
 			$scope.payroll_entry.special_holiday_pay = 	$scope.payroll_entry.special_holiday ? $scope.payroll_entry.special_holiday * $scope.hourly_rate * $scope.payroll_process.payroll.time_interpretation.special_holiday_rate : null;
+			$scope.governmentContributions();
 		}
 
 		$scope.specialHolidayOvertimePay = function(){
 			$scope.payroll_entry.special_holiday_overtime_pay = $scope.payroll_entry.special_holiday_overtime ? $scope.payroll_entry.special_holiday_overtime * $scope.hourly_rate * $scope.payroll_process.payroll.time_interpretation.special_holiday_overtime : null;
+			$scope.governmentContributions();
 		}
 
 		$scope.specialHolidayNightDifferentialPay = function(){
 			$scope.payroll_entry.special_holiday_night_differential_pay = $scope.payroll_entry.special_holiday_night_differential ? $scope.payroll_entry.special_holiday_night_differential * $scope.hourly_rate * $scope.payroll_process.payroll.time_interpretation.special_holiday_night_differential : null;
+			$scope.governmentContributions();
 		}
 
 		$scope.specialHolidayOvertimeNightDifferentialPay = function(){
 			$scope.payroll_entry.special_holiday_overtime_night_differential_pay = $scope.payroll_entry.special_holiday_overtime_night_differential ? $scope.payroll_entry.special_holiday_overtime_night_differential * $scope.hourly_rate * $scope.payroll_process.payroll.time_interpretation.special_holiday_overtime_night_differential : null;
+			$scope.governmentContributions();
 		}
 
 		$scope.restDayPay = function(){
 			$scope.payroll_entry.rest_day_pay = $scope.payroll_entry.rest_day ? $scope.payroll_entry.rest_day * $scope.hourly_rate * $scope.payroll_process.payroll.time_interpretation.rest_day_rate : null;
+			$scope.governmentContributions();
 		}
 
 		$scope.restDayOvertimePay = function(){
 			$scope.payroll_entry.rest_day_overtime_pay = $scope.payroll_entry.rest_day_overtime ? $scope.payroll_entry.rest_day_overtime * $scope.hourly_rate * $scope.payroll_process.payroll.time_interpretation.rest_day_overtime : null;
+			$scope.governmentContributions();
 		}
 
 		$scope.restDayNightDifferentialPay = function(){
 			$scope.payroll_entry.rest_day_night_differential_pay = $scope.payroll_entry.rest_day_night_differential ? $scope.payroll_entry.rest_day_night_differential * $scope.hourly_rate * $scope.payroll_process.payroll.time_interpretation.rest_day_night_differential : null;
+			$scope.governmentContributions();
 		}
 
 		$scope.restDayOvertimeNightDifferentialPay = function(){
 			$scope.payroll_entry.rest_day_overtime_night_differential_pay = $scope.payroll_entry.rest_day_overtime_night_differential ? $scope.payroll_entry.rest_day_overtime_night_differential * $scope.hourly_rate * $scope.payroll_process.payroll.time_interpretation.rest_day_overtime_night_differential : null;
+			$scope.governmentContributions();
 		}
 
 		$scope.regularHolidayRestDayPay = function(){
 			$scope.payroll_entry.regular_holiday_rest_day_pay = $scope.payroll_entry.regular_holiday_rest_day ? $scope.payroll_entry.regular_holiday_rest_day * $scope.hourly_rate * $scope.payroll_process.payroll.time_interpretation.regular_holiday_rest_day_rate : null;
+			$scope.governmentContributions();
 		}
 
 		$scope.regularHolidayRestDayOvertimePay = function(){
 			$scope.payroll_entry.regular_holiday_rest_day_overtime_pay = $scope.payroll_entry.regular_holiday_rest_day_overtime ? $scope.payroll_entry.regular_holiday_rest_day_overtime * $scope.hourly_rate * $scope.payroll_process.payroll.time_interpretation.regular_holiday_rest_day_overtime : null;
+			$scope.governmentContributions();
 		}
 
 		$scope.regularHolidayRestDayNightDifferentialPay = function(){
 			$scope.payroll_entry.regular_holiday_rest_day_night_differential_pay = $scope.payroll_entry.regular_holiday_rest_day_night_differential ? $scope.payroll_entry.regular_holiday_rest_day_night_differential * $scope.hourly_rate * $scope.payroll_process.payroll.time_interpretation.regular_holiday_rest_day_night_differential : null;
+			$scope.governmentContributions();
 		}
 
 		$scope.regularHolidayRestDayOvertimeNightDifferentialPay = function(){
 			$scope.payroll_entry.regular_holiday_rest_day_overtime_night_differential_pay = $scope.payroll_entry.regular_holiday_rest_day_overtime_night_differential ? $scope.payroll_entry.regular_holiday_rest_day_overtime_night_differential * $scope.hourly_rate * $scope.payroll_process.payroll.time_interpretation.regular_holiday_rest_day_overtime_night_differential : null;
+			$scope.governmentContributions();
 		}
 
 		$scope.specialHolidayRestDayPay = function(){
 			$scope.payroll_entry.special_holiday_rest_day_pay = $scope.payroll_entry.special_holiday_rest_day ? $scope.payroll_entry.special_holiday_rest_day * $scope.hourly_rate * $scope.payroll_process.payroll.time_interpretation.special_holiday_rest_day_rate : null;
+			$scope.governmentContributions();
 		}
 
 		$scope.specialHolidayRestDayOvertimePay = function(){
 			$scope.payroll_entry.special_holiday_rest_day_overtime_pay = $scope.payroll_entry.special_holiday_rest_day_overtime ? $scope.payroll_entry.special_holiday_rest_day_overtime * $scope.hourly_rate * $scope.payroll_process.payroll.time_interpretation.special_holiday_rest_day_overtime : null;
+			$scope.governmentContributions();
 		}
 
 		$scope.specialHolidayRestDayNightDifferentialPay = function(){
 			$scope.payroll_entry.special_holiday_rest_day_night_differential_pay = $scope.payroll_entry.special_holiday_rest_day_night_differential ? $scope.payroll_entry.special_holiday_rest_day_night_differential * $scope.hourly_rate * $scope.payroll_process.payroll.time_interpretation.special_holiday_rest_day_night_differential : null;
+			$scope.governmentContributions();
 		}
 
 		$scope.specialHolidayRestDayOvertimeNightDifferentialPay = function(){
 			$scope.payroll_entry.special_holiday_rest_day_overtime_night_differential_pay = $scope.payroll_entry.special_holiday_rest_day_overtime_night_differential ? $scope.payroll_entry.special_holiday_rest_day_overtime_night_differential * $scope.hourly_rate * $scope.payroll_process.payroll.time_interpretation.special_holiday_rest_day_overtime_night_differential : null;
+			$scope.governmentContributions();
 		}
 
 		$scope.init = function(){
@@ -352,6 +369,10 @@ payroll
 					},
 					{
 						'relation': 'payroll.time_interpretation',
+						'withTrashed': false,
+					},
+					{
+						'relation': 'payroll.government_contributions',
 						'withTrashed': false,
 					},
 					{
@@ -377,6 +398,13 @@ payroll
 
 					var timeDiff = Math.abs(data.payroll_period.end_cut_off.getTime() - data.payroll_period.start_cut_off.getTime());
 					$scope.max_regular_working_days = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
+
+					angular.forEach(data.payroll.government_contributions, function(item){
+						if((data.payroll_period.cut_off == 'first' && item.first_cut_off) || (data.payroll_period.cut_off == 'second' && item.second_cut_off))
+						{
+							$scope.payroll_entry.government_contributions.push(item);
+						}
+					});
 
 					$scope.payroll_process = data;
 
@@ -463,11 +491,6 @@ payroll
 							}
 						);	
 					}
-
-					Helper.post('/government-contribution/enlist', government_contribution_query)
-						.success(function(data){
-							$scope.government_contributions = data;
-						})
 
 					var employee_query = {
 						'with': [
