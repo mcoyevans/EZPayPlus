@@ -1,5 +1,5 @@
 payroll
-	.controller('payrollEntryContentContainerController', ['$scope', '$state', '$stateParams', 'Helper', function($scope, $state, $stateParams, Helper){
+	.controller('payrollEntryContentContainerController', ['$scope', '$filter', '$state', '$stateParams', 'Helper', function($scope, $filter, $state, $stateParams, Helper){
 		$scope.$emit('closeSidenav');
 
 		var payrollProcessID = $stateParams.payrollProcessID;
@@ -195,6 +195,7 @@ payroll
 							'value': $scope.payroll_entry.employee.id,
 						},
 					],
+					'first': true,
 				}
 				
 				Helper.post('/payroll-entry/enlist', previous_payroll_entry_query)
@@ -214,8 +215,160 @@ payroll
 			$scope.payroll_entry.absent = $scope.payroll_entry.days_absent ? $scope.payroll_entry.days_absent * $scope.daily_rate : 0;
 		}
 
+		$scope.calculateTax = function(){
+			var withholding_tax = $filter('filter')($scope.payroll_entry.government_contributions, 'Withholding Tax')[0];
+
+			var withholding_tax_query = {}
+
+			withholding_tax_query.where = [
+				{
+					'label': 'tax_code_id',
+					'condition': '=',
+					'value': $scope.payroll_entry.employee.tax_code_id,
+				},
+			];
+
+			withholding_tax_query.orderBy = {
+				'label': 'salary',
+				'order': 'desc',
+			}
+
+			withholding_tax_query.first = true;
+
+			if($scope.payroll_process.payroll_period.cut_off == 'first')
+			{
+				withholding_tax_query.where.push({
+					'label': 'pay_frequency',
+					'condition': '=',
+					'value': 'semi-monthly'
+				});
+
+				withholding_tax_query.where.push({
+					'label': 'salary',
+					'condition': '<=',
+					'value': $scope.payroll_entry.taxable_income,
+				});
+			}
+			else if($scope.payroll_process.payroll_period.cut_off == 'second')
+			{
+				var first_cut_off_withholding_tax = $filter('filter')($scope.previous_payroll_entry.government_contributions, 'Withholding Tax') ? $filter('filter')($scope.previous_payroll_entry.government_contributions, 'Withholding Tax')[0] : null;
+
+				var taxable_income = $scope.previous_payroll_entry ? $scope.previous_payroll_entry.taxable_income + $scope.payroll_entry.taxable_income : $scope.payroll_entry.taxable_income;
+
+				withholding_tax_query.where.push({
+					'label': 'pay_frequency',
+					'condition': '=',
+					'value': 'monthly'
+				});
+
+				withholding_tax_query.where.push({
+					'label': 'salary',
+					'condition': '<=',
+					'value': taxable_income,
+				});
+			}
+
+			Helper.post('/tax/enlist', withholding_tax_query)
+				.success(function(data){
+					withholding_tax.amount = first_cut_off_withholding_tax ? first_cut_off_withholding_tax.amount - (data.tax + ($scope.payroll_entry.taxable_income - data.salary) * data.excess) : data.tax + ($scope.payroll_entry.taxable_income - data.salary) * data.excess;
+					console.log($scope.payroll_entry.government_contributions);
+				})
+				.error(function(){
+					Helper.error();
+				});
+		}
+
 		$scope.governmentContributions = function(){
-			$scope.payroll_entry.taxable_income = $scope.payroll_entry.regular_working_hours_pay - $scope.payroll_entry.tardy - $scope.payroll_entry.absent + $scope.payroll_entry.night_differential_pay + $scope.payroll_entry.overtime_pay + $scope.payroll_entry.overtime_night_differential_pay + $scope.payroll_entry.rest_day_pay + $scope.payroll_entry.rest_day_overtime_pay + $scope.payroll_entry.rest_day_night_differential_pay + $scope.payroll_entry.rest_day_overtime_night_differential_pay + $scope.payroll_entry.regular_holiday_pay + $scope.payroll_entry.regular_holiday_overtime_pay + $scope.payroll_entry.regular_holiday_night_differential_pay + $scope.payroll_entry.regular_holiday_overtime_night_differential_pay + $scope.payroll_entry.regular_holiday_rest_day_pay + $scope.payroll_entry.regular_holiday_rest_day_overtime_pay + $scope.payroll_entry.regular_holiday_rest_day_night_differential_pay + $scope.payroll_entry.regular_holiday_rest_day_overtime_night_differential_pay + $scope.payroll_entry.special_holiday_pay + $scope.payroll_entry.special_holiday_overtime_pay + $scope.payroll_entry.special_holiday_night_differential_pay + $scope.payroll_entry.special_holiday_overtime_night_differential_pay + $scope.payroll_entry.special_holiday_rest_day_pay + $scope.payroll_entry.special_holiday_rest_day_overtime_pay + $scope.payroll_entry.special_holiday_rest_day_night_differential_pay + $scope.payroll_entry.special_holiday_rest_day_overtime_night_differential_pay;
+			if($scope.payroll_entry.regular_working_hours)
+			{
+				$scope.payroll_entry.taxable_income = $scope.payroll_entry.regular_working_hours_pay - $scope.payroll_entry.tardy - $scope.payroll_entry.absent + $scope.payroll_entry.night_differential_pay + $scope.payroll_entry.overtime_pay + $scope.payroll_entry.overtime_night_differential_pay + $scope.payroll_entry.rest_day_pay + $scope.payroll_entry.rest_day_overtime_pay + $scope.payroll_entry.rest_day_night_differential_pay + $scope.payroll_entry.rest_day_overtime_night_differential_pay + $scope.payroll_entry.regular_holiday_pay + $scope.payroll_entry.regular_holiday_overtime_pay + $scope.payroll_entry.regular_holiday_night_differential_pay + $scope.payroll_entry.regular_holiday_overtime_night_differential_pay + $scope.payroll_entry.regular_holiday_rest_day_pay + $scope.payroll_entry.regular_holiday_rest_day_overtime_pay + $scope.payroll_entry.regular_holiday_rest_day_night_differential_pay + $scope.payroll_entry.regular_holiday_rest_day_overtime_night_differential_pay + $scope.payroll_entry.special_holiday_pay + $scope.payroll_entry.special_holiday_overtime_pay + $scope.payroll_entry.special_holiday_night_differential_pay + $scope.payroll_entry.special_holiday_overtime_night_differential_pay + $scope.payroll_entry.special_holiday_rest_day_pay + $scope.payroll_entry.special_holiday_rest_day_overtime_pay + $scope.payroll_entry.special_holiday_rest_day_night_differential_pay + $scope.payroll_entry.special_holiday_rest_day_overtime_night_differential_pay;
+
+				var sss = $filter('filter')($scope.payroll_entry.government_contributions, 'SSS')[0];
+				var philhealth = $filter('filter')($scope.payroll_entry.government_contributions, 'Philhealth')[0];
+				var pagibig = $filter('filter')($scope.payroll_entry.government_contributions, 'Pagibig')[0];
+				var withholding_tax = $filter('filter')($scope.payroll_entry.government_contributions, 'Withholding Tax')[0];
+
+				if(sss)
+				{
+					var first_cut_off_sss = $filter('filter')($scope.previous_payroll_entry.government_contributions, 'SSS') ? $filter('filter')($scope.previous_payroll_entry.government_contributions, 'SSS')[0] : null;
+
+					var sss_query = {}
+
+					sss_query.where = [
+						{
+							'label': 'from',
+							'condition': '<=',
+							'value': $scope.payroll_entry.taxable_income,
+						},
+					];
+
+					sss_query.orderBy = {
+						'label': 'from',
+						'order': 'desc',
+					}
+
+					sss_query.first = true;
+
+					Helper.post('/sss/enlist', sss_query)
+						.success(function(data){
+							sss.amount = first_cut_off_sss ? first_cut_off_sss.amount - data.EE : data.EE;
+							$scope.payroll_entry.taxable_income -= sss.amount;
+
+							if(withholding_tax){
+								$scope.calculateTax();
+							}
+						})
+						.error(function(){
+							Helper.error();
+						})
+				}
+
+				if(pagibig)
+				{
+					var first_cut_off_pagibig = $filter('filter')($scope.previous_payroll_entry.government_contributions, 'Pagibig') ? $filter('filter')($scope.previous_payroll_entry.government_contributions, 'Pagibig')[0] : null;
+
+					pagibig.amount = first_cut_off_pagibig ? 100 - first_cut_off_pagibig.amount : 100;
+					$scope.payroll_entry.taxable_income -= pagibig.amount;
+
+					if(withholding_tax){
+						$scope.calculateTax();
+					}
+				}
+
+				if(philhealth)
+				{
+					var first_cut_off_philhealth = $filter('filter')($scope.previous_payroll_entry.government_contributions, 'Philhealth') ? $filter('filter')($scope.previous_payroll_entry.government_contributions, 'Philhealth')[0] : null;
+
+					var philhealth_query = {}
+
+					philhealth_query.where = [
+						{
+							'label': 'from',
+							'condition': '<=',
+							'value': $scope.payroll_entry.taxable_income,
+						},
+					];
+
+					philhealth_query.orderBy = {
+						'label': 'from',
+						'order': 'desc',
+					}
+
+					philhealth_query.first = true;
+
+					Helper.post('/philhealth/enlist', philhealth_query)
+						.success(function(data){
+							philhealth.amount = first_cut_off_philhealth ? first_cut_off_philhealth.amount - data.employee_share : data.employee_share;
+							$scope.payroll_entry.taxable_income -= philhealth.amount; 
+							if(withholding_tax){
+								$scope.calculateTax();
+							}
+						})
+						.error(function(){
+							Helper.error();
+						})
+				}
+			}
 		}
 
 		// Calculating

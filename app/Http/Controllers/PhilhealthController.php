@@ -46,6 +46,16 @@ class PhilhealthController extends Controller
             }
         }
 
+        if($request->has('orderBy'))
+        {
+            $philhealth->orderBy($request->input('orderBy.label'), $request->input('orderBy.order'));
+        }
+
+        if($request->has('first'))
+        {
+            return $philhealth->first();
+        }
+
         if($request->has('paginate'))
         {
             return $philhealth->paginate($request->paginate);
