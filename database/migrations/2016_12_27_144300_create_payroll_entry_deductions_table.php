@@ -18,7 +18,6 @@ class CreatePayrollEntryDeductionsTable extends Migration
             $table->integer('payroll_entry_id')->unsigned();
             $table->integer('employee_deduction_type_id');
             $table->float('amount');
-            $table->boolean('taxable');
             $table->timestamps();
         });
     }

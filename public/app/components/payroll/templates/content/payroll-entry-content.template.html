@@ -4,7 +4,7 @@
 			<md-list>
 				<md-list-item class="md-3-line">
 					<h2 class="md-avatar primary-bg"  layout="row" layout-align="center center">
-						<span class="md-headline white-text">{{payroll_process.payroll.name.charAt(0).toUpperCase()}}</span></span>
+						<span class="md-title white-text">{{payroll_process.payroll.name.charAt(0).toUpperCase()}}</span></span>
 					</h2>
 					<div class="md-list-item-text">
 						<h3>{{payroll_process.payroll.name}} - {{payroll_process.payroll.description}}</h3>
@@ -23,14 +23,14 @@
 				<!-- Branch -->
 				<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
 					<label>Branch</label>
-					<md-select name="Branch" ng-model="branch_id" ng-disabled="busy" ng-change="payroll_entry.employee=null">
+					<md-select name="Branch" ng-model="branch_id" ng-disabled="busy" ng-blur="payroll_entry.employee=null">
 						<md-option ng-repeat="branch in branches" value="{{branch.id}}">{{branch.name}} - {{branch.description}}</md-option>
 					</md-select>
 				</md-input-container>
 				<!-- Cost Center -->
 				<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
 					<label>Cost Center</label>
-					<md-select name="CostCenter" ng-model="cost_center_id" ng-disabled="busy" ng-change="payroll_entry.employee=null">
+					<md-select name="CostCenter" ng-model="cost_center_id" ng-disabled="busy" ng-blur="payroll_entry.employee=null">
 						<md-option ng-repeat="cost_center in cost_centers" value="{{cost_center.id}}">{{cost_center.name}} - {{cost_center.description}}</md-option>
 					</md-select>
 				</md-input-container>
@@ -39,7 +39,7 @@
 				<!-- Employee -->
 				<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
 					<label>Employee</label>
-					<md-select name="Employee" ng-model="payroll_entry.employee" required ng-disabled="busy" ng-change="setEmployee()">
+					<md-select name="Employee" ng-model="payroll_entry.employee" required ng-disabled="busy" ng-blur="setEmployee()">
 						<md-option ng-repeat="item in employees | filter:{branch_id:branch_id} | filter:{cost_center_id:cost_center_id} | orderBy:'last_name'" ng-value="{{item}}">{{item.last_name}}, {{item.first_name}} {{item.middle_name}}</md-option>
 					</md-select>
 					<div ng-messages="form.payrollEntryForm.Employee.$error" ng-if="form.payrollEntryForm.Employee.$touched">
@@ -365,224 +365,246 @@
                 </md-tab>
                 <md-tab label="Earnings">
                     <div layout="row" layout-wrap flex>
-                        <md-list flex-xs="100" flex-sm="100" flex-md="100" flex-gt-md>
-                            <!-- Basic Pay -->
-                            <md-list-item class="md-3-line" ng-if="payroll_entry.regular_working_hours">
-                                <div class="md-list-item-text">
-                                    <h3>
-                                        {{payroll_entry.regular_working_hours_pay | number: 2 }}
-                                    </h3>
-                                    <h4>Regular Basic Pay</h4>
-                                </div>
-                            </md-list-item>
-                            <!-- Overtime -->
-                            <md-list-item class="md-3-line" ng-if="payroll_entry.overtime">
-                                <div class="md-list-item-text">
-                                    <h3>
-                                        {{payroll_entry.overtime_pay | number: 2}}
-                                    </h3>
-                                    <h4>Overtime Pay</h4>
-                                </div>
-                            </md-list-item>
-                            <!-- Night Differential -->
-                            <md-list-item class="md-3-line" ng-if="payroll_entry.night_differential">
-                                <div class="md-list-item-text">
-                                    <h3>
-                                        {{payroll_entry.night_differential_pay | number: 2}}
-                                    </h3>
-                                    <h4>Night Differential Pay</h4>
-                                </div>
-                            </md-list-item>
-                            <!-- Overtime Night Differential -->
-                            <md-list-item class="md-3-line" ng-if="payroll_entry.overtime_night_differential">
-                                <div class="md-list-item-text">
-                                    <h3>
-                                        {{payroll_entry.overtime_night_differential_pay | number: 2}}
-                                    </h3>
-                                    <h4>Overtime Night Differential Pay</h4>
-                                </div>
-                            </md-list-item>
-                            <!-- Regular Holiday -->
-                            <md-list-item class="md-3-line" ng-if="payroll_entry.regular_holiday && regular_holiday">
-                                <div class="md-list-item-text">
-                                    <h3>
-                                        {{ payroll_entry.regular_holiday_pay | number: 2}}</span>
-                                    </h3>
-                                    <h4>Regular Holiday Pay</h4>
-                                </div>
-                            </md-list-item>
-                            <!-- Regular Holiday Overtime -->
-                            <md-list-item class="md-3-line" ng-if="payroll_entry.regular_holiday_overtime && regular_holiday">
-                                <div class="md-list-item-text">
-                                    <h3>
-                                        {{ payroll_entry.regular_holiday_overtime_pay | number: 2}}</span>
-                                    </h3>
-                                    <h4>Regular Holiday Overtime Pay</h4>
-                                </div>
-                            </md-list-item>
-                            <!-- Regular Holiday Night Differential -->
-                            <md-list-item class="md-3-line" ng-if="payroll_entry.regular_holiday_night_differential && regular_holiday">
-                                <div class="md-list-item-text">
-                                    <h3>
-                                        {{ payroll_entry.regular_holiday_night_differential_pay | number: 2}}</span>
-                                    </h3>
-                                    <h4>Regular Holiday Night Differential Pay</h4>
-                                </div>
-                            </md-list-item>
-                            <!-- Regular Holiday Overtime Night Differential -->
-                            <md-list-item class="md-3-line" ng-if="payroll_entry.regular_holiday_overtime_night_differential && regular_holiday">
-                                <div class="md-list-item-text">
-                                    <h3>
-                                        {{ payroll_entry.regular_holiday_overtime_night_differential_pay | number: 2}}</span>
-                                    </h3>
-                                    <h4>Regular Holiday Overtime Night Differential Pay</h4>
-                                </div>
-                            </md-list-item>
-                            <!-- Special Holiday -->
-                            <md-list-item class="md-3-line" ng-if="payroll_entry.special_holiday && special_holiday">
-                                <div class="md-list-item-text">
-                                    <h3>
-                                        {{ payroll_entry.special_holiday_pay | number: 2}}</span>
-                                    </h3>
-                                    <h4>Special Holiday Pay</h4>
-                                </div>
-                            </md-list-item>
-                            <!-- Special Holiday Overtime -->
-                            <md-list-item class="md-3-line" ng-if="payroll_entry.special_holiday_overtime && special_holiday">
-                                <div class="md-list-item-text">
-                                    <h3>
-                                        {{ payroll_entry.special_holiday_overtime_pay | number: 2}}</span>
-                                    </h3>
-                                    <h4>Special Holiday Overtime Pay</h4>
-                                </div>
-                            </md-list-item>
-                            <!-- Special Holiday Night Differential -->
-                            <md-list-item class="md-3-line" ng-if="payroll_entry.special_holiday_night_differential && special_holiday">
-                                <div class="md-list-item-text">
-                                    <h3>
-                                        {{ payroll_entry.special_holiday_night_differential_pay | number: 2}}</span>
-                                    </h3>
-                                    <h4>Special Holiday Night Differential Pay</h4>
-                                </div>
-                            </md-list-item>
-                            <!-- Special Holiday Overtime Night Differential -->
-                            <md-list-item class="md-3-line" ng-if="payroll_entry.special_holiday_overtime_night_differential && special_holiday">
-                                <div class="md-list-item-text">
-                                    <h3>
-                                        {{ payroll_entry.special_holiday_overtime_night_differential_pay | number: 2}}</span>
-                                    </h3>
-                                    <h4>Special Holiday Overtime Night Differential Pay</h4>
-                                </div>
-                            </md-list-item>
-                            <!-- Rest Day -->
-                            <md-list-item class="md-3-line" ng-if="payroll_entry.rest_day && rest_day">
-                                <div class="md-list-item-text">
-                                    <h3>
-                                        {{ payroll_entry.rest_day_pay | number: 2}}</span>
-                                    </h3>
-                                    <h4>Rest Day Pay</h4>
-                                </div>
-                            </md-list-item>
-                            <!-- Rest Day Overtime -->
-                            <md-list-item class="md-3-line" ng-if="payroll_entry.rest_day_overtime && rest_day">
-                                <div class="md-list-item-text">
-                                    <h3>
-                                        {{ payroll_entry.rest_day_overtime_pay | number: 2}}</span>
-                                    </h3>
-                                    <h4>Rest Day Overtime Pay</h4>
-                                </div>
-                            </md-list-item>
-                            <!-- Rest Day Night Differential -->
-                            <md-list-item class="md-3-line" ng-if="payroll_entry.rest_day_night_differential && rest_day">
-                                <div class="md-list-item-text">
-                                    <h3>
-                                        {{ payroll_entry.rest_day_night_differential_pay | number: 2}}</span>
-                                    </h3>
-                                    <h4>Rest Day Night Differential Pay</h4>
-                                </div>
-                            </md-list-item>
-                            <!-- Rest Day Overtime Night Differential -->
-                            <md-list-item class="md-3-line" ng-if="payroll_entry.rest_day_overtime_night_differential && rest_day">
-                                <div class="md-list-item-text">
-                                    <h3>
-                                        {{ payroll_entry.rest_day_overtime_night_differential_pay | number: 2}}</span>
-                                    </h3>
-                                    <h4>Rest Day Overtime Night Differential Pay</h4>
-                                </div>
-                            </md-list-item>
-                            <!-- Regular Holiday Rest Day -->
-                            <md-list-item class="md-3-line" ng-if="payroll_entry.regular_holiday_rest_day && regular_holiday_rest_day">
-                                <div class="md-list-item-text">
-                                    <h3>
-                                        {{ payroll_entry.regular_holiday_rest_day_pay | number: 2}}</span>
-                                    </h3>
-                                    <h4>Regular Holiday Rest Day Pay</h4>
-                                </div>
-                            </md-list-item>
-                            <!-- Regular Holiday Rest Day Overtime -->
-                            <md-list-item class="md-3-line" ng-if="payroll_entry.regular_holiday_rest_day_overtime && regular_holiday_rest_day">
-                                <div class="md-list-item-text">
-                                    <h3>
-                                        {{ payroll_entry.regular_holiday_rest_day_overtime_pay | number: 2}}</span>
-                                    </h3>
-                                    <h4>Regular Holiday Rest Day Overtime Pay</h4>
-                                </div>
-                            </md-list-item>
-                            <!-- Regular Holiday Rest Day Night Differential -->
-                            <md-list-item class="md-3-line" ng-if="payroll_entry.regular_holiday_rest_day_night_differential && regular_holiday_rest_day">
-                                <div class="md-list-item-text">
-                                    <h3>
-                                        {{ payroll_entry.regular_holiday_rest_day_night_differential_pay | number: 2}}</span>
-                                    </h3>
-                                    <h4>Regular Holiday Rest Day Night Differential Pay</h4>
-                                </div>
-                            </md-list-item>
-                            <!-- Regular Holiday Rest Day Overtime Night Differential -->
-                            <md-list-item class="md-3-line" ng-if="payroll_entry.regular_holiday_rest_day_overtime_night_differential && regular_holiday_rest_day">
-                                <div class="md-list-item-text">
-                                    <h3>
-                                        {{ payroll_entry.regular_holiday_rest_day_overtime_night_differential_pay | number: 2}}</span>
-                                    </h3>
-                                    <h4>Regular Holiday Rest Day Overtime Night Differential Pay</h4>
-                                </div>
-                            </md-list-item>
-                            <!-- Special Holiday Rest Day -->
-                            <md-list-item class="md-3-line" ng-if="payroll_entry.special_holiday_rest_day && special_holiday_rest_day">
-                                <div class="md-list-item-text">
-                                    <h3>
-                                        {{ payroll_entry.special_holiday_rest_day_pay | number: 2}}</span>
-                                    </h3>
-                                    <h4>Special Holiday Rest Day Pay</h4>
-                                </div>
-                            </md-list-item>
-                            <!-- Special Holiday Rest Day Overtime -->
-                            <md-list-item class="md-3-line" ng-if="payroll_entry.special_holiday_rest_day_overtime && special_holiday_rest_day">
-                                <div class="md-list-item-text">
-                                    <h3>
-                                        {{ payroll_entry.special_holiday_rest_day_overtime_pay | number: 2}}</span>
-                                    </h3>
-                                    <h4>Special Holiday Rest Day Overtime Pay</h4>
-                                </div>
-                            </md-list-item>
-                            <!-- Special Holiday Rest Day Night Differential -->
-                            <md-list-item class="md-3-line" ng-if="payroll_entry.special_holiday_rest_day_night_differential && special_holiday_rest_day">
-                                <div class="md-list-item-text">
-                                    <h3>
-                                        {{ payroll_entry.special_holiday_rest_day_night_differential_pay | number: 2}}</span>
-                                    </h3>
-                                    <h4>Special Holiday Rest Day Night Differential Pay</h4>
-                                </div>
-                            </md-list-item>
-                            <!-- Special Holiday Rest Day Overtime Night Differential -->
-                            <md-list-item class="md-3-line" ng-if="payroll_entry.special_holiday_rest_day_overtime_night_differential && special_holiday_rest_day">
-                                <div class="md-list-item-text">
-                                    <h3>
-                                        {{ payroll_entry.special_holiday_rest_day_overtime_night_differential_pay | number: 2}}</span>
-                                    </h3>
-                                    <h4>Special Holiday Rest Day Overtime Night Differential Pay</h4>
-                                </div>
-                            </md-list-item>
-                        </md-list>
+                        <div flex-xs="100" flex-sm="100" flex-md="100" flex-gt-md>                        
+                            <md-list>
+                                <!-- Basic Pay -->
+                                <md-list-item class="md-3-line" ng-if="payroll_entry.regular_working_hours">
+                                    <div class="md-list-item-text">
+                                        <h3>
+                                            {{payroll_entry.regular_working_hours_pay | number: 2 }}
+                                        </h3>
+                                        <h4>Regular Basic Pay</h4>
+                                    </div>
+                                </md-list-item>
+                                <!-- Overtime -->
+                                <md-list-item class="md-3-line" ng-if="payroll_entry.overtime">
+                                    <div class="md-list-item-text">
+                                        <h3>
+                                            {{payroll_entry.overtime_pay | number: 2}}
+                                        </h3>
+                                        <h4>Overtime Pay</h4>
+                                    </div>
+                                </md-list-item>
+                                <!-- Night Differential -->
+                                <md-list-item class="md-3-line" ng-if="payroll_entry.night_differential">
+                                    <div class="md-list-item-text">
+                                        <h3>
+                                            {{payroll_entry.night_differential_pay | number: 2}}
+                                        </h3>
+                                        <h4>Night Differential Pay</h4>
+                                    </div>
+                                </md-list-item>
+                                <!-- Overtime Night Differential -->
+                                <md-list-item class="md-3-line" ng-if="payroll_entry.overtime_night_differential">
+                                    <div class="md-list-item-text">
+                                        <h3>
+                                            {{payroll_entry.overtime_night_differential_pay | number: 2}}
+                                        </h3>
+                                        <h4>Overtime Night Differential Pay</h4>
+                                    </div>
+                                </md-list-item>
+                                <!-- Regular Holiday -->
+                                <md-list-item class="md-3-line" ng-if="payroll_entry.regular_holiday && regular_holiday">
+                                    <div class="md-list-item-text">
+                                        <h3>
+                                            {{ payroll_entry.regular_holiday_pay | number: 2}}</span>
+                                        </h3>
+                                        <h4>Regular Holiday Pay</h4>
+                                    </div>
+                                </md-list-item>
+                                <!-- Regular Holiday Overtime -->
+                                <md-list-item class="md-3-line" ng-if="payroll_entry.regular_holiday_overtime && regular_holiday">
+                                    <div class="md-list-item-text">
+                                        <h3>
+                                            {{ payroll_entry.regular_holiday_overtime_pay | number: 2}}</span>
+                                        </h3>
+                                        <h4>Regular Holiday Overtime Pay</h4>
+                                    </div>
+                                </md-list-item>
+                                <!-- Regular Holiday Night Differential -->
+                                <md-list-item class="md-3-line" ng-if="payroll_entry.regular_holiday_night_differential && regular_holiday">
+                                    <div class="md-list-item-text">
+                                        <h3>
+                                            {{ payroll_entry.regular_holiday_night_differential_pay | number: 2}}</span>
+                                        </h3>
+                                        <h4>Regular Holiday Night Differential Pay</h4>
+                                    </div>
+                                </md-list-item>
+                                <!-- Regular Holiday Overtime Night Differential -->
+                                <md-list-item class="md-3-line" ng-if="payroll_entry.regular_holiday_overtime_night_differential && regular_holiday">
+                                    <div class="md-list-item-text">
+                                        <h3>
+                                            {{ payroll_entry.regular_holiday_overtime_night_differential_pay | number: 2}}</span>
+                                        </h3>
+                                        <h4>Regular Holiday Overtime Night Differential Pay</h4>
+                                    </div>
+                                </md-list-item>
+                                <!-- Special Holiday -->
+                                <md-list-item class="md-3-line" ng-if="payroll_entry.special_holiday && special_holiday">
+                                    <div class="md-list-item-text">
+                                        <h3>
+                                            {{ payroll_entry.special_holiday_pay | number: 2}}</span>
+                                        </h3>
+                                        <h4>Special Holiday Pay</h4>
+                                    </div>
+                                </md-list-item>
+                                <!-- Special Holiday Overtime -->
+                                <md-list-item class="md-3-line" ng-if="payroll_entry.special_holiday_overtime && special_holiday">
+                                    <div class="md-list-item-text">
+                                        <h3>
+                                            {{ payroll_entry.special_holiday_overtime_pay | number: 2}}</span>
+                                        </h3>
+                                        <h4>Special Holiday Overtime Pay</h4>
+                                    </div>
+                                </md-list-item>
+                                <!-- Special Holiday Night Differential -->
+                                <md-list-item class="md-3-line" ng-if="payroll_entry.special_holiday_night_differential && special_holiday">
+                                    <div class="md-list-item-text">
+                                        <h3>
+                                            {{ payroll_entry.special_holiday_night_differential_pay | number: 2}}</span>
+                                        </h3>
+                                        <h4>Special Holiday Night Differential Pay</h4>
+                                    </div>
+                                </md-list-item>
+                                <!-- Special Holiday Overtime Night Differential -->
+                                <md-list-item class="md-3-line" ng-if="payroll_entry.special_holiday_overtime_night_differential && special_holiday">
+                                    <div class="md-list-item-text">
+                                        <h3>
+                                            {{ payroll_entry.special_holiday_overtime_night_differential_pay | number: 2}}</span>
+                                        </h3>
+                                        <h4>Special Holiday Overtime Night Differential Pay</h4>
+                                    </div>
+                                </md-list-item>
+                                <!-- Rest Day -->
+                                <md-list-item class="md-3-line" ng-if="payroll_entry.rest_day && rest_day">
+                                    <div class="md-list-item-text">
+                                        <h3>
+                                            {{ payroll_entry.rest_day_pay | number: 2}}</span>
+                                        </h3>
+                                        <h4>Rest Day Pay</h4>
+                                    </div>
+                                </md-list-item>
+                                <!-- Rest Day Overtime -->
+                                <md-list-item class="md-3-line" ng-if="payroll_entry.rest_day_overtime && rest_day">
+                                    <div class="md-list-item-text">
+                                        <h3>
+                                            {{ payroll_entry.rest_day_overtime_pay | number: 2}}</span>
+                                        </h3>
+                                        <h4>Rest Day Overtime Pay</h4>
+                                    </div>
+                                </md-list-item>
+                                <!-- Rest Day Night Differential -->
+                                <md-list-item class="md-3-line" ng-if="payroll_entry.rest_day_night_differential && rest_day">
+                                    <div class="md-list-item-text">
+                                        <h3>
+                                            {{ payroll_entry.rest_day_night_differential_pay | number: 2}}</span>
+                                        </h3>
+                                        <h4>Rest Day Night Differential Pay</h4>
+                                    </div>
+                                </md-list-item>
+                                <!-- Rest Day Overtime Night Differential -->
+                                <md-list-item class="md-3-line" ng-if="payroll_entry.rest_day_overtime_night_differential && rest_day">
+                                    <div class="md-list-item-text">
+                                        <h3>
+                                            {{ payroll_entry.rest_day_overtime_night_differential_pay | number: 2}}</span>
+                                        </h3>
+                                        <h4>Rest Day Overtime Night Differential Pay</h4>
+                                    </div>
+                                </md-list-item>
+                                <!-- Regular Holiday Rest Day -->
+                                <md-list-item class="md-3-line" ng-if="payroll_entry.regular_holiday_rest_day && regular_holiday_rest_day">
+                                    <div class="md-list-item-text">
+                                        <h3>
+                                            {{ payroll_entry.regular_holiday_rest_day_pay | number: 2}}</span>
+                                        </h3>
+                                        <h4>Regular Holiday Rest Day Pay</h4>
+                                    </div>
+                                </md-list-item>
+                                <!-- Regular Holiday Rest Day Overtime -->
+                                <md-list-item class="md-3-line" ng-if="payroll_entry.regular_holiday_rest_day_overtime && regular_holiday_rest_day">
+                                    <div class="md-list-item-text">
+                                        <h3>
+                                            {{ payroll_entry.regular_holiday_rest_day_overtime_pay | number: 2}}</span>
+                                        </h3>
+                                        <h4>Regular Holiday Rest Day Overtime Pay</h4>
+                                    </div>
+                                </md-list-item>
+                                <!-- Regular Holiday Rest Day Night Differential -->
+                                <md-list-item class="md-3-line" ng-if="payroll_entry.regular_holiday_rest_day_night_differential && regular_holiday_rest_day">
+                                    <div class="md-list-item-text">
+                                        <h3>
+                                            {{ payroll_entry.regular_holiday_rest_day_night_differential_pay | number: 2}}</span>
+                                        </h3>
+                                        <h4>Regular Holiday Rest Day Night Differential Pay</h4>
+                                    </div>
+                                </md-list-item>
+                                <!-- Regular Holiday Rest Day Overtime Night Differential -->
+                                <md-list-item class="md-3-line" ng-if="payroll_entry.regular_holiday_rest_day_overtime_night_differential && regular_holiday_rest_day">
+                                    <div class="md-list-item-text">
+                                        <h3>
+                                            {{ payroll_entry.regular_holiday_rest_day_overtime_night_differential_pay | number: 2}}</span>
+                                        </h3>
+                                        <h4>Regular Holiday Rest Day Overtime Night Differential Pay</h4>
+                                    </div>
+                                </md-list-item>
+                                <!-- Special Holiday Rest Day -->
+                                <md-list-item class="md-3-line" ng-if="payroll_entry.special_holiday_rest_day && special_holiday_rest_day">
+                                    <div class="md-list-item-text">
+                                        <h3>
+                                            {{ payroll_entry.special_holiday_rest_day_pay | number: 2}}</span>
+                                        </h3>
+                                        <h4>Special Holiday Rest Day Pay</h4>
+                                    </div>
+                                </md-list-item>
+                                <!-- Special Holiday Rest Day Overtime -->
+                                <md-list-item class="md-3-line" ng-if="payroll_entry.special_holiday_rest_day_overtime && special_holiday_rest_day">
+                                    <div class="md-list-item-text">
+                                        <h3>
+                                            {{ payroll_entry.special_holiday_rest_day_overtime_pay | number: 2}}</span>
+                                        </h3>
+                                        <h4>Special Holiday Rest Day Overtime Pay</h4>
+                                    </div>
+                                </md-list-item>
+                                <!-- Special Holiday Rest Day Night Differential -->
+                                <md-list-item class="md-3-line" ng-if="payroll_entry.special_holiday_rest_day_night_differential && special_holiday_rest_day">
+                                    <div class="md-list-item-text">
+                                        <h3>
+                                            {{ payroll_entry.special_holiday_rest_day_night_differential_pay | number: 2}}</span>
+                                        </h3>
+                                        <h4>Special Holiday Rest Day Night Differential Pay</h4>
+                                    </div>
+                                </md-list-item>
+                                <!-- Special Holiday Rest Day Overtime Night Differential -->
+                                <md-list-item class="md-3-line" ng-if="payroll_entry.special_holiday_rest_day_overtime_night_differential && special_holiday_rest_day">
+                                    <div class="md-list-item-text">
+                                        <h3>
+                                            {{ payroll_entry.special_holiday_rest_day_overtime_night_differential_pay | number: 2}}</span>
+                                        </h3>
+                                        <h4>Special Holiday Rest Day Overtime Night Differential Pay</h4>
+                                    </div>
+                                </md-list-item>
+                                <!-- Absent -->
+                                <md-list-item class="md-3-line" ng-if="payroll_entry.days_absent">
+                                    <div class="md-list-item-text">
+                                        <h3>
+                                            -{{payroll_entry.absent | number: 2 }}
+                                        </h3>
+                                        <h4>Absent</h4>
+                                    </div>
+                                </md-list-item>
+                                <!-- Tardy -->
+                                <md-list-item class="md-3-line" ng-if="payroll_entry.regular_working_hours != (max_regular_work_hours)">
+                                    <div class="md-list-item-text">
+                                        <h3>
+                                            -{{payroll_entry.tardy | number: 2 }}
+                                        </h3>
+                                        <h4>Tardy</h4>
+                                    </div>
+                                </md-list-item>
+                            </md-list>
+                            <md-divider></md-divider>
+                            <h3 class="md-title" ng-if="payroll_entry.regular_working_hours_pay">Subtotal: {{ payroll_entry.regular_working_hours_pay - payroll_entry.tardy - payroll_entry.absent + payroll_entry.night_differential_pay + payroll_entry.overtime_pay + payroll_entry.overtime_night_differential_pay + payroll_entry.rest_day_pay + payroll_entry.rest_day_overtime_pay + payroll_entry.rest_day_night_differential_pay + payroll_entry.rest_day_overtime_night_differential_pay + payroll_entry.regular_holiday_pay + payroll_entry.regular_holiday_overtime_pay + payroll_entry.regular_holiday_night_differential_pay + payroll_entry.regular_holiday_overtime_night_differential_pay + payroll_entry.regular_holiday_rest_day_pay + payroll_entry.regular_holiday_rest_day_overtime_pay + payroll_entry.regular_holiday_rest_day_night_differential_pay + payroll_entry.regular_holiday_rest_day_overtime_night_differential_pay + payroll_entry.special_holiday_pay + payroll_entry.special_holiday_overtime_pay + payroll_entry.special_holiday_night_differential_pay + payroll_entry.special_holiday_overtime_night_differential_pay + payroll_entry.special_holiday_rest_day_pay + payroll_entry.special_holiday_rest_day_overtime_pay + payroll_entry.special_holiday_rest_day_night_differential_pay + payroll_entry.special_holiday_rest_day_overtime_night_differential_pay | number: 2}}</h3>
+                        </div>
                         <div flex-xs="100" flex-sm="100" flex-md="100" flex-gt-md>
                             <md-subheader ng-if="payroll_entry.allowances.length">Additional Earnings</md-subheader>
                             <md-list>
@@ -594,32 +616,16 @@
                                     </div>
                                 </md-list-item>
                             </md-list>
+                            <md-divider></md-divider>
+                            <h3 class="md-title" ng-if="payroll_entry.additional_earnings">
+                                Subtotal: {{payroll_entry.additional_earnings}}
+                            </h3>
                         </div>
                     </div>
                 </md-tab>
                 <md-tab label="Deductions">
                     <div layout="row" layout-wrap flex>
                         <div flex-xs="100" flex-sm="100" flex-md="100" flex-gt-md>
-                            <md-list>
-                                <!-- Absent -->
-                                <md-list-item class="md-3-line" ng-if="payroll_entry.days_absent">
-                                    <div class="md-list-item-text">
-                                        <h3>
-                                            {{payroll_entry.absent | number: 2 }}
-                                        </h3>
-                                        <h4>Absent</h4>
-                                    </div>
-                                </md-list-item>
-                                <!-- Tardy -->
-                                <md-list-item class="md-3-line" ng-if="payroll_entry.regular_working_hours != (max_regular_work_hours)">
-                                    <div class="md-list-item-text">
-                                        <h3>
-                                            {{payroll_entry.tardy | number: 2 }}
-                                        </h3>
-                                        <h4>Tardy</h4>
-                                    </div>
-                                </md-list-item>
-                            </md-list>
                             <md-subheader ng-if="payroll_entry.government_contributions.length && payroll_entry.regular_working_hours_pay">Government Contributions</md-subheader>
                             <md-list>
                                 <md-list-item class="md-3-line" ng-if="payroll_entry.regular_working_hours_pay" ng-repeat="item in payroll_entry.government_contributions">
@@ -629,6 +635,10 @@
                                     </div>
                                 </md-list-item>
                             </md-list>
+                            <md-divider></md-divider>
+                            <h3 class="md-title" ng-if="payroll_entry.government_contributions.length && payroll_entry.regular_working_hours_pay">
+                                Subtotal: {{government_contribution_deduction + withholding_tax | number: 2}}
+                            </h3>
                         </div>                    
                         <div flex-xs="100" flex-sm="100" flex-md="100" flex-gt-md>
                             <md-subheader ng-if="payroll_entry.deductions.length">Additional Deductions</md-subheader>
@@ -641,10 +651,20 @@
                                     </div>
                                 </md-list-item>
                             </md-list>
+                            <md-divider></md-divider>
+                            <h3 class="md-title" ng-if="payroll_entry.additional_deductions">
+                                Subtotal: {{payroll_entry.additional_deductions}}
+                            </h3>
                         </div>
                     </div>
                 </md-tab>
             </md-tabs>
+            <md-divider></md-divider>
+            <div layout="column" layout-align="center end" flex>
+                <h3 class="md-title">Gross Pay: {{ payroll_entry.regular_working_hours_pay - payroll_entry.tardy - payroll_entry.absent + payroll_entry.night_differential_pay + payroll_entry.overtime_pay + payroll_entry.overtime_night_differential_pay + payroll_entry.rest_day_pay + payroll_entry.rest_day_overtime_pay + payroll_entry.rest_day_night_differential_pay + payroll_entry.rest_day_overtime_night_differential_pay + payroll_entry.regular_holiday_pay + payroll_entry.regular_holiday_overtime_pay + payroll_entry.regular_holiday_night_differential_pay + payroll_entry.regular_holiday_overtime_night_differential_pay + payroll_entry.regular_holiday_rest_day_pay + payroll_entry.regular_holiday_rest_day_overtime_pay + payroll_entry.regular_holiday_rest_day_night_differential_pay + payroll_entry.regular_holiday_rest_day_overtime_night_differential_pay + payroll_entry.special_holiday_pay + payroll_entry.special_holiday_overtime_pay + payroll_entry.special_holiday_night_differential_pay + payroll_entry.special_holiday_overtime_night_differential_pay + payroll_entry.special_holiday_rest_day_pay + payroll_entry.special_holiday_rest_day_overtime_pay + payroll_entry.special_holiday_rest_day_night_differential_pay + payroll_entry.special_holiday_rest_day_overtime_night_differential_pay + payroll_entry.additional_earnings | number: 2}}</h3>
+                <h3 class="md-title">Total Deductions: {{government_contribution_deduction + withholding_tax + payroll_entry.additional_deductions | number: 2}}</h3>
+                <h3 class="md-title">Net Pay: {{(payroll_entry.regular_working_hours_pay - payroll_entry.tardy - payroll_entry.absent + payroll_entry.night_differential_pay + payroll_entry.overtime_pay + payroll_entry.overtime_night_differential_pay + payroll_entry.rest_day_pay + payroll_entry.rest_day_overtime_pay + payroll_entry.rest_day_night_differential_pay + payroll_entry.rest_day_overtime_night_differential_pay + payroll_entry.regular_holiday_pay + payroll_entry.regular_holiday_overtime_pay + payroll_entry.regular_holiday_night_differential_pay + payroll_entry.regular_holiday_overtime_night_differential_pay + payroll_entry.regular_holiday_rest_day_pay + payroll_entry.regular_holiday_rest_day_overtime_pay + payroll_entry.regular_holiday_rest_day_night_differential_pay + payroll_entry.regular_holiday_rest_day_overtime_night_differential_pay + payroll_entry.special_holiday_pay + payroll_entry.special_holiday_overtime_pay + payroll_entry.special_holiday_night_differential_pay + payroll_entry.special_holiday_overtime_night_differential_pay + payroll_entry.special_holiday_rest_day_pay + payroll_entry.special_holiday_rest_day_overtime_pay + payroll_entry.special_holiday_rest_day_night_differential_pay + payroll_entry.special_holiday_rest_day_overtime_night_differential_pay + payroll_entry.additional_earnings) - (government_contribution_deduction + withholding_tax + payroll_entry.additional_deductions) | number: 2}}</h3>
+            </div>
         </md-content>
     </div>
 </form>

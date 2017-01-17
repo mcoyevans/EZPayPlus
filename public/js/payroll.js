@@ -162,7 +162,10 @@ payroll
 		$scope.form = {}
 
 		$scope.payroll_entry = {};
+		$scope.payroll_entry.payroll_process_id = payrollProcessID;
 		$scope.payroll_entry.government_contributions = [];
+
+		$scope.subtotal = {};
 
 		/*
 		 * Object for toolbar
@@ -245,8 +248,11 @@ payroll
 		}
 
 		$scope.setEmployee = function(){
+			$scope.payroll_entry.employee_id = $scope.payroll_entry.employee.id;
 			$scope.payroll_entry.allowances = [];
 			$scope.payroll_entry.deductions = [];
+			$scope.payroll_entry.additional_earnings = 0;
+			$scope.payroll_entry.additional_deductions = 0;
 
 			angular.forEach($scope.payroll_entry.employee.allowance_types, function(item, key){
 				if(($scope.payroll_process.payroll_period.cut_off == 'first' && item.pivot.first_cut_off) || ($scope.payroll_process.payroll_period.cut_off == 'second' && item.pivot.second_cut_off)){
@@ -258,6 +264,7 @@ payroll
 					allowance.employee_allowance_type_id = item.pivot.id;
 
 					$scope.payroll_entry.allowances.push(allowance);
+					$scope.payroll_entry.additional_earnings += allowance.amount;
 				}
 			});
 
@@ -271,6 +278,7 @@ payroll
 					deduction.employee_deduction_type_id = item.pivot.id;
 					
 					$scope.payroll_entry.deductions.push(deduction);
+					$scope.payroll_entry.additional_deductions += deduction.amount;
 				}
 			});
 
@@ -426,7 +434,7 @@ payroll
 			Helper.post('/tax/enlist', withholding_tax_query)
 				.success(function(data){
 					withholding_tax.amount = first_cut_off_withholding_tax ? first_cut_off_withholding_tax.amount - (data.tax + ($scope.payroll_entry.taxable_income - data.salary) * data.excess) : data.tax + ($scope.payroll_entry.taxable_income - data.salary) * data.excess;
-					console.log($scope.payroll_entry.government_contributions);
+					$scope.withholding_tax = withholding_tax.amount;
 				})
 				.error(function(){
 					Helper.error();
@@ -436,7 +444,8 @@ payroll
 		$scope.governmentContributions = function(){
 			if($scope.payroll_entry.regular_working_hours)
 			{
-				$scope.payroll_entry.taxable_income = $scope.payroll_entry.regular_working_hours_pay - $scope.payroll_entry.tardy - $scope.payroll_entry.absent + $scope.payroll_entry.night_differential_pay + $scope.payroll_entry.overtime_pay + $scope.payroll_entry.overtime_night_differential_pay + $scope.payroll_entry.rest_day_pay + $scope.payroll_entry.rest_day_overtime_pay + $scope.payroll_entry.rest_day_night_differential_pay + $scope.payroll_entry.rest_day_overtime_night_differential_pay + $scope.payroll_entry.regular_holiday_pay + $scope.payroll_entry.regular_holiday_overtime_pay + $scope.payroll_entry.regular_holiday_night_differential_pay + $scope.payroll_entry.regular_holiday_overtime_night_differential_pay + $scope.payroll_entry.regular_holiday_rest_day_pay + $scope.payroll_entry.regular_holiday_rest_day_overtime_pay + $scope.payroll_entry.regular_holiday_rest_day_night_differential_pay + $scope.payroll_entry.regular_holiday_rest_day_overtime_night_differential_pay + $scope.payroll_entry.special_holiday_pay + $scope.payroll_entry.special_holiday_overtime_pay + $scope.payroll_entry.special_holiday_night_differential_pay + $scope.payroll_entry.special_holiday_overtime_night_differential_pay + $scope.payroll_entry.special_holiday_rest_day_pay + $scope.payroll_entry.special_holiday_rest_day_overtime_pay + $scope.payroll_entry.special_holiday_rest_day_night_differential_pay + $scope.payroll_entry.special_holiday_rest_day_overtime_night_differential_pay;
+				$scope.payroll_entry.taxable_income = $scope.payroll_entry.regular_working_hours_pay - $scope.payroll_entry.tardy - $scope.payroll_entry.absent + $scope.payroll_entry.night_differential_pay + $scope.payroll_entry.overtime_pay + $scope.payroll_entry.overtime_night_differential_pay + $scope.payroll_entry.rest_day_pay + $scope.payroll_entry.rest_day_overtime_pay + $scope.payroll_entry.rest_day_night_differential_pay + $scope.payroll_entry.rest_day_overtime_night_differential_pay + $scope.payroll_entry.regular_holiday_pay + $scope.payroll_entry.regular_holiday_overtime_pay + $scope.payroll_entry.regular_holiday_night_differential_pay + $scope.payroll_entry.regular_holiday_overtime_night_differential_pay + $scope.payroll_entry.regular_holiday_rest_day_pay + $scope.payroll_entry.regular_holiday_rest_day_overtime_pay + $scope.payroll_entry.regular_holiday_rest_day_night_differential_pay + $scope.payroll_entry.regular_holiday_rest_day_overtime_night_differential_pay + $scope.payroll_entry.special_holiday_pay + $scope.payroll_entry.special_holiday_overtime_pay + $scope.payroll_entry.special_holiday_night_differential_pay + $scope.payroll_entry.special_holiday_overtime_night_differential_pay + $scope.payroll_entry.special_holiday_rest_day_pay + $scope.payroll_entry.special_holiday_rest_day_overtime_pay + $scope.payroll_entry.special_holiday_rest_day_night_differential_pay + $scope.payroll_entry.special_holiday_rest_day_overtime_night_differential_pay;			
+				$scope.government_contribution_deduction = 0;
 
 				var sss = $filter('filter')($scope.payroll_entry.government_contributions, 'SSS')[0];
 				var philhealth = $filter('filter')($scope.payroll_entry.government_contributions, 'Philhealth')[0];
@@ -468,6 +477,7 @@ payroll
 						.success(function(data){
 							sss.amount = first_cut_off_sss ? first_cut_off_sss.amount - data.EE : data.EE;
 							$scope.payroll_entry.taxable_income -= sss.amount;
+							$scope.government_contribution_deduction += sss.amount;
 
 							if(withholding_tax){
 								$scope.calculateTax();
@@ -484,6 +494,8 @@ payroll
 
 					pagibig.amount = first_cut_off_pagibig ? 100 - first_cut_off_pagibig.amount : 100;
 					$scope.payroll_entry.taxable_income -= pagibig.amount;
+					$scope.government_contribution_deduction += pagibig.amount;
+
 
 					if(withholding_tax){
 						$scope.calculateTax();
@@ -514,7 +526,8 @@ payroll
 					Helper.post('/philhealth/enlist', philhealth_query)
 						.success(function(data){
 							philhealth.amount = first_cut_off_philhealth ? first_cut_off_philhealth.amount - data.employee_share : data.employee_share;
-							$scope.payroll_entry.taxable_income -= philhealth.amount; 
+							$scope.payroll_entry.taxable_income -= philhealth.amount;
+							$scope.government_contribution_deduction += philhealth.amount;
 							if(withholding_tax){
 								$scope.calculateTax();
 							}
