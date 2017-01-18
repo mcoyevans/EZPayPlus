@@ -23,14 +23,14 @@
 				<!-- Branch -->
 				<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
 					<label>Branch</label>
-					<md-select name="Branch" ng-model="branch_id" ng-disabled="busy" ng-blur="payroll_entry.employee=null">
+					<md-select name="Branch" ng-model="branch_id" ng-disabled="busy" ng-change="payroll_entry.employee=null">
 						<md-option ng-repeat="branch in branches" value="{{branch.id}}">{{branch.name}} - {{branch.description}}</md-option>
 					</md-select>
 				</md-input-container>
 				<!-- Cost Center -->
 				<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
 					<label>Cost Center</label>
-					<md-select name="CostCenter" ng-model="cost_center_id" ng-disabled="busy" ng-blur="payroll_entry.employee=null">
+					<md-select name="CostCenter" ng-model="cost_center_id" ng-disabled="busy" ng-change="payroll_entry.employee=null">
 						<md-option ng-repeat="cost_center in cost_centers" value="{{cost_center.id}}">{{cost_center.name}} - {{cost_center.description}}</md-option>
 					</md-select>
 				</md-input-container>
@@ -39,7 +39,7 @@
 				<!-- Employee -->
 				<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
 					<label>Employee</label>
-					<md-select name="Employee" ng-model="payroll_entry.employee" required ng-disabled="busy" ng-blur="setEmployee()">
+					<md-select name="Employee" ng-model="payroll_entry.employee" required ng-disabled="busy" ng-change="setEmployee()">
 						<md-option ng-repeat="item in employees | filter:{branch_id:branch_id} | filter:{cost_center_id:cost_center_id} | orderBy:'last_name'" ng-value="{{item}}">{{item.last_name}}, {{item.first_name}} {{item.middle_name}}</md-option>
 					</md-select>
 					<div ng-messages="form.payrollEntryForm.Employee.$error" ng-if="form.payrollEntryForm.Employee.$touched">

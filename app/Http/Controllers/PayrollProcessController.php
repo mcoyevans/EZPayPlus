@@ -128,6 +128,7 @@ class PayrollProcessController extends Controller
         $payroll_process->payroll_id = $request->payroll_id;
         $payroll_process->payroll_period_id = $request->payroll_period_id;
         $payroll_process->locked = false;
+        $payroll_process->processed = false;
 
         $payroll_process->save();
     }

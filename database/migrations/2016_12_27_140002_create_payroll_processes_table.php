@@ -14,11 +14,13 @@ class CreatePayrollProcessesTable extends Migration
     public function up()
     {
         Schema::create('payroll_processes', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->integer('batch_id')->unsigned();
             $table->integer('payroll_id')->unsigned();
             $table->integer('payroll_period_id')->unsigned();
             $table->boolean('locked');
+            $table->boolean('processed');
             $table->timestamps();
             $table->softDeletes();
         });

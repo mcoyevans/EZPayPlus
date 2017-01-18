@@ -14,6 +14,7 @@ class CreatePayrollEntriesTable extends Migration
     public function up()
     {
         Schema::create('payroll_entries', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->integer('payroll_process_id')->unsigned();
             $table->integer('employee_id')->unsigned();

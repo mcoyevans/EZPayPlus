@@ -165,6 +165,14 @@ payroll
 				'relation':'employee',
 				'withTrashed': false,
 			},
+		];
+
+		$scope.request.where = [
+			{
+				'label': 'payroll_process_id',
+				'condition': '=',
+				'value': payrollProcessID,
+			},
 		];	
 
 		$scope.isLoading = true;

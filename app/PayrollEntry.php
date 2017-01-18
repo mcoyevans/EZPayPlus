@@ -47,16 +47,16 @@ class PayrollEntry extends Model
 
     public function allowances()
     {
-    	return $this->belongsToMany('App\PayrollEntryAllowance', 'payroll_entry_allowances');
+    	return $this->belongsToMany('App\EmployeeAllowanceType', 'payroll_entry_employee_allowance_type')->withPivot('id', 'amount', 'taxable');
     }
 
     public function deductions()
     {
-        return $this->belongsToMany('App\PayrollEntryDeduction', 'payroll_entry_deductions');
+        return $this->belongsToMany('App\EmployeeDeductionType', 'payroll_entry_employee_deduction_type')->withPivot('id', 'amount');
     }
 
     public function government_contributions()
     {
-        return $this->belongsToMany('App\PayrollEntryGovernmentContribution', 'payroll_entry_government_contributions');
+        return $this->belongsToMany('App\GovernmentContribution', 'payroll_entry_government_contribution')->withPivot('id', 'amount');
     }
 }

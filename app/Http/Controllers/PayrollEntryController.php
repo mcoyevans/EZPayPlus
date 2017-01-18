@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 
 use App\PayrollEntry;
-use App\PayrollEntryAllowance;
-use App\PayrollEntryDeduction;
+use App\PayrollEntryEmployeeAllowanceType;
+use App\PayrollEntryEmployeeDeductionType;
 use App\PayrollEntryGovernmentContribution;
 
 use Auth;
@@ -217,8 +217,8 @@ class PayrollEntryController extends Controller
             {
                 $payroll_entry->additional_deductions = 0;
 
-                for ($i=0; $i < count($request->allowances); $i++) { 
-                    $payroll_entry->additional_deductions += $request->input('allowances')[$i]['amount'];
+                for ($i=0; $i < count($request->deductions); $i++) { 
+                    $payroll_entry->additional_deductions += $request->input('deductions')[$i]['amount'];
                 }
             }
 
@@ -240,7 +240,7 @@ class PayrollEntryController extends Controller
             if($request->has('allowances'))
             {
                 for ($i=0; $i < count($request->allowances); $i++) { 
-                    $allowance = new PayrollEntryAllowance;
+                    $allowance = new PayrollEntryEmployeeAllowanceType;
 
                     $allowance->payroll_entry_id = $payroll_entry->id;
                     $allowance->employee_allowance_type_id = $request->input('allowances')[$i]['employee_allowance_type_id'];
@@ -254,7 +254,7 @@ class PayrollEntryController extends Controller
             if($request->has('deductions'))
             {
                 for ($i=0; $i < count($request->deductions); $i++) { 
-                    $deduction = new PayrollEntryDeduction;
+                    $deduction = new PayrollEntryEmployeeDeductionType;
 
                     $deduction->payroll_entry_id = $payroll_entry->id;
                     $deduction->employee_deduction_type_id = $request->input('deductions')[$i]['employee_deduction_type_id'];

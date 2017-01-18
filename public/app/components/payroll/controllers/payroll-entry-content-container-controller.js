@@ -266,7 +266,7 @@ payroll
 				withholding_tax_query.where.push({
 					'label': 'pay_frequency',
 					'condition': '=',
-					'value': 'monthly'
+					'value': 'monthly',
 				});
 
 				withholding_tax_query.where.push({
@@ -278,7 +278,7 @@ payroll
 
 			Helper.post('/tax/enlist', withholding_tax_query)
 				.success(function(data){
-					withholding_tax.amount = first_cut_off_withholding_tax ? first_cut_off_withholding_tax.amount - (data.tax + ($scope.payroll_entry.taxable_income - data.salary) * data.excess) : data.tax + ($scope.payroll_entry.taxable_income - data.salary) * data.excess;
+					withholding_tax.amount = first_cut_off_withholding_tax ? (data.tax + (taxable_income - data.salary) * data.excess) - first_cut_off_withholding_tax.pivot.amount : data.tax + ($scope.payroll_entry.taxable_income - data.salary) * data.excess;
 					$scope.withholding_tax = withholding_tax.amount;
 				})
 				.error(function(){
@@ -290,6 +290,7 @@ payroll
 			if($scope.payroll_entry.regular_working_hours)
 			{
 				$scope.payroll_entry.taxable_income = $scope.payroll_entry.regular_working_hours_pay - $scope.payroll_entry.tardy - $scope.payroll_entry.absent + $scope.payroll_entry.night_differential_pay + $scope.payroll_entry.overtime_pay + $scope.payroll_entry.overtime_night_differential_pay + $scope.payroll_entry.rest_day_pay + $scope.payroll_entry.rest_day_overtime_pay + $scope.payroll_entry.rest_day_night_differential_pay + $scope.payroll_entry.rest_day_overtime_night_differential_pay + $scope.payroll_entry.regular_holiday_pay + $scope.payroll_entry.regular_holiday_overtime_pay + $scope.payroll_entry.regular_holiday_night_differential_pay + $scope.payroll_entry.regular_holiday_overtime_night_differential_pay + $scope.payroll_entry.regular_holiday_rest_day_pay + $scope.payroll_entry.regular_holiday_rest_day_overtime_pay + $scope.payroll_entry.regular_holiday_rest_day_night_differential_pay + $scope.payroll_entry.regular_holiday_rest_day_overtime_night_differential_pay + $scope.payroll_entry.special_holiday_pay + $scope.payroll_entry.special_holiday_overtime_pay + $scope.payroll_entry.special_holiday_night_differential_pay + $scope.payroll_entry.special_holiday_overtime_night_differential_pay + $scope.payroll_entry.special_holiday_rest_day_pay + $scope.payroll_entry.special_holiday_rest_day_overtime_pay + $scope.payroll_entry.special_holiday_rest_day_night_differential_pay + $scope.payroll_entry.special_holiday_rest_day_overtime_night_differential_pay;			
+				var taxable_income = $scope.payroll_entry.regular_working_hours_pay - $scope.payroll_entry.tardy - $scope.payroll_entry.absent + $scope.payroll_entry.night_differential_pay + $scope.payroll_entry.overtime_pay + $scope.payroll_entry.overtime_night_differential_pay + $scope.payroll_entry.rest_day_pay + $scope.payroll_entry.rest_day_overtime_pay + $scope.payroll_entry.rest_day_night_differential_pay + $scope.payroll_entry.rest_day_overtime_night_differential_pay + $scope.payroll_entry.regular_holiday_pay + $scope.payroll_entry.regular_holiday_overtime_pay + $scope.payroll_entry.regular_holiday_night_differential_pay + $scope.payroll_entry.regular_holiday_overtime_night_differential_pay + $scope.payroll_entry.regular_holiday_rest_day_pay + $scope.payroll_entry.regular_holiday_rest_day_overtime_pay + $scope.payroll_entry.regular_holiday_rest_day_night_differential_pay + $scope.payroll_entry.regular_holiday_rest_day_overtime_night_differential_pay + $scope.payroll_entry.special_holiday_pay + $scope.payroll_entry.special_holiday_overtime_pay + $scope.payroll_entry.special_holiday_night_differential_pay + $scope.payroll_entry.special_holiday_overtime_night_differential_pay + $scope.payroll_entry.special_holiday_rest_day_pay + $scope.payroll_entry.special_holiday_rest_day_overtime_pay + $scope.payroll_entry.special_holiday_rest_day_night_differential_pay + $scope.payroll_entry.special_holiday_rest_day_overtime_night_differential_pay;
 				$scope.government_contribution_deduction = 0;
 
 				var sss = $filter('filter')($scope.payroll_entry.government_contributions, 'SSS')[0];
@@ -307,7 +308,7 @@ payroll
 						{
 							'label': 'from',
 							'condition': '<=',
-							'value': $scope.payroll_entry.taxable_income,
+							'value': $scope.payroll_process.payroll_period.cut_off == 'second' ? $scope.previous_payroll_entry.taxable_income + taxable_income : taxable_income,
 						},
 					];
 
@@ -320,7 +321,7 @@ payroll
 
 					Helper.post('/sss/enlist', sss_query)
 						.success(function(data){
-							sss.amount = first_cut_off_sss ? first_cut_off_sss.amount - data.EE : data.EE;
+							sss.amount = first_cut_off_sss ? data.EE - first_cut_off_sss.amount : data.EE;
 							$scope.payroll_entry.taxable_income -= sss.amount;
 							$scope.government_contribution_deduction += sss.amount;
 
@@ -357,7 +358,7 @@ payroll
 						{
 							'label': 'from',
 							'condition': '<=',
-							'value': $scope.payroll_entry.taxable_income,
+							'value': $scope.payroll_process.payroll_period.cut_off == 'second' ? $scope.previous_payroll_entry.taxable_income + taxable_income : taxable_income,
 						},
 					];
 
@@ -370,7 +371,7 @@ payroll
 
 					Helper.post('/philhealth/enlist', philhealth_query)
 						.success(function(data){
-							philhealth.amount = first_cut_off_philhealth ? first_cut_off_philhealth.amount - data.employee_share : data.employee_share;
+							philhealth.amount = first_cut_off_philhealth ? data.employee_share - first_cut_off_philhealth.amount : data.employee_share;
 							$scope.payroll_entry.taxable_income -= philhealth.amount;
 							$scope.government_contribution_deduction += philhealth.amount;
 							if(withholding_tax){
@@ -380,6 +381,10 @@ payroll
 						.error(function(){
 							Helper.error();
 						})
+				}
+
+				if(withholding_tax){
+					$scope.calculateTax();
 				}
 			}
 		}
@@ -392,7 +397,7 @@ payroll
 			}
 			else if($scope.payroll_process.payroll.time_interpretation.name == 'Daily')
 			{
-				$scope.payroll_entry.regular_working_hours_pay = $scope.payroll_entry.regular_working_hours ? $scope.payroll_entry.regular_working_hours * $scope.hourly_rate * $scope.payroll_process.time_interpretation.	regular_working_hours : null;
+				$scope.payroll_entry.regular_working_hours_pay = $scope.payroll_entry.regular_working_hours ? $scope.payroll_entry.regular_working_hours * $scope.hourly_rate * $scope.payroll_process.payroll.time_interpretation.regular_working_hours : null;
 			}
 
 			$scope.payroll_entry.hours_tardy = $scope.max_regular_work_hours - $scope.payroll_entry.regular_working_hours;
@@ -623,40 +628,40 @@ payroll
 
 							$scope.holidays = data;
 
-							$scope.max_regular_holiday_regular_hours = $scope.regular_holidays.length * $scope.payroll_process.payroll.working_hours_per_day;
-							$scope.max_special_holiday_regular_hours = $scope.special_holidays.length * $scope.payroll_process.payroll.working_hours_per_day;
+							$scope.max_regular_holiday_regular_hours = $scope.regular_holidays ? $scope.regular_holidays.length * $scope.payroll_process.payroll.working_hours_per_day : 0;
+							$scope.max_special_holiday_regular_hours = $scope.regular_holidays ? $scope.special_holidays.length * $scope.payroll_process.payroll.working_hours_per_day : 0;
 						})
 
-					var government_contribution_query = {
-						'where': [
-							{
-								'label': 'payroll_id',
-								'condition': '=',
-								'value': $scope.payroll_process.payroll_id,
-							},
-						],
-					}
+					// var government_contribution_query = {
+					// 	'where': [
+					// 		{
+					// 			'label': 'payroll_id',
+					// 			'condition': '=',
+					// 			'value': $scope.payroll_process.payroll_id,
+					// 		},
+					// 	],
+					// }
 
-					if($scope.payroll_process.payroll_period.cut_off == 'first')
-					{
-						government_contribution_query.where.push(
-							{
-								'label': 'first_cut_off',
-								'condition': '=',
-								'value': 1,
-							}
-						);						
-					}
-					else if($scope.payroll_process.payroll_period.cut_off == 'second')
-					{
-						government_contribution_query.where.push(
-							{
-								'label': 'second_cut_off',
-								'condition': '=',
-								'value': 1,
-							}
-						);	
-					}
+					// if($scope.payroll_process.payroll_period.cut_off == 'first')
+					// {
+					// 	government_contribution_query.where.push(
+					// 		{
+					// 			'label': 'first_cut_off',
+					// 			'condition': '=',
+					// 			'value': 1,
+					// 		}
+					// 	);						
+					// }
+					// else if($scope.payroll_process.payroll_period.cut_off == 'second')
+					// {
+					// 	government_contribution_query.where.push(
+					// 		{
+					// 			'label': 'second_cut_off',
+					// 			'condition': '=',
+					// 			'value': 1,
+					// 		}
+					// 	);	
+					// }
 
 					var employee_query = {
 						'with': [
@@ -682,6 +687,11 @@ payroll
 								'label': 'batch_id',
 								'condition': '=',
 								'value': $scope.payroll_process.batch_id,
+							},
+							{
+								'label': 'time_interpretation_id',
+								'condition': '=',
+								'value': $scope.payroll_process.payroll.time_interpretation_id,
 							},
 						],
 						'whereDoesntHave': [

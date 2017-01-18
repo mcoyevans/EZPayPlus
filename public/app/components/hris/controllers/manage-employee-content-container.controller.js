@@ -242,6 +242,7 @@ hris
 					});
 				});
 
+
 				Helper.alert('Oops!', 'Kindly check form for errors.');
 
 				return;
@@ -251,27 +252,29 @@ hris
 			{
 				$scope.busy = true;
 
-				var allowance_unchecked = true;
+				var allowance_unchecked = false;
 
 				angular.forEach($scope.employee.allowance_types, function(item, key){
-					if(item.first_cut_off || item.second_cut_off || item.third_cut_off || item.fourth_cut_off || item.on_hold)
+					if(!item.first_cut_off && !item.second_cut_off && !item.third_cut_off && !item.fourth_cut_off && !item.on_hold && item.allowance_type_id)
 					{
-						allowance_unchecked = false;
+						allowance_unchecked = true;
 					}
 				});
 
-				var deduction_unchecked = true;
+				var deduction_unchecked = false;
 
 				angular.forEach($scope.employee.deduction_types, function(item, key){
-					if(item.first_cut_off || item.second_cut_off || item.third_cut_off || item.fourth_cut_off || item.on_hold)
+					if(!item.first_cut_off && !item.second_cut_off && !item.third_cut_off && !item.fourth_cut_off && !item.on_hold && item.deduction_type_id)
 					{
-						deduction_unchecked = false;
+						deduction_unchecked = true;
 					}
 				});
+
+				console.log(deduction_unchecked, allowance_unchecked);
 
 				if(deduction_unchecked || allowance_unchecked)
 				{
-					Helper.alert('Oops!', 'Kindly check form for errors.')
+					Helper.alert('Oops!', 'Kindly check allowances or deductions for errors.')
 
 					return;
 				}

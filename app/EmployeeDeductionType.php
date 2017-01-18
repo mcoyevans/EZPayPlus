@@ -20,6 +20,6 @@ class EmployeeDeductionType extends Model
 
     public function payroll_entries()
     {
-    	return $this->belongsToMany('App\PayrollEntryDeduction', 'payroll_entry_deductions');
+    	return $this->belongsToMany('App\PayrollEntryDeduction', 'payroll_entry_employee_deduction_type');
     }
 }

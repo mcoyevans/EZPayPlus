@@ -206,7 +206,27 @@
                 <!-- Salary -->
                 <md-tab label="Salary">
                     <md-content class="md-padding">
-                        <md-subheader class="md-no-sticky">Additional Earnings</md-subheader>
+                        <md-list>
+                            <md-list-item class="md-2-line">
+                                <div class="md-avatar" layout="row" layout-align="center center">
+                                    <md-icon class="mdi mdi-currency-usd grey"></md-icon>
+                                </div>
+                                <div class="md-list-item-text">
+                                    <h3>{{employee.basic_salary}}</h3>
+                                    <p>Basic Salary</p>
+                                </div>
+                            </md-list-item>
+                            <md-list-item class="md-2-line">
+                                <div class="md-avatar" layout="row" layout-align="center center">
+                                    <md-icon class="mdi mdi-clock grey"></md-icon>
+                                </div>
+                                <div class="md-list-item-text">
+                                    <h3>{{employee.time_interpretation.name}}</h3>
+                                    <p>Time Interpretation</p>
+                                </div>
+                            </md-list-item>
+                        </md-list>
+                        <md-subheader class="md-no-sticky" ng-if="employee.allowance_types.length">Additional Earnings</md-subheader>
                         <md-list ng-if="employee.allowance_types.length">
                             <md-list-item class="md-2-line" ng-repeat="item in employee.allowance_types">
                                 <h2 class="md-avatar" layout="row" layout-align="center center">
@@ -218,7 +238,7 @@
                                 </div>
                             </md-list-item>
                         </md-list>
-                        <md-subheader class="md-no-sticky">Additional Deductions</md-subheader>
+                        <md-subheader class="md-no-sticky" ng-if="employee.deduction_types.length">Additional Deductions</md-subheader>
                         <md-list ng-if="employee.deduction_types.length">
                             <md-list-item class="md-2-line" ng-repeat="item in employee.deduction_types">
                                 <h2 class="md-avatar" layout="row" layout-align="center center">

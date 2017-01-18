@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePayrollEntryGovernmentContributionsTable extends Migration
+class CreatePayrollEntryGovernmentContributionTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,8 @@ class CreatePayrollEntryGovernmentContributionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('payroll_entry_government_contributions', function (Blueprint $table) {
+        Schema::create('payroll_entry_government_contribution', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->integer('payroll_entry_id')->unsigned();
             $table->integer('government_contribution_id');
@@ -29,6 +30,6 @@ class CreatePayrollEntryGovernmentContributionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('payroll_entry_government_contributions');
+        Schema::dropIfExists('payroll_entry_government_contribution');
     }
 }

@@ -333,8 +333,8 @@
 							<div layout="row" layout-align="center center" flex>
 								<md-checkbox ng-model="item.first_cut_off" ng-change="checkFrequency(item, item.first_cut_off)" ng-disabled="item.on_hold || (item.limit && !item.first_cut_off) || item.first_cut_off_checked" ng-true-value="1" ng-false-value="0">1st</md-checkbox>
 								<md-checkbox ng-model="item.second_cut_off" ng-change="checkFrequency(item, item.second_cut_off)" ng-disabled="item.on_hold || (item.limit && !item.second_cut_off) || item.second_cut_off_checked" ng-true-value="1" ng-false-value="0">2nd</md-checkbox>
-								<md-checkbox ng-model="item.third_cut_off" ng-change="checkFrequency(item, item.third_cut_off)" ng-disabled="item.on_hold || (item.limit && !item.third_cut_off) || item.third_cut_off_checked" ng-true-value="1" ng-false-value="0">3rd</md-checkbox>
-								<md-checkbox ng-model="item.fourth_cut_off" ng-change="checkFrequency(item, item.fourth_cut_off)" ng-disabled="item.on_hold || (item.limit && !item.fourth_cut_off) || item.fourth_cut_off_checked" ng-true-value="1" ng-false-value="0">4th</md-checkbox>
+								<!-- <md-checkbox ng-model="item.third_cut_off" ng-change="checkFrequency(item, item.third_cut_off)" ng-disabled="item.on_hold || (item.limit && !item.third_cut_off) || item.third_cut_off_checked" ng-true-value="1" ng-false-value="0">3rd</md-checkbox> -->
+								<!-- <md-checkbox ng-model="item.fourth_cut_off" ng-change="checkFrequency(item, item.fourth_cut_off)" ng-disabled="item.on_hold || (item.limit && !item.fourth_cut_off) || item.fourth_cut_off_checked" ng-true-value="1" ng-false-value="0">4th</md-checkbox> -->
 								<md-checkbox ng-model="item.on_hold" ng-change="checkFrequency(item)" ng-disabled="item.first_cut_off || item.second_cut_off || item.third_cut_off || item.fourth_cut_off">Hold</md-checkbox>
 							</div>
 							<div class="secondary-text" ng-if="!item.checked">Check at least one.</div>
@@ -375,8 +375,8 @@
 						<div layout="row" flex-xs="100" flex-sm="100" flex-gt-sm layout-align="center center">
 							<md-checkbox ng-model="item.first_cut_off" ng-disabled="item.on_hold || item.first_cut_off_checked" ng-true-value="1" ng-false-value="0">1st</md-checkbox>
 							<md-checkbox ng-model="item.second_cut_off" ng-disabled="item.on_hold || item.second_cut_off_checked" ng-true-value="1" ng-false-value="0">2nd</md-checkbox>
-							<md-checkbox ng-model="item.third_cut_off" ng-disabled="item.on_hold || item.third_cut_off_checked" ng-true-value="1" ng-false-value="0">3rd</md-checkbox>
-							<md-checkbox ng-model="item.fourth_cut_off" ng-disabled="item.on_hold || item.fourth_cut_off_checked" ng-true-value="1" ng-false-value="0">4th</md-checkbox>
+							<!-- <md-checkbox ng-model="item.third_cut_off" ng-disabled="item.on_hold || item.third_cut_off_checked" ng-true-value="1" ng-false-value="0">3rd</md-checkbox> -->
+							<!-- <md-checkbox ng-model="item.fourth_cut_off" ng-disabled="item.on_hold || item.fourth_cut_off_checked" ng-true-value="1" ng-false-value="0">4th</md-checkbox> -->
 							<md-checkbox ng-model="item.on_hold" ng-disabled="item.first_cut_off || item.second_cut_off || item.third_cut_off || item.fourth_cut_off">Hold</md-checkbox>
 						</div>
 						<md-button class="md-icon-button" ng-click="removeDeduction(item)">

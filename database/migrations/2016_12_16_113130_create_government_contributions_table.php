@@ -14,6 +14,7 @@ class CreateGovernmentContributionsTable extends Migration
     public function up()
     {
         Schema::create('government_contributions', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string('name');
             $table->boolean('first_cut_off');

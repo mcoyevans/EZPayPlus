@@ -13,6 +13,6 @@ class GovernmentContribution extends Model
 
     public function payroll_entries()
     {
-        return $this->belongsToMany('App\PayrollEntryGovernmentContribution', 'payroll_entry_government_contributions');
+        return $this->belongsToMany('App\PayrollEntryGovernmentContribution', 'payroll_entry_government_contribution');
     }
 }

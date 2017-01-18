@@ -14,6 +14,7 @@ class CreateCostCenterHolidayTable extends Migration
     public function up()
     {
         Schema::create('cost_center_holiday', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->integer('cost_center_id')->unsigned();
             $table->integer('holiday_id')->unsigned();
