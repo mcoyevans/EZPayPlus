@@ -261,6 +261,7 @@ Route::group(['prefix' => 'cost-center-holiday'], function(){
 Route::group(['prefix' => 'payroll-process'], function(){
 	Route::post('enlist', 'PayrollProcessController@enlist');
 	Route::post('check-duplicate', 'PayrollProcessController@checkDuplicate');
+	Route::post('lock', 'PayrollProcessController@lock');
 });
 
 /* Payroll Entry */

@@ -285,6 +285,9 @@ md-content.dirty-white {
   transition: transform 0.3s ease-in-out;
   transition: transform 0.3s ease-in-out, -webkit-transform 0.3s ease-in-out; }
 
+.not-visible {
+  visibility: hidden; }
+
 /* transition duration */
 .transition, .fade-transition, .main-view {
   -webkit-transition: all 0.3s cubic-bezier(0.55, 0, 0.55, 0.2);

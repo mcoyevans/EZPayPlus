@@ -78,6 +78,7 @@ class CreatePayrollEntriesTable extends Migration
             $table->float('total_deductions');
             $table->float('additional_earnings')->nullable();
             $table->float('additional_deductions')->nullable();
+            $table->float('government_contributions')->nullable();
             $table->float('net_pay');
             $table->timestamps();
         });

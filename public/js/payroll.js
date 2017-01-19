@@ -918,6 +918,63 @@ payroll
 				$scope.toolbar.parentState = data.payroll.name;
 				$scope.toolbar.childState = new Date(data.payroll_period.start_cut_off).toDateString() + ' - ' + new Date(data.payroll_period.end_cut_off).toDateString();
 
+				if($scope.payroll_process.locked && !$scope.payroll_process.processed)
+				{
+					$scope.subheader.menu.push(
+						{
+							'label': 'Process Payroll',
+							'icon': 'mdi-comment-processing',
+							action: function(){
+
+							},
+						}
+					);
+				}
+				else if(!$scope.payroll_process.locked && !$scope.payroll_process.processed){
+					$scope.subheader.menu.push(
+						{
+							'label': 'Lock Payroll',
+							'icon': 'mdi-lock',
+							action: function(){
+								var dialog = {}
+
+								dialog.title = 'Lock Payroll'
+								dialog.message = 'Adding or editing payroll entries will be disabled upon locking this payroll process.'
+								dialog.ok = 'Lock',
+								dialog.cancel = 'Cancel',
+
+								Helper.confirm(dialog)
+									.then(function(){
+										Helper.preload();
+										Helper.post('/payroll-process/lock', $scope.payroll_process)
+											.success(function(){
+												Helper.stop();
+												Helper.notify('Payroll process locked.');
+												$state.go($state.current, {}, {reload:true});
+											})
+											.error(function(){
+												Helper.error();
+											})
+									}, function(){
+										return;
+									})
+							},
+						},
+						{
+							'label': 'Process Payroll',
+							'icon': 'mdi-comment-processing',
+							action: function(){
+							
+							},
+						}
+					);	
+				}
+
+				$scope.isLoading = true;
+				$scope.$broadcast('close');
+
+				$scope.init($scope.request);
+
 			})
 
 		/*
@@ -935,6 +992,8 @@ payroll
 			$scope.sortType = filter.type;
 			$scope.sortReverse = filter.sortReverse;
 		}
+
+		$scope.subheader.menu = []
 		
 		/*
 		 * Object for fab
@@ -982,7 +1041,7 @@ payroll
 					$scope.model.items = data.data;
 					$scope.model.show = true;
 
-					$scope.fab.show = true;
+					$scope.fab.show = $scope.payroll_process.locked || $scope.payroll_process.processed ? false : true;
 
 					if(data.data.length){
 						// iterate over each record and set the format
@@ -1049,11 +1108,6 @@ payroll
 				'value': payrollProcessID,
 			},
 		];	
-
-		$scope.isLoading = true;
-		$scope.$broadcast('close');
-
-		$scope.init($scope.request);
 	}]);
 payroll
 	.controller('payrollProcessDialogController', ['$scope', 'Helper', function($scope, Helper){

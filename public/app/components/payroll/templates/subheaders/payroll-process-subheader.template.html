@@ -24,4 +24,9 @@
             </md-menu-item>
         </md-menu-content>
     </md-menu>
+    <!-- Other Buttons -->
+    <md-button ng-repeat="menu in subheader.menu" aria-label="others" class="md-icon-button" ng-click="menu.action()">
+        <md-icon class="mdi {{menu.icon}} grey"></md-icon>
+        <md-tooltip hide-xs hide-sm hide-md>{{menu.label}}</md-tooltip>
+    </md-button>
 </md-subheader>

@@ -5,5 +5,6 @@ var sharedModule = angular.module('sharedModule', [
 	'infinite-scroll',
 	'chart.js',
 	'angularMoment',
-	'angularFileUpload'
+	'angularFileUpload',
+	'angular-timeline'
 ]);

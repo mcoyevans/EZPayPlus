@@ -10,7 +10,7 @@ app
 					},
 					'content-container@main': {
 						templateUrl: '/app/shared/views/content-container.view.html',
-						// controller: 'dashboardContentContainerController',
+						controller: 'dashboardContentContainerController',
 					},
 					'toolbar@main': {
 						templateUrl: '/app/shared/templates/toolbar.template.html',
@@ -22,7 +22,7 @@ app
 					// 	templateUrl: '/app/shared/templates/subheaders/dashboard-subheader.template.html',
 					// },
 					'content@main':{
-						// templateUrl: '/app/components/app/templates/content/dashboard-content.template.html',
+						templateUrl: '/app/components/app/templates/content/dashboard-content.template.html',
 					}
 				}
 			})

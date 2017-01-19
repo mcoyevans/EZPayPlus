@@ -10,6 +10,7 @@ use App\PayrollEntry;
 use App\PayrollEntryEmployeeAllowanceType;
 use App\PayrollEntryEmployeeDeductionType;
 use App\PayrollEntryGovernmentContribution;
+use App\PayrollProcess;
 
 use Auth;
 use Carbon\Carbon;
@@ -110,6 +111,13 @@ class PayrollEntryController extends Controller
         if(Gate::forUser($request->user())->denies('payroll'))
         {
             abort(403, 'Unauthorized action.');
+        }
+
+        $payroll_process = PayrollProcess::find($request->payroll_process_id);
+
+        if($payroll_process->locked || $payroll_process->processed)
+        {
+            abort(403, 'Payroll process already locked or processed.');
         }
 
         $duplicate = PayrollEntry::where('employee_id', $request->employee_id)->where('payroll_process_id', $request->payroll_process_id)->first();
@@ -224,15 +232,15 @@ class PayrollEntryController extends Controller
 
             if($request->has('government_contributions'))
             {
-                $government_contributions = 0;
+                $payroll_entry->government_contributions = 0;
 
                 for ($i=0; $i < count($request->government_contributions); $i++) { 
-                    $government_contributions += $request->input('government_contributions')[$i]['amount'];
+                    $payroll_entry->government_contributions += $request->input('government_contributions')[$i]['amount'];
                 }   
             }
 
             $payroll_entry->gross_pay += $payroll_entry->additional_earnings;
-            $payroll_entry->total_deductions = round($government_contributions + $payroll_entry->additional_deductions, 2);
+            $payroll_entry->total_deductions = round($payroll_entry->government_contributions + $payroll_entry->additional_deductions, 2);
             $payroll_entry->net_pay = round($payroll_entry->gross_pay - $payroll_entry->total_deductions, 2);
 
             $payroll_entry->save();

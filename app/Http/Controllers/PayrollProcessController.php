@@ -16,6 +16,25 @@ use Gate;
 class PayrollProcessController extends Controller
 {
     /**
+     * Locks payroll.
+     *
+     * @return bool
+     */
+    public function lock(Request $request)
+    {
+        if(Gate::forUser($request->user())->denies('payroll'))
+        {
+            abort(403, 'Unauthorized access.');
+        }
+
+        $payroll_process = PayrollProcess::findOrFail($request->id);
+
+        $payroll_process->locked = true;
+
+        $payroll_process->save();
+    }
+
+    /**
      * Checks for duplicate entry.
      *
      * @return bool

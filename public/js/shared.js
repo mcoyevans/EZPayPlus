@@ -8,7 +8,8 @@ var sharedModule = angular.module('sharedModule', [
 	'infinite-scroll',
 	'chart.js',
 	'angularMoment',
-	'angularFileUpload'
+	'angularFileUpload',
+	'angular-timeline'
 ]);
 sharedModule
 	.config(['$urlRouterProvider', '$stateProvider', '$mdThemingProvider', function($urlRouterProvider, $stateProvider, $mdThemingProvider){
