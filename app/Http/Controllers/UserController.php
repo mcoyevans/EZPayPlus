@@ -89,6 +89,18 @@ class UserController extends Controller
 
         return response()->json($user ? true : false);
     }
+
+    /**
+     * Checks if the username is already taken.
+     *
+     * @return bool
+     */
+    public function checkUsername(Request $request)
+    {
+        $user = $request->id ? User::withTrashed()->whereNotIn('id', [$request->id])->where('username', $request->username)->first() : User::withTrashed()->where('username', $request->username)->first();
+
+        return response()->json($user ? true : false);
+    }
     
     /**
      * Changes the password of the authenticated user.
@@ -157,7 +169,7 @@ class UserController extends Controller
     {
         if(Gate::forUser($request->user())->allows('settings-access'))
         {
-            $duplicate = User::where('email', $request->email)->first();
+            $duplicate = User::where('email', $request->email)->orWhere('username', $request->username)->first();
 
             if($duplicate)
             {
@@ -167,6 +179,7 @@ class UserController extends Controller
             $this->validate($request, [
                 'name' => 'required',
                 'email' => 'required|unique:users',
+                'username' => 'required|unique:users',
                 'password' => 'required',
                 'group_id' => 'required|numeric',
             ]);
@@ -175,6 +188,7 @@ class UserController extends Controller
 
             $user->name = $request->name;
             $user->email = $request->email;
+            $user->username = $request->username;
             $user->password = bcrypt($request->password);
             $user->group_id = $request->group_id;
             $user->super_user = false;
@@ -220,7 +234,7 @@ class UserController extends Controller
     {
         if(Gate::forUser($request->user())->allows('settings-access'))
         {
-            $duplicate = User::whereNotIn('id', [$id])->where('email', $request->email)->first();
+            $duplicate = User::whereNotIn('id', [$id])->where('email', $request->email)->orWhere('username', $request->username)->first();
 
             if($duplicate)
             {

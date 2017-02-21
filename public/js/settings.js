@@ -1004,6 +1004,13 @@ settings
 				})
 		}
 
+		$scope.checkDuplicateUsername = function(){
+			Helper.post('/user/check-username', $scope.user)
+				.success(function(data){
+					$scope.duplicate_username = data ? true : false;
+				})
+		}
+
 		$scope.submit = function(){
 			$scope.error = false;
 			if($scope.userForm.$invalid){
@@ -1015,7 +1022,7 @@ settings
 
 				return;
 			}
-			if(!$scope.duplicate && $scope.user.password == $scope.user.confirm)
+			if(!$scope.duplicate && !$scope.duplicate_username && $scope.user.password == $scope.user.confirm)
 			{
 				$scope.busy = true;
 				Helper.post('/user', $scope.user)
@@ -1600,6 +1607,13 @@ settings
 			Helper.post('/user/check-email', $scope.user)
 				.success(function(data){
 					$scope.duplicate = data ? true : false;
+				})
+		}
+
+		$scope.checkDuplicateUsername = function(){
+			Helper.post('/user/check-username', $scope.user)
+				.success(function(data){
+					$scope.duplicate_username = data ? true : false;
 				})
 		}
 

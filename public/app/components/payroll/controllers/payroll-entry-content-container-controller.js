@@ -3,6 +3,7 @@ payroll
 		$scope.$emit('closeSidenav');
 
 		var payrollProcessID = $stateParams.payrollProcessID;
+		var payrollEntryID = $stateParams.payrollEntryID;
 
 		$scope.form = {}
 
@@ -11,6 +12,50 @@ payroll
 		$scope.payroll_entry.government_contributions = [];
 
 		$scope.subtotal = {};
+
+		if(payrollEntryID)
+		{
+			var query = {
+				'with': [
+					{
+						'relation': 'employee.tax_code',
+						'withTrashed': false,
+					},
+					{
+						'relation': 'employee.position',
+						'withTrashed': false,
+					},
+					{
+						'relation': 'allowances.allowance_type',
+						'withTrashed': false,
+					},
+					{
+						'relation': 'deductions.deduction',
+						'withTrashed': false,
+					},
+					{
+						'relation': 'government_contributions',
+						'withTrashed': false,
+					},
+				],
+				'where': [
+					{
+						'label': 'id',
+						'condition': '=',
+						'value': payrollEntryID,
+					},
+				],
+				'first': true,
+			}
+
+			Helper.post('/payroll-entry/enlist', query)
+				.success(function(data){
+					$scope.payroll_entry = data;
+				})
+				.error(function(){
+					Helper.error();
+				});
+		}
 
 		/*
 		 * Object for toolbar
@@ -47,7 +92,7 @@ payroll
 
 				Helper.preload();
 
-				if(!$stateParams.payrollEntryID)
+				if(!payrollEntryID)
 				{
 					Helper.post('/payroll-entry', $scope.payroll_entry)
 						.success(function(duplicate){

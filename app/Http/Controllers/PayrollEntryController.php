@@ -232,15 +232,15 @@ class PayrollEntryController extends Controller
 
             if($request->has('government_contributions'))
             {
-                $payroll_entry->government_contributions = 0;
+                $payroll_entry->government_deductions = 0;
 
                 for ($i=0; $i < count($request->government_contributions); $i++) { 
-                    $payroll_entry->government_contributions += $request->input('government_contributions')[$i]['amount'];
+                    $payroll_entry->government_deductions += $request->input('government_contributions')[$i]['amount'];
                 }   
             }
 
             $payroll_entry->gross_pay += $payroll_entry->additional_earnings;
-            $payroll_entry->total_deductions = round($payroll_entry->government_contributions + $payroll_entry->additional_deductions, 2);
+            $payroll_entry->total_deductions = round($payroll_entry->government_deductions + $payroll_entry->additional_deductions, 2);
             $payroll_entry->net_pay = round($payroll_entry->gross_pay - $payroll_entry->total_deductions, 2);
 
             $payroll_entry->save();

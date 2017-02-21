@@ -72,6 +72,7 @@ Route::resource('user', 'UserController');
 Route::group(['prefix' => 'user'], function(){
 	Route::post('check', 'UserController@check');
 	Route::post('check-email', 'UserController@checkEmail');
+	Route::post('check-username', 'UserController@checkUsername');
 	Route::post('change-password', 'UserController@changePassword');
 	Route::post('check-password', 'UserController@checkPassword');
 	Route::post('enlist', 'UserController@enlist');

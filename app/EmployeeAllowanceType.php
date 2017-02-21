@@ -13,7 +13,7 @@ class EmployeeAllowanceType extends Model
     	return $this->belongsTo('App\Employee');
     }
 
-    public function allowance()
+    public function allowance_type()
     {
     	return $this->belongsTo('App\AllowanceType');
     }

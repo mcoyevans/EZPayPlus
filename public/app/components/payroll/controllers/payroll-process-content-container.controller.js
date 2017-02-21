@@ -147,6 +147,29 @@ payroll
 			$scope.refresh();
 		});
 
+		$scope.viewPayrollEntry = function(data){
+			var config = data;
+
+			if($scope.payroll_process.locked || $scope.payroll_process.processed)
+			{
+				data.view_only = true;
+			}
+
+			Helper.set(data);
+
+			var dialog = {
+				'template': '/app/components/payroll/templates/dialogs/payroll-entry-dialog.template.html',
+				'controller': 'payrollEntryDialogController',
+			}
+
+			Helper.customDialog(dialog)
+				.then(function(){
+
+				}, function(){
+
+				});
+		}
+
 		/* Formats every data in the paginated call */
 		var pushItem = function(data){
 			
