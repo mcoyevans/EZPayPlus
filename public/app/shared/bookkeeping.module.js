@@ -1,0 +1,1 @@
+var bookkeeping = angular.module('bookkeeping', []);

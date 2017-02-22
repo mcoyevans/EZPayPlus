@@ -335,11 +335,17 @@ class EmployeeController extends Controller
 
             $employee->save();
 
-            EmployeeAllowanceType::where('employee_id', $employee->id)->delete();
-            EmployeeDeductionType::where('employee_id', $employee->id)->delete();
+            // EmployeeAllowanceType::where('employee_id', $employee->id)->delete();
+            // EmployeeDeductionType::where('employee_id', $employee->id)->delete();
 
             for ($i=0; $i < count($request->allowance_types); $i++) { 
-                $employee_allowance = new EmployeeAllowanceType;
+                if(isset($request->input('allowance_types')[$i]['id']))
+                {
+                    $employee_allowance = EmployeeAllowanceType::find($request->input('allowance_types')[$i]['id']);
+                }
+                else{
+                    $employee_allowance = new EmployeeAllowanceType;
+                }
 
                 $employee_allowance->employee_id = $employee->id;
                 $employee_allowance->allowance_type_id = $request->input('allowance_types')[$i]['allowance_type_id'];
@@ -354,7 +360,13 @@ class EmployeeController extends Controller
             }
 
             for ($i=0; $i < count($request->deduction_types); $i++) { 
-                $employee_deduction = new EmployeeDeductionType;
+                if(isset($request->input('deduction_types')[$i]['id']))
+                {
+                    $employee_allowance = EmployeeDeductionType::find($request->input('deduction_types')[$i]['id']);
+                }
+                else{
+                    $employee_deduction = new EmployeeDeductionType;
+                }
 
                 $employee_deduction->employee_id = $employee->id;
                 $employee_deduction->deduction_type_id = $request->input('deduction_types')[$i]['deduction_type_id'];

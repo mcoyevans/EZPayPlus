@@ -1,3 +1,4 @@
+var bookkeeping = angular.module('bookkeeping', []);
 var hris = angular.module('hris', []);
 var payroll = angular.module('payroll', []);
 var settings = angular.module('settings', []);

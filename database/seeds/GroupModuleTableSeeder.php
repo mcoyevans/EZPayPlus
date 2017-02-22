@@ -24,6 +24,10 @@ class GroupModuleTableSeeder extends Seeder
         		'group_id' => 1,
         		'module_id' => 3,
         	],
+            [
+                'group_id' => 1,
+                'module_id' => 4,
+            ],
         ]);
     }
 }

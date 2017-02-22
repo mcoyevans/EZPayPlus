@@ -411,6 +411,8 @@ hris
 			if(!$scope.duplicate)
 			{
 				$scope.busy = true;
+				
+				Helper.preload();
 
 				var allowance_unchecked = false;
 
@@ -430,16 +432,12 @@ hris
 					}
 				});
 
-				console.log(deduction_unchecked, allowance_unchecked);
-
 				if(deduction_unchecked || allowance_unchecked)
 				{
 					Helper.alert('Oops!', 'Kindly check allowances or deductions for errors.')
 
 					return;
 				}
-
-				Helper.preload();
 
 				var date_back_up = {};
 
@@ -690,6 +688,14 @@ hris
 						'withTrashed': false,
 					},
 				]
+
+				request.where = [
+					{
+						'label': 'id',
+						'condition': '=',
+						'value': $stateParams.employeeID,
+					},
+				],
 
 				request.withTrashed = true;
 

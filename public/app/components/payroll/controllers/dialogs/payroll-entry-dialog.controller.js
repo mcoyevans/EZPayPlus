@@ -24,6 +24,10 @@ payroll
 					'relation': 'government_contributions',
 					'withTrashed': false,
 				},
+				{
+					'relation': 'payroll_process',
+					'withTrashed': false,	
+				}
 			],
 			'where': [
 				{
@@ -47,24 +51,24 @@ payroll
 			Helper.cancel();
 		}
 
-		// $scope.edit = function(){
-		// 	Helper.stop();
-		// 	$state.go('main.payroll-entry', {'payrollProcessID': $scope.payroll_entry.payroll_process_id, 'payrollEntryID': $scope.payroll_entry.id});
-		// }
+		$scope.edit = function(){
+			Helper.stop();
+			$state.go('main.payroll-entry', {'payrollProcessID': $scope.payroll_entry.payroll_process_id, 'payrollEntryID': $scope.payroll_entry.id});
+		}
 
-		// $scope.delete = function(){
-		// 	var confirm = {
-		// 		'title': 'Delete Entry',
-		// 		'message': 'This payroll entry will be deleted permanently.'
-		// 		'ok': 'Delete',
-		// 		'cancel': 'Cancel',
-		// 	}
+		$scope.delete = function(){
+			var confirm = {
+				'title': 'Delete Entry',
+				'message': 'This payroll entry will be deleted permanently.',
+				'ok': 'Delete',
+				'cancel': 'Cancel',
+			}
 
-		// 	Helper.confirm(confirm)
-		// 		.then(function(){
+			Helper.confirm(confirm)
+				.then(function(){
 					
-		// 		}, function(){
-		// 			return;
-		// 		})
-		// }
+				}, function(){
+					return;
+				})
+		}
 	}]);

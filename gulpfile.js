@@ -39,6 +39,9 @@ elixir(function(mix) {
         /* Payroll Scripts */
         .scriptsIn('public/app/components/payroll', 'public/js/payroll.js')
 
+        /* HRIS Scripts */
+        .scriptsIn('public/app/components/bookkeeping', 'public/js/bookkeeping.js')
+
         /* Timekeeping Scripts */
         .scriptsIn('public/app/components/timekeeping', 'public/js/timekeeping.js')
 

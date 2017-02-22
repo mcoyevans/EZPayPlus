@@ -101,6 +101,12 @@ settings
 							'withTrashed': false
 						},
 					],
+					'withCount': [
+						{
+							'relation': 'payroll_process',
+							'withTrashed': false,
+						},
+					],
 					'paginate':20,
 				},
 				'fab': {
@@ -185,6 +191,12 @@ settings
 							'column': 'start_cut_off',
 							'order': 'asc'
 						}
+					],
+					'withCount': [
+						{
+							'relation': 'payroll_process',
+							'withTrashed': false,
+						},
 					],
 					'paginate':20,
 				},

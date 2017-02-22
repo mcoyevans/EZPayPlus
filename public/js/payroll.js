@@ -203,13 +203,15 @@ payroll
 				'first': true,
 			}
 
-			Helper.post('/payroll-entry/enlist', query)
-				.success(function(data){
-					$scope.payroll_entry = data;
-				})
-				.error(function(){
-					Helper.error();
-				});
+			var payrollEntry = function(){
+				Helper.post('/payroll-entry/enlist', query)
+					.success(function(data){
+						$scope.payroll_entry = data;
+					})
+					.error(function(){
+						Helper.error();
+					});
+			}
 		}
 
 		/*
@@ -448,7 +450,7 @@ payroll
 				withholding_tax_query.where.push({
 					'label': 'pay_frequency',
 					'condition': '=',
-					'value': 'semi-monthly'
+					'value': $scope.payroll_process.payroll.pay_frequency,
 				});
 
 				withholding_tax_query.where.push({
@@ -500,7 +502,10 @@ payroll
 
 				if(sss)
 				{
-					var first_cut_off_sss = $filter('filter')($scope.previous_payroll_entry.government_contributions, 'SSS') ? $filter('filter')($scope.previous_payroll_entry.government_contributions, 'SSS')[0] : null;
+					if($scope.previous_payroll_entry)
+					{
+						var first_cut_off_sss = $filter('filter')($scope.previous_payroll_entry.government_contributions, 'SSS') ? $filter('filter')($scope.previous_payroll_entry.government_contributions, 'SSS')[0] : null;
+					}
 
 					var sss_query = {}
 
@@ -536,7 +541,10 @@ payroll
 
 				if(pagibig)
 				{
-					var first_cut_off_pagibig = $filter('filter')($scope.previous_payroll_entry.government_contributions, 'Pagibig') ? $filter('filter')($scope.previous_payroll_entry.government_contributions, 'Pagibig')[0] : null;
+					if($scope.previous_payroll_entry)
+					{
+						var first_cut_off_pagibig = $filter('filter')($scope.previous_payroll_entry.government_contributions, 'Pagibig') ? $filter('filter')($scope.previous_payroll_entry.government_contributions, 'Pagibig')[0] : null;
+					}
 
 					pagibig.amount = first_cut_off_pagibig ? 100 - first_cut_off_pagibig.amount : 100;
 					$scope.payroll_entry.taxable_income -= pagibig.amount;
@@ -550,7 +558,10 @@ payroll
 
 				if(philhealth)
 				{
-					var first_cut_off_philhealth = $filter('filter')($scope.previous_payroll_entry.government_contributions, 'Philhealth') ? $filter('filter')($scope.previous_payroll_entry.government_contributions, 'Philhealth')[0] : null;
+					if($scope.previous_payroll_entry)
+					{
+						var first_cut_off_philhealth = $filter('filter')($scope.previous_payroll_entry.government_contributions, 'Philhealth') ? $filter('filter')($scope.previous_payroll_entry.government_contributions, 'Philhealth')[0] : null;
+					}
 
 					var philhealth_query = {}
 
@@ -1203,6 +1214,10 @@ payroll
 					'relation': 'government_contributions',
 					'withTrashed': false,
 				},
+				{
+					'relation': 'payroll_process',
+					'withTrashed': false,	
+				}
 			],
 			'where': [
 				{
@@ -1226,26 +1241,26 @@ payroll
 			Helper.cancel();
 		}
 
-		// $scope.edit = function(){
-		// 	Helper.stop();
-		// 	$state.go('main.payroll-entry', {'payrollProcessID': $scope.payroll_entry.payroll_process_id, 'payrollEntryID': $scope.payroll_entry.id});
-		// }
+		$scope.edit = function(){
+			Helper.stop();
+			$state.go('main.payroll-entry', {'payrollProcessID': $scope.payroll_entry.payroll_process_id, 'payrollEntryID': $scope.payroll_entry.id});
+		}
 
-		// $scope.delete = function(){
-		// 	var confirm = {
-		// 		'title': 'Delete Entry',
-		// 		'message': 'This payroll entry will be deleted permanently.'
-		// 		'ok': 'Delete',
-		// 		'cancel': 'Cancel',
-		// 	}
+		$scope.delete = function(){
+			var confirm = {
+				'title': 'Delete Entry',
+				'message': 'This payroll entry will be deleted permanently.',
+				'ok': 'Delete',
+				'cancel': 'Cancel',
+			}
 
-		// 	Helper.confirm(confirm)
-		// 		.then(function(){
+			Helper.confirm(confirm)
+				.then(function(){
 					
-		// 		}, function(){
-		// 			return;
-		// 		})
-		// }
+				}, function(){
+					return;
+				})
+		}
 	}]);
 payroll
 	.controller('payrollProcessDialogController', ['$scope', 'Helper', function($scope, Helper){

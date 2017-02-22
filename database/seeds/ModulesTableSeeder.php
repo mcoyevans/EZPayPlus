@@ -24,6 +24,10 @@ class ModulesTableSeeder extends Seeder
 		        'name' => 'Payroll',
 		        'description' => 'Allow user to manage payroll.',
 		    ],
+            [
+                'name' => 'Bookkeeping',
+                'description' => 'Allow user to manage bookkeeping.',
+            ],
         ]);
     }
 }

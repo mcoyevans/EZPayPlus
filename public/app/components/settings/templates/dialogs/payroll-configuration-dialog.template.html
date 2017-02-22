@@ -90,8 +90,8 @@
                         <th class="col-xs-4 col-sm-4 col-md-4 col-lg-4 secondary-text">Check at least one in every contribution.</th>
                         <th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">1st</th>
                         <th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">2nd</th>
-                        <th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">3rd</th>
-                        <th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">4th</th>
+                        <!-- <th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">3rd</th> -->
+                        <!-- <th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">4th</th> -->
                     </tr>
                     <tr ng-repeat="item in payroll.government_contributions">
                         <td class="col-xs-4 col-sm-4 col-md-4 col-lg-4">{{item.name}}</td>
@@ -101,12 +101,12 @@
                         <td class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
                             <md-checkbox aria-label="Second Cut-off" ng-model="item.second_cut_off" ng-true-value="1" ng-false-value="0" ng-change="checkGovernmentContribution(item)" ng-disabled="busy || payroll.pay_frequency == 'Monthly'"></md-checkbox>
                         </td>
-                        <td class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                        <!-- <td class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
                             <md-checkbox aria-label="Third Cut-off" ng-model="item.third_cut_off" ng-true-value="1" ng-false-value="0" ng-change="checkGovernmentContribution(item)" ng-disabled="busy || payroll.pay_frequency == 'Semi-monthly' || payroll.pay_frequency == 'Monthly'"></md-checkbox>
                         </td>
                         <td class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
                             <md-checkbox aria-label="Fourth Cut-off" ng-model="item.fourth_cut_off" ng-true-value="1" ng-false-value="0" ng-change="checkGovernmentContribution(item)" ng-disabled="busy || payroll.pay_frequency == 'Semi-monthly' || payroll.pay_frequency == 'Monthly'"></md-checkbox>
-                        </td>
+                        </td> -->
                     </tr>
                 </table>
             </div>

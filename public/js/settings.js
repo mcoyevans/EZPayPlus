@@ -409,26 +409,34 @@ settings
 				data.current = $scope.subheader.current;
 
 				// condition for checking if the delete button can be allowed
-				if(data.current.label == 'Time Interpretation')
+				if(data.current.label == 'Time Interpretations')
 				{
 					// disable the delete button
 					data.current.menu[1].show = false;
 				}
 				// otherwise
-				else if(!data.current.label == 'Time Interpretation')
+				else if(!data.current.label == 'Time Interpretations')
 				{
 					// enable the delete button
 					data.current.menu[1].show = true;
 				}
 
-				Helper.set(data);
+				if((data.current.label == 'Payroll Configuration' || data.current.label == 'Payroll Period') && data.payroll_process_count)
+				{
+					Helper.alert('Notice', 'This data is locked for any modification.');
+				}
+				else
+				{
+					Helper.set(data);
 
-				var dialog = {};
-				dialog.controller = 'listItemActionsDialogController';
-				dialog.template = '/app/shared/templates/dialogs/list-item-actions-dialog.template.html';
-				dialog.fullScreen = false;
+					var dialog = {};
+					dialog.controller = 'listItemActionsDialogController';
+					dialog.template = '/app/shared/templates/dialogs/list-item-actions-dialog.template.html';
+					dialog.fullScreen = false;
 
-				Helper.customDialog(dialog);
+					Helper.customDialog(dialog);
+				}
+
 			}
 		}
 
@@ -486,7 +494,7 @@ settings
 								return;
 							});
 					}
-					$scope.fab.show = true;
+					$scope.fab.show = query.label == 'Time Interpretations' ? false : true;
 
 					if(data.data.length){
 						// iterate over each record and set the format
@@ -4478,6 +4486,12 @@ settings
 							'withTrashed': false
 						},
 					],
+					'withCount': [
+						{
+							'relation': 'payroll_process',
+							'withTrashed': false,
+						},
+					],
 					'paginate':20,
 				},
 				'fab': {
@@ -4562,6 +4576,12 @@ settings
 							'column': 'start_cut_off',
 							'order': 'asc'
 						}
+					],
+					'withCount': [
+						{
+							'relation': 'payroll_process',
+							'withTrashed': false,
+						},
 					],
 					'paginate':20,
 				},

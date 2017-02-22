@@ -16,7 +16,7 @@
 	                    
 					</p>
 				</div>
-				<md-menu ng-if="!type.deleted_at || !type.locked">
+				<md-menu ng-if="!type.deleted_at && !type.locked && !type.processed">
 					<md-button aria-label="Menu" class="md-icon-button" ng-click="$mdOpenMenu($event)">
 			            <md-icon class="mdi mdi-dots-vertical grey"></md-icon>
 			            <md-tooltip>{{type.payroll.name}} - {{type.payroll.description}}</md-tooltip>

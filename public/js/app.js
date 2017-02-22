@@ -3,6 +3,7 @@ var app = angular.module('app', [
 	'hris',
 	'payroll',
 	'timekeeping',
+	'bookkeeping',
 	'settings',
 ]);
 app
@@ -469,6 +470,16 @@ app
 						}
 
 						$scope.menu.static.push(payroll);
+					}
+					else if(module.name == 'Bookkeeping')
+					{
+						var bookkeeping = {
+							'state': 'main.bookkeeping',
+							'icon': 'mdi-book-multiple-variant',
+							'label': 'Bookkeeping',
+						}
+
+						$scope.menu.static.push(bookkeeping);
 					}
 					// else if(module.name == 'Timekeeping')
 					// {

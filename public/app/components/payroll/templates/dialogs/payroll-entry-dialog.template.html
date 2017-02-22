@@ -355,7 +355,7 @@
             </div>
         </md-dialog-content>
     </form>
-    <!-- <div layout="row" layout-align="end center" ng-if="!config.view_only">   
+    <div layout="row" layout-align="end center" ng-if="!payroll_entry.payroll_process.locked && !payroll_entry.payroll_process.processed">   
         <md-button ng-if="!busy" class="md-primary" aria-label="Edit" ng-click="edit()">
             Edit
         </md-button>
@@ -363,5 +363,5 @@
             Delete
         </md-button>
         <md-progress-circular ng-if="busy" md-mode="indeterminate" class="md-primary" md-diameter="60"></md-progress-circular>
-    </div> -->
+    </div>
 </md-dialog>

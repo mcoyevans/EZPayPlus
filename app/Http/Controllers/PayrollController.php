@@ -60,7 +60,7 @@ class PayrollController extends Controller
         if($request->has('withCount'))
         {
             for ($i=0; $i < count($request->withCount); $i++) { 
-                if($request->input('withCount')[$i]['whereBetween'])
+                if(isset($request->input('withCount')[$i]['whereBetween']))
                 {
                     $payroll->withCount(['payroll_periods' => function($query) use($request, $i){
                         $query->whereBetween('start_cut_off', [Carbon::parse('first day of '. $request->input('withCount')[$i]['whereBetween']), Carbon::parse('last day of '. $request->input('withCount')[$i]['whereBetween'])]);
@@ -228,6 +228,13 @@ class PayrollController extends Controller
             return response()->json(true);
         }
 
+        $payroll = Payroll::withCount('payroll_process')->where('id', $id)->first();
+
+        if($payroll->payroll_process_count)
+        {
+            abort(403, 'Cannot modify payroll because of associated payroll process.');
+        }
+
         $this->validate($request, [
             'name' => 'required',
             'working_days_per_year' => 'required|numeric',
@@ -238,9 +245,7 @@ class PayrollController extends Controller
             'government_contributions' => 'required',
         ]);
 
-        DB::transaction(function() use($request, $id){
-            $payroll = Payroll::find($id);
-
+        DB::transaction(function() use($request, $paryoll){
             $payroll->name = $request->name;
             $payroll->description = $request->description;
             $payroll->working_days_per_year = $request->working_days_per_year;

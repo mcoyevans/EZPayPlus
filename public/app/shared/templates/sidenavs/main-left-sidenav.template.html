@@ -15,7 +15,7 @@
     <md-divider></md-divider>
     <md-subheader class="md-no-sticky">Menu</md-subheader>
     <ul class="no-padding">
-        <li layout="row" flex ng-repeat="page in menu.static | orderBy:'label'">
+        <li layout="row" flex ng-repeat="page in menu.static">
             <md-button class="static" flex ui-sref="{{page.state}}">
                 <div layout="row" flex>
                     <md-icon class="mdi {{page.icon}} grey"></md-icon>

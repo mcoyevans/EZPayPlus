@@ -3,5 +3,6 @@ var app = angular.module('app', [
 	'hris',
 	'payroll',
 	'timekeeping',
+	'bookkeeping',
 	'settings',
 ]);
