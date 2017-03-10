@@ -1,4 +1,4 @@
-<form name="form.employeeForm" flex>
+<form name="form.employeeForm" flex ng-if="show">
 	<md-subheader class="md-primary">Primary Information</md-subheader>
 	<md-button class="md-primary" ng-click="test()">Auto Fill</md-button>
 	<div layout="row" flex layout-align="center center">
@@ -302,6 +302,10 @@
 							<div ng-message="min">Basic salary cannot be a negative number.</div>
 						</div>
 					</md-input-container>
+					<div flex-xs="100" flex-sm="100" flex-gt-sm>
+						<!-- Minimum Wage Earner -->
+						<md-checkbox class="md-primary" ng-model="employee.minimum_wage_earner" aria-label="Minimum Wage Earner">Minimum Wage Earner</md-checkbox>
+					</div>
 				</div>
 				<div ng-if="allowance_types.length">
 					<!-- Allowances -->
@@ -393,4 +397,8 @@
 		</md-card>
 	</div>
 </form>
+
+<div layout="row" layout-align="center center" layout-padding layout-margin ng-if="!show">
+	<md-progress-circular class="md-primary" md-diameter="60"></md-progress-circular>
+</div>
 

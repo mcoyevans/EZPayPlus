@@ -46,9 +46,9 @@ class CreateEmployeesTable extends Migration
             $table->string('email');
             $table->integer('time_interpretation_id')->unsigned();
             $table->float('basic_salary');
+            $table->boolean('minimum_wage_earner');
             // $table->string('payment_type');
             // $table->integer('account_number');
-            // $table->boolean('minimum_wage_earner');
             // $table->string('emergency_contact_person')->nullable();
             // $table->text('emergency_contact_person_address')->nullable();
             // $table->text('emergency_contact_person_relationship')->nullable();

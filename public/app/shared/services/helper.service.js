@@ -3,6 +3,12 @@ sharedModule
 		var dataHolder = null;
 		var user = null;
 
+		var error_dialog = {
+			'title': 'Aw Snap!',
+			'message': 'An error occured on the server.',
+			'ok': 'Try Again'
+		}
+
 		return {
 			cancel: function(){
 				$mdDialog.cancel();
@@ -82,6 +88,9 @@ sharedModule
 				        .ariaLabel('Error Message')
 				        .ok('Got it!')
 				);
+			},
+			failed(){
+			 	return this.confirm(error_dialog);
 			},
 			/* Send temporary data for retrival */
 			set: function(data){
