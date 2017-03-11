@@ -207,13 +207,14 @@
                 <md-tab label="Salary">
                     <md-content class="md-padding">
                         <md-list>
-                            <md-list-item class="md-2-line">
+                            <md-list-item class="md-3-line">
                                 <div class="md-avatar" layout="row" layout-align="center center">
                                     <md-icon class="mdi mdi-currency-usd grey"></md-icon>
                                 </div>
                                 <div class="md-list-item-text">
                                     <h3>{{employee.basic_salary}}</h3>
-                                    <p>Basic Salary</p>
+                                    <h4>Basic Salary</h4>
+                                    <p ng-if="employee.minimum_wage_earner">Minimum Wage Earner</p>
                                 </div>
                             </md-list-item>
                             <md-list-item class="md-2-line">

@@ -179,8 +179,16 @@ payroll
 				}
 			});
 
-			$scope.daily_rate = ($scope.payroll_entry.employee.basic_salary * 12) / $scope.payroll_process.payroll.working_days_per_year;
-			$scope.hourly_rate = ($scope.payroll_entry.employee.basic_salary * 12) / $scope.payroll_process.payroll.working_days_per_year / $scope.payroll_process.payroll.working_hours_per_day;
+			if($scope.payroll_entry.employee.time_interpretation.name == 'Monthly')
+			{
+				$scope.daily_rate = ($scope.payroll_entry.employee.basic_salary * 12) / $scope.payroll_process.payroll.working_days_per_year;
+				$scope.hourly_rate = ($scope.payroll_entry.employee.basic_salary * 12) / $scope.payroll_process.payroll.working_days_per_year / $scope.payroll_process.payroll.working_hours_per_day;
+			}
+			else if($scope.payroll_entry.employee.time_interpretation.name == 'Daily') {
+				$scope.daily_rate = $scope.payroll_entry.employee.basic_salary;
+				$scope.hourly_rate = $scope.daily_rate / $scope.payroll_process.payroll.working_hours_per_day;
+			}
+
 
 			$scope.regularWorkingHoursPay();
 			$scope.overtimePay();
@@ -287,6 +295,13 @@ payroll
 
 		$scope.calculateTax = function(){
 			var withholding_tax = $filter('filter')($scope.payroll_entry.government_contributions, 'Withholding Tax')[0];
+			
+			if($scope.payroll_entry.employee.minimum_wage_earner)
+			{
+				withholding_tax.amount = 0;
+
+				return;
+			}
 
 			var withholding_tax_query = {}
 
@@ -362,6 +377,8 @@ payroll
 				var taxable_income = $scope.payroll_entry.regular_working_hours_pay - $scope.payroll_entry.tardy - $scope.payroll_entry.absent + $scope.payroll_entry.night_differential_pay + $scope.payroll_entry.overtime_pay + $scope.payroll_entry.overtime_night_differential_pay + $scope.payroll_entry.rest_day_pay + $scope.payroll_entry.rest_day_overtime_pay + $scope.payroll_entry.rest_day_night_differential_pay + $scope.payroll_entry.rest_day_overtime_night_differential_pay + $scope.payroll_entry.regular_holiday_pay + $scope.payroll_entry.regular_holiday_overtime_pay + $scope.payroll_entry.regular_holiday_night_differential_pay + $scope.payroll_entry.regular_holiday_overtime_night_differential_pay + $scope.payroll_entry.regular_holiday_rest_day_pay + $scope.payroll_entry.regular_holiday_rest_day_overtime_pay + $scope.payroll_entry.regular_holiday_rest_day_night_differential_pay + $scope.payroll_entry.regular_holiday_rest_day_overtime_night_differential_pay + $scope.payroll_entry.special_holiday_pay + $scope.payroll_entry.special_holiday_overtime_pay + $scope.payroll_entry.special_holiday_night_differential_pay + $scope.payroll_entry.special_holiday_overtime_night_differential_pay + $scope.payroll_entry.special_holiday_rest_day_pay + $scope.payroll_entry.special_holiday_rest_day_overtime_pay + $scope.payroll_entry.special_holiday_rest_day_night_differential_pay + $scope.payroll_entry.special_holiday_rest_day_overtime_night_differential_pay;
 				$scope.government_contribution_deduction = 0;
 
+				console.log(taxable_income);
+
 				var sss = $filter('filter')($scope.payroll_entry.government_contributions, 'SSS')[0];
 				var philhealth = $filter('filter')($scope.payroll_entry.government_contributions, 'Philhealth')[0];
 				var pagibig = $filter('filter')($scope.payroll_entry.government_contributions, 'Pagibig')[0];
@@ -380,7 +397,7 @@ payroll
 						{
 							'label': 'from',
 							'condition': '<=',
-							'value': $scope.payroll_process.payroll_period.cut_off == 'second' ? $scope.previous_payroll_entry.taxable_income + taxable_income : taxable_income,
+							'value': $scope.previous_payroll_entry ? $scope.previous_payroll_entry.taxable_income + taxable_income : taxable_income,
 						},
 					];
 
@@ -443,7 +460,7 @@ payroll
 						{
 							'label': 'from',
 							'condition': '<=',
-							'value': $scope.payroll_process.payroll_period.cut_off == 'second' ? $scope.previous_payroll_entry.taxable_income + taxable_income : taxable_income,
+							'value': $scope.previous_payroll_entry ? $scope.previous_payroll_entry.taxable_income + taxable_income : taxable_income,
 						},
 					];
 
@@ -791,6 +808,10 @@ payroll
 								{
 									'relation': 'position',
 									'withTrashed': false,	
+								},
+								{
+									'relation': 'time_interpretation',
+									'withTrashed': false,
 								},
 							],
 							'where': [

@@ -39,7 +39,7 @@
 				<!-- Employee -->
 				<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
 					<label>Employee</label>
-					<md-select name="Employee" ng-model="payroll_entry.employee" required ng-disabled="busy && !form.branch_id && !form.cost_center_id" ng-change="setEmployee()">
+					<md-select name="Employee" ng-model="payroll_entry.employee" required ng-disabled="busy || (!form.branch_id && !form.cost_center_id)" ng-change="setEmployee()">
 						<md-option ng-repeat="item in employees | filter:{branch_id:form.branch_id} | filter:{cost_center_id:form.cost_center_id} | orderBy:'last_name'" ng-value="{{item}}">{{item.last_name}}, {{item.first_name}} {{item.middle_name}}</md-option>
 					</md-select>
 					<div ng-messages="form.payrollEntryForm.Employee.$error" ng-if="form.payrollEntryForm.Employee.$touched">

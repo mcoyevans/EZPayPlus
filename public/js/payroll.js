@@ -334,8 +334,16 @@ payroll
 				}
 			});
 
-			$scope.daily_rate = ($scope.payroll_entry.employee.basic_salary * 12) / $scope.payroll_process.payroll.working_days_per_year;
-			$scope.hourly_rate = ($scope.payroll_entry.employee.basic_salary * 12) / $scope.payroll_process.payroll.working_days_per_year / $scope.payroll_process.payroll.working_hours_per_day;
+			if($scope.payroll_entry.employee.time_interpretation.name == 'Monthly')
+			{
+				$scope.daily_rate = ($scope.payroll_entry.employee.basic_salary * 12) / $scope.payroll_process.payroll.working_days_per_year;
+				$scope.hourly_rate = ($scope.payroll_entry.employee.basic_salary * 12) / $scope.payroll_process.payroll.working_days_per_year / $scope.payroll_process.payroll.working_hours_per_day;
+			}
+			else if($scope.payroll_entry.employee.time_interpretation.name == 'Daily') {
+				$scope.daily_rate = $scope.payroll_entry.employee.basic_salary;
+				$scope.hourly_rate = $scope.daily_rate / $scope.payroll_process.payroll.working_hours_per_day;
+			}
+
 
 			$scope.regularWorkingHoursPay();
 			$scope.overtimePay();
@@ -442,6 +450,13 @@ payroll
 
 		$scope.calculateTax = function(){
 			var withholding_tax = $filter('filter')($scope.payroll_entry.government_contributions, 'Withholding Tax')[0];
+			
+			if($scope.payroll_entry.employee.minimum_wage_earner)
+			{
+				withholding_tax.amount = 0;
+
+				return;
+			}
 
 			var withholding_tax_query = {}
 
@@ -517,6 +532,8 @@ payroll
 				var taxable_income = $scope.payroll_entry.regular_working_hours_pay - $scope.payroll_entry.tardy - $scope.payroll_entry.absent + $scope.payroll_entry.night_differential_pay + $scope.payroll_entry.overtime_pay + $scope.payroll_entry.overtime_night_differential_pay + $scope.payroll_entry.rest_day_pay + $scope.payroll_entry.rest_day_overtime_pay + $scope.payroll_entry.rest_day_night_differential_pay + $scope.payroll_entry.rest_day_overtime_night_differential_pay + $scope.payroll_entry.regular_holiday_pay + $scope.payroll_entry.regular_holiday_overtime_pay + $scope.payroll_entry.regular_holiday_night_differential_pay + $scope.payroll_entry.regular_holiday_overtime_night_differential_pay + $scope.payroll_entry.regular_holiday_rest_day_pay + $scope.payroll_entry.regular_holiday_rest_day_overtime_pay + $scope.payroll_entry.regular_holiday_rest_day_night_differential_pay + $scope.payroll_entry.regular_holiday_rest_day_overtime_night_differential_pay + $scope.payroll_entry.special_holiday_pay + $scope.payroll_entry.special_holiday_overtime_pay + $scope.payroll_entry.special_holiday_night_differential_pay + $scope.payroll_entry.special_holiday_overtime_night_differential_pay + $scope.payroll_entry.special_holiday_rest_day_pay + $scope.payroll_entry.special_holiday_rest_day_overtime_pay + $scope.payroll_entry.special_holiday_rest_day_night_differential_pay + $scope.payroll_entry.special_holiday_rest_day_overtime_night_differential_pay;
 				$scope.government_contribution_deduction = 0;
 
+				console.log(taxable_income);
+
 				var sss = $filter('filter')($scope.payroll_entry.government_contributions, 'SSS')[0];
 				var philhealth = $filter('filter')($scope.payroll_entry.government_contributions, 'Philhealth')[0];
 				var pagibig = $filter('filter')($scope.payroll_entry.government_contributions, 'Pagibig')[0];
@@ -535,7 +552,7 @@ payroll
 						{
 							'label': 'from',
 							'condition': '<=',
-							'value': $scope.payroll_process.payroll_period.cut_off == 'second' ? $scope.previous_payroll_entry.taxable_income + taxable_income : taxable_income,
+							'value': $scope.previous_payroll_entry ? $scope.previous_payroll_entry.taxable_income + taxable_income : taxable_income,
 						},
 					];
 
@@ -598,7 +615,7 @@ payroll
 						{
 							'label': 'from',
 							'condition': '<=',
-							'value': $scope.payroll_process.payroll_period.cut_off == 'second' ? $scope.previous_payroll_entry.taxable_income + taxable_income : taxable_income,
+							'value': $scope.previous_payroll_entry ? $scope.previous_payroll_entry.taxable_income + taxable_income : taxable_income,
 						},
 					];
 
@@ -946,6 +963,10 @@ payroll
 								{
 									'relation': 'position',
 									'withTrashed': false,	
+								},
+								{
+									'relation': 'time_interpretation',
+									'withTrashed': false,
 								},
 							],
 							'where': [
@@ -1537,6 +1558,109 @@ payroll
 			})
 	}]);
 payroll
+	.controller('payrollSubheaderController', ['$scope', '$state', 'Helper', function($scope, $state, Helper){
+		var setInit = function(data){
+			Helper.set(data);
+
+			$scope.$emit('setInit');
+		}
+
+		$scope.subheader.navs = [
+			// Payroll Process
+			{
+				'label':'Payroll Processes',
+				'url': '/payroll-process/enlist',
+				'request' : {
+					'with' : [
+						{
+							'relation':'batch',
+							'withTrashed': false,
+						},
+						{
+							'relation':'payroll',
+							'withTrashed': false,
+						},
+						{
+							'relation':'payroll_period',
+							'withTrashed': false,
+						},
+					],
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'payrollProcessDialogController',
+					'template':'/app/components/payroll/templates/dialogs/payroll-process-form-dialog.template.html',
+					'message': 'Payroll process saved.',
+					'action' : 'create',
+					'fullscreen' : true,
+					'url': '/payroll-process',
+					'label': 'Payroll process',
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/payroll-process';
+							data.label = 'Payroll process';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'payrollProcessDialogController';
+							dialog.template = '/app/components/payroll/templates/dialogs/payroll-process-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Payroll process updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + new Date(data.payroll_period.start_cut_off).toLocaleDateString() + ' - ' + new Date(data.payroll_period.end_cut_off).toLocaleDateString() + ' payroll process?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/payroll-process/' + data.id)
+										.success(function(){
+											Helper.notify('Payroll process deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				view: function(data){
+					$state.go('main.payroll-process', {payrollProcessID: data.id});
+				},
+				action: function(current){
+					setInit(current);
+				},
+			},
+		];
+
+		setInit($scope.subheader.navs[0]);
+	}]);
+payroll
 	.controller('payrollEntryToolbarController', ['$scope', '$filter', function($scope, $filter){
 		$scope.toolbar.childState = 'Payroll Entry';
 
@@ -1672,108 +1796,5 @@ payroll
 			$scope.$emit('search');
 			$scope.searched = true;
 		};
-	}]);
-payroll
-	.controller('payrollSubheaderController', ['$scope', '$state', 'Helper', function($scope, $state, Helper){
-		var setInit = function(data){
-			Helper.set(data);
-
-			$scope.$emit('setInit');
-		}
-
-		$scope.subheader.navs = [
-			// Payroll Process
-			{
-				'label':'Payroll Processes',
-				'url': '/payroll-process/enlist',
-				'request' : {
-					'with' : [
-						{
-							'relation':'batch',
-							'withTrashed': false,
-						},
-						{
-							'relation':'payroll',
-							'withTrashed': false,
-						},
-						{
-							'relation':'payroll_period',
-							'withTrashed': false,
-						},
-					],
-					'paginate':20,
-				},
-				'fab': {
-					'fullscreen' : true,
-					'controller':'payrollProcessDialogController',
-					'template':'/app/components/payroll/templates/dialogs/payroll-process-form-dialog.template.html',
-					'message': 'Payroll process saved.',
-					'action' : 'create',
-					'fullscreen' : true,
-					'url': '/payroll-process',
-					'label': 'Payroll process',
-				},
-				'menu': [
-					{
-						'label': 'Edit',
-						'icon': 'mdi-pencil',
-						'show': true,
-						action: function(data){
-							data.action = 'edit';
-							data.url = '/payroll-process';
-							data.label = 'Payroll process';
-
-							Helper.set(data);
-
-							var dialog = {};
-							dialog.controller = 'payrollProcessDialogController';
-							dialog.template = '/app/components/payroll/templates/dialogs/payroll-process-form-dialog.template.html';
-
-							Helper.customDialog(dialog)
-								.then(function(){
-									Helper.notify('Payroll process updated.');
-									$scope.$emit('refresh');
-								}, function(){
-									return;
-								})
-						},
-					},
-					{
-						'label': 'Delete',
-						'icon': 'mdi-delete',
-						'show': true,
-						action: function(data){
-							var dialog = {};
-							dialog.title = 'Delete';
-							dialog.message = 'Delete ' + new Date(data.payroll_period.start_cut_off).toLocaleDateString() + ' - ' + new Date(data.payroll_period.end_cut_off).toLocaleDateString() + ' payroll process?'
-							dialog.ok = 'Delete';
-							dialog.cancel = 'Cancel';
-
-							Helper.confirm(dialog)
-								.then(function(){
-									Helper.delete('/payroll-process/' + data.id)
-										.success(function(){
-											Helper.notify('Payroll process deleted.');
-											$scope.$emit('refresh');
-										})
-										.error(function(){
-											Helper.error();
-										});
-								}, function(){
-									return;
-								})
-						},
-					},
-				],
-				view: function(data){
-					$state.go('main.payroll-process', {payrollProcessID: data.id});
-				},
-				action: function(current){
-					setInit(current);
-				},
-			},
-		];
-
-		setInit($scope.subheader.navs[0]);
 	}]);
 //# sourceMappingURL=payroll.js.map
