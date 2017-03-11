@@ -105,6 +105,15 @@ class HolidayController extends Controller
             }
         }
 
+        if($request->has('whereHas'))
+        {
+            foreach ($request->whereHas as $whereHas) {
+                $holidays->whereHas($whereHas['relation'], function($query) use($whereHas){
+                    $query->where($whereHas['where']['label'], $whereHas['where']['condition'], $whereHas['where']['value']);
+                });
+            }
+        }
+
         if($request->has('search'))
         {
             $holidays->where('description', 'like', '%'. $request->search. '%');

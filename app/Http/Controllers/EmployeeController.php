@@ -160,6 +160,7 @@ class EmployeeController extends Controller
             'tax_code_id' => 'required',
             'time_interpretation_id' => 'required',
             'basic_salary' => 'required',
+            'minimum_wage_earner' => 'required',
         ]);
 
         DB::transaction(function() use($request){
@@ -169,6 +170,7 @@ class EmployeeController extends Controller
             $employee->batch_id = $request->batch_id;
             $employee->branch_id = $request->branch_id;
             $employee->basic_salary = $request->basic_salary;
+            $employee->minimum_wage_earner = $request->minimum_wage_earner;
             $employee->birthdate = Carbon::parse($request->birthdate);
             $employee->civil_status = $request->civil_status;
             $employee->cost_center_id = $request->cost_center_id;
@@ -297,6 +299,7 @@ class EmployeeController extends Controller
             'tax_code_id' => 'required',
             'time_interpretation_id' => 'required',
             'basic_salary' => 'required',
+            'minimum_wage_earner' => 'required',
         ]);
 
         DB::transaction(function() use($request, $id){
@@ -306,6 +309,7 @@ class EmployeeController extends Controller
             $employee->batch_id = $request->batch_id;
             $employee->branch_id = $request->branch_id;
             $employee->basic_salary = $request->basic_salary;
+            $employee->minimum_wage_earner = $request->minimum_wage_earner;
             $employee->birthdate = Carbon::parse($request->birthdate);
             $employee->civil_status = $request->civil_status;
             $employee->cost_center_id = $request->cost_center_id;

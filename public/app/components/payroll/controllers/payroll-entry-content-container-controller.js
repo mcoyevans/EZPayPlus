@@ -54,9 +54,14 @@ payroll
 						$scope.payroll_entry = data;
 					})
 					.error(function(){
-						Helper.error();
+						Helper.failed()
+							.then(function(){
+								payrollEntry();
+							});
 					});
 			}
+
+			payrollEntry();
 		}
 
 		/*
@@ -252,11 +257,21 @@ payroll
 					],
 					'first': true,
 				}
-				
-				Helper.post('/payroll-entry/enlist', previous_payroll_entry_query)
-					.success(function(data){
-						$scope.previous_payroll_entry = data;
-					})
+
+				var previousPayrollEntry = function(){
+					Helper.post('/payroll-entry/enlist', previous_payroll_entry_query)
+						.success(function(data){
+							$scope.previous_payroll_entry = data;
+						})
+						.error(function(){
+							Helper.failed()
+								.then(function(){
+									previousPayrollEntry();
+								})
+						})
+				}
+
+				previousPayrollEntry();
 			}
 		}
 
@@ -323,14 +338,21 @@ payroll
 				});
 			}
 
-			Helper.post('/tax/enlist', withholding_tax_query)
-				.success(function(data){
-					withholding_tax.amount = first_cut_off_withholding_tax ? (data.tax + (taxable_income - data.salary) * data.excess) - first_cut_off_withholding_tax.pivot.amount : data.tax + ($scope.payroll_entry.taxable_income - data.salary) * data.excess;
-					$scope.withholding_tax = withholding_tax.amount;
-				})
-				.error(function(){
-					Helper.error();
-				});
+			var getTax = function(){
+				Helper.post('/tax/enlist', withholding_tax_query)
+					.success(function(data){
+						withholding_tax.amount = first_cut_off_withholding_tax ? (data.tax + (taxable_income - data.salary) * data.excess) - first_cut_off_withholding_tax.pivot.amount : data.tax + ($scope.payroll_entry.taxable_income - data.salary) * data.excess;
+						$scope.withholding_tax = withholding_tax.amount;
+					})
+					.error(function(){
+						Helper.failed()
+							.then(function(){
+								getTax();
+							});
+					});
+			}
+
+			getTax();
 		}
 
 		$scope.governmentContributions = function(){
@@ -369,19 +391,26 @@ payroll
 
 					sss_query.first = true;
 
-					Helper.post('/sss/enlist', sss_query)
-						.success(function(data){
-							sss.amount = first_cut_off_sss ? data.EE - first_cut_off_sss.amount : data.EE;
-							$scope.payroll_entry.taxable_income -= sss.amount;
-							$scope.government_contribution_deduction += sss.amount;
+					var getSSS = function(){
+						Helper.post('/sss/enlist', sss_query)
+							.success(function(data){
+								sss.amount = first_cut_off_sss ? data.EE - first_cut_off_sss.amount : data.EE;
+								$scope.payroll_entry.taxable_income -= sss.amount;
+								$scope.government_contribution_deduction += sss.amount;
 
-							if(withholding_tax){
-								$scope.calculateTax();
-							}
-						})
-						.error(function(){
-							Helper.error();
-						})
+								if(withholding_tax){
+									$scope.calculateTax();
+								}
+							})
+							.error(function(){
+								Helper.failed()
+									.then(function(){
+										getSSS();
+									});
+							})
+					}
+
+					getSSS();
 				}
 
 				if(pagibig)
@@ -577,16 +606,112 @@ payroll
 			$scope.governmentContributions();
 		}
 
-		$scope.init = function(){
-			Helper.get('/branch')
-				.success(function(data){
-					$scope.branches = data;
-				})
+		$scope.getHolidays = function(){
+			$scope.payroll_entry.employee = null;
 
-			Helper.get('/cost-center')
+			var holiday_query = {
+				'whereMonth': 
+				{
+					'label':'date',
+					'value': new Date($scope.payroll_process.payroll_period.start_cut_off).getMonth() + 1,
+				},
+				'whereBetweenDay': 
+				{
+					'label': 'date',
+					'start': new Date($scope.payroll_process.payroll_period.start_cut_off).getDate(),
+					'end': new Date($scope.payroll_process.payroll_period.end_cut_off).getDate(),
+				},
+			}
+
+			holiday_query.whereHas = [];
+
+			if($scope.form.branch_id)
+			{
+				holiday_query.whereHas.push(
+					{
+						'relation': 'branches',
+						'where': {
+							'label': 'branch_id',
+							'condition': '=',
+							'value': $scope.form.branch_id,
+						}
+					}
+				)
+			}
+
+			if($scope.form.cost_center_id)
+			{
+				holiday_query.whereHas.push(
+					{
+						'relation': 'cost_centers',
+						'where': {
+							'label': 'cost_center_id',
+							'condition': '=',
+							'value': $scope.form.cost_center_id,
+						}
+					}
+				)
+			}
+
+			Helper.post('/holiday/enlist', holiday_query)
 				.success(function(data){
-					$scope.cost_centers = data;
-				})			
+					$scope.regular_holidays = [];
+					$scope.special_holidays = [];
+
+					if(data.length)
+					{
+						angular.forEach(data, function(item){
+							item.date = new Date(item.date);
+
+							if(item.type == 'Regular Holiday'){
+								$scope.regular_holidays.push(item)
+							}
+							else if(item.type == 'Special Non-Working Holiday')
+							{
+								$scope.special_holidays.push(item)
+							}
+						});
+					}							
+
+					$scope.holidays = data;
+
+					$scope.max_regular_holiday_regular_hours = $scope.regular_holidays ? $scope.regular_holidays.length * $scope.payroll_process.payroll.working_hours_per_day : 0;
+					$scope.max_special_holiday_regular_hours = $scope.regular_holidays ? $scope.special_holidays.length * $scope.payroll_process.payroll.working_hours_per_day : 0;
+				})
+				.error(function(){
+					Helper.failed()
+						.then(function(){
+							getHolidays();
+						})
+				});
+		}
+
+		$scope.init = function(){
+			var branches = function(){
+				Helper.get('/branch')
+					.success(function(data){
+						$scope.branches = data;
+					})
+					.error(function(){
+						Helper.failed()
+							.then(function(){
+								branches();
+							})
+					})
+			}
+
+			var costCenters = function(){
+				Helper.get('/cost-center')
+					.success(function(data){
+						$scope.cost_centers = data;
+					})
+					.error(function(){
+						Helper.failed()
+							.then(function(){
+								costCenters();
+							})
+					})			
+			}
 
 			var payroll_process_query = {
 				'with': [
@@ -617,160 +742,109 @@ payroll
 				'first': true,
 			}
 
-			Helper.post('/payroll-process/enlist', payroll_process_query)
-				.success(function(data){
-					data.payroll_period.start_cut_off = new Date(data.payroll_period.start_cut_off);
-					data.payroll_period.end_cut_off = new Date(data.payroll_period.end_cut_off);
-					data.payroll_period.payout = new Date(data.payroll_period.payout);
+			var payrollProcess = function(){
+				Helper.post('/payroll-process/enlist', payroll_process_query)
+					.success(function(data){
+						data.payroll_period.start_cut_off = new Date(data.payroll_period.start_cut_off);
+						data.payroll_period.end_cut_off = new Date(data.payroll_period.end_cut_off);
+						data.payroll_period.payout = new Date(data.payroll_period.payout);
 
-					var timeDiff = Math.abs(data.payroll_period.end_cut_off.getTime() - data.payroll_period.start_cut_off.getTime());
-					$scope.max_regular_working_days = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
+						var timeDiff = Math.abs(data.payroll_period.end_cut_off.getTime() - data.payroll_period.start_cut_off.getTime());
+						$scope.max_regular_working_days = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
 
-					angular.forEach(data.payroll.government_contributions, function(item){
-						if((data.payroll_period.cut_off == 'first' && item.first_cut_off) || (data.payroll_period.cut_off == 'second' && item.second_cut_off))
+						angular.forEach(data.payroll.government_contributions, function(item){
+							if((data.payroll_period.cut_off == 'first' && item.first_cut_off) || (data.payroll_period.cut_off == 'second' && item.second_cut_off))
+							{
+								$scope.payroll_entry.government_contributions.push(item);
+							}
+						});
+
+						$scope.payroll_process = data;
+
+						if(data.payroll.pay_frequency == 'Weekly')
 						{
-							$scope.payroll_entry.government_contributions.push(item);
+							$scope.basic_pay_factor = 4;
 						}
-					});
-
-					$scope.payroll_process = data;
-
-					if(data.payroll.pay_frequency == 'Weekly')
-					{
-						$scope.basic_pay_factor = 4;
-					}
-					else if(data.payroll.pay_frequency == 'Semi-monthly')
-					{
-						$scope.basic_pay_factor = 2;						
-					}
-					else if(data.payroll.pay_frequency == 'Monthly')
-					{
-						$scope.basic_pay_factor = 1;						
-					}
-
-					var holiday_query = {
-						'whereMonth': 
+						else if(data.payroll.pay_frequency == 'Semi-monthly')
 						{
-							'label':'date',
-							'value': new Date(data.payroll_period.start_cut_off).getMonth() + 1,
-						},
-						'whereBetweenDay': 
+							$scope.basic_pay_factor = 2;						
+						}
+						else if(data.payroll.pay_frequency == 'Monthly')
 						{
-							'label': 'date',
-							'start': new Date(data.payroll_period.start_cut_off).getDate(),
-							'end': new Date(data.payroll_period.end_cut_off).getDate(),
-						},
-					}
+							$scope.basic_pay_factor = 1;						
+						}
 
-					Helper.post('/holiday/enlist', holiday_query)
-						.success(function(data){
-							if(data.length)
-							{
-								$scope.regular_holidays = [];
-								$scope.special_holidays = [];
+						var employee_query = {
+							'with': [
+								{
+									'relation': 'allowance_types.de_minimis',
+									'withTrashed': false,	
+								},
+								{
+									'relation': 'deduction_types',
+									'withTrashed': false,
+								},
+								{
+									'relation': 'tax_code',
+									'withTrashed': false,	
+								},
+								{
+									'relation': 'position',
+									'withTrashed': false,	
+								},
+							],
+							'where': [
+								{
+									'label': 'batch_id',
+									'condition': '=',
+									'value': $scope.payroll_process.batch_id,
+								},
+								{
+									'label': 'time_interpretation_id',
+									'condition': '=',
+									'value': $scope.payroll_process.payroll.time_interpretation_id,
+								},
+							],
+							'whereDoesntHave': [
+								{
+									'relation': 'payroll_entries',
+									'where': [
+										{
+											'label': 'payroll_process_id',
+											'condition': '=',
+											'value': $scope.payroll_process.id,
+										},
+									],
+								},
+							],
+						}
 
-								angular.forEach(data, function(item){
-									item.date = new Date(item.date);
+						var employees = function(){						
+							Helper.post('/employee/enlist', employee_query)
+								.success(function(data){
+									$scope.employees = data;
+								})
+								.error(function(){
+									Helper.failed()
+										.then(function(){
+											employees();
+										})
+								})
+						}
 
-									if(item.type == 'Regular Holiday'){
-										$scope.regular_holidays.push(item)
-									}
-									else if(item.type == 'Special Non-working Holiday')
-									{
-										$scope.special_holidays.push(item)
-									}
-								});
-							}							
+						employees();
+					})
+					.error(function(){
+						Helper.failed()
+							.then(function(){
+								payrollProcess();
+							});
+					})
+			}
 
-							$scope.holidays = data;
+			branches();
+			costCenters();
+			payrollProcess();
 
-							$scope.max_regular_holiday_regular_hours = $scope.regular_holidays ? $scope.regular_holidays.length * $scope.payroll_process.payroll.working_hours_per_day : 0;
-							$scope.max_special_holiday_regular_hours = $scope.regular_holidays ? $scope.special_holidays.length * $scope.payroll_process.payroll.working_hours_per_day : 0;
-						})
-
-					// var government_contribution_query = {
-					// 	'where': [
-					// 		{
-					// 			'label': 'payroll_id',
-					// 			'condition': '=',
-					// 			'value': $scope.payroll_process.payroll_id,
-					// 		},
-					// 	],
-					// }
-
-					// if($scope.payroll_process.payroll_period.cut_off == 'first')
-					// {
-					// 	government_contribution_query.where.push(
-					// 		{
-					// 			'label': 'first_cut_off',
-					// 			'condition': '=',
-					// 			'value': 1,
-					// 		}
-					// 	);						
-					// }
-					// else if($scope.payroll_process.payroll_period.cut_off == 'second')
-					// {
-					// 	government_contribution_query.where.push(
-					// 		{
-					// 			'label': 'second_cut_off',
-					// 			'condition': '=',
-					// 			'value': 1,
-					// 		}
-					// 	);	
-					// }
-
-					var employee_query = {
-						'with': [
-							{
-								'relation': 'allowance_types.de_minimis',
-								'withTrashed': false,	
-							},
-							{
-								'relation': 'deduction_types',
-								'withTrashed': false,
-							},
-							{
-								'relation': 'tax_code',
-								'withTrashed': false,	
-							},
-							{
-								'relation': 'position',
-								'withTrashed': false,	
-							},
-						],
-						'where': [
-							{
-								'label': 'batch_id',
-								'condition': '=',
-								'value': $scope.payroll_process.batch_id,
-							},
-							{
-								'label': 'time_interpretation_id',
-								'condition': '=',
-								'value': $scope.payroll_process.payroll.time_interpretation_id,
-							},
-						],
-						'whereDoesntHave': [
-							{
-								'relation': 'payroll_entries',
-								'where': [
-									{
-										'label': 'payroll_process_id',
-										'condition': '=',
-										'value': $scope.payroll_process.id,
-									},
-								],
-							},
-						],
-					}
-
-					Helper.post('/employee/enlist', employee_query)
-						.success(function(data){
-							$scope.employees = data;
-						})
-				})
-				.error(function(){
-					Helper.error();
-				})
 		}();
 	}]);
