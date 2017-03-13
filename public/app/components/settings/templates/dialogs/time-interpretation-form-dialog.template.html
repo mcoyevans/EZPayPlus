@@ -2,7 +2,7 @@
     <form name="timeInterpretationForm">
         <md-toolbar >
             <div class="md-toolbar-tools">
-                <h2 class="white-text">Time Interpretation</h2>
+                <h2 class="white-text">Time Interpretation - {{time_interpretation.name}}</h2>
                 <span flex></span>
                 <md-button class="md-icon-button" ng-click="cancel()">
                     <md-icon class="mdi mdi-close mdi-24px" aria-label="Close dialog"></md-icon>
@@ -11,17 +11,6 @@
         </md-toolbar>
         <md-dialog-content flex layout-padding layout-wrap>
             <md-subheader class="md-accent" ng-if="error">Oops! Something went wrong! An error occured. Please try again.</md-subheader>
-            <div layout="row" layout-wrap flex>
-                <!-- Name -->
-                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
-                    <label>Name</label>
-                    <input type="text" name="Name" required ng-model="time_interpretation.name" ng-disabled="busy" ng-blur="checkDuplicate()">
-                    <div class="pattern" ng-if="duplicate && timeInterpretationForm.Name.$valid">Leave already exists.</div>
-                    <div ng-messages="timeInterpretationForm.Name.$error" ng-if="timeInterpretationForm.Name.$touched">
-                        <div ng-message="required">Name is required.</div>
-                    </div>
-                </md-input-container>
-            </div>
             <!-- Regular Days -->
             <md-subheader class="md-no-sticky">Regular Days</md-subheader>
             <div layout="row" layout-wrap flex>
