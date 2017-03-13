@@ -6,7 +6,7 @@
         <!-- Subheader -->
         <md-toolbar class="white-toolbar" md-scroll-shrink ng-if="subheader.show" ui-view="subheader"></md-toolbar>
         <!-- Content -->
-        <md-content ui-view="content" flex></md-content>
+        <md-content ui-view="content" flex md-swipe-right="toggleSidenav('left')"></md-content>
     </div>
     <!-- FAB -->
     <md-button class="md-fab md-primary md-fab-bottom-right z-index-75" ng-if="fab.show" ng-click="fab.action()" aria-label="FAB">
