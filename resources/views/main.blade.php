@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="loginModule">
+<html lang="en" ng-app="auth">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,7 +15,7 @@
 </head>
 <body>
 	<!-- Main View -->
-	<div class="main-view no-opacity" ng-controller="homePageController" ng-init="show()" id="main">
+	<div class="main-view no-opacity" ng-controller="formController" ng-init="show()" id="main">
 		<md-content flex layout="column" layout-align="center center" class="full-height-min main-content">
 			<a href="/">
 				<h1 class="md-display-3 weight-100 white-text">EZPayPlus</h1>
@@ -35,24 +35,7 @@
 	</div>
 	<!-- Vendor Scripts -->
 	<script src="/js/vendor.js"></script>
-
-	<script>
-		var loginModule = angular.module('loginModule', ['ngMaterial', 'ngMessages',]);
-
-		loginModule
-			.config(['$mdThemingProvider', function($mdThemingProvider){
-				/* Defaul Theme Blue - Light Blue */
-				$mdThemingProvider.theme('default')
-					.primaryPalette('blue')
-					.accentPalette('deep-purple')
-			}]);
-
-		loginModule
-			.controller('homePageController', ['$scope', function($scope){
-				$scope.show = function(){
-					angular.element(document.querySelector('.main-view')).removeClass('no-opacity');
-				};
-			}]);
-	</script>
+	<!-- Auth Scripts -->
+	<script src="/js/auth.js"></script>
 </body>
 </html>

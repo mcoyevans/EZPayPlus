@@ -1,82 +1,53 @@
-@extends('layouts.app')
+@extends('main')
 
 @section('content')
-<div class="container">
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-            <div class="panel panel-default">
-                <div class="panel-heading">Register</div>
-                <div class="panel-body">
-                    <form class="form-horizontal" role="form" method="POST" action="{{ url('/register') }}">
-                        {{ csrf_field() }}
-
-                        <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
-                            <label for="name" class="col-md-4 control-label">Name</label>
-
-                            <div class="col-md-6">
-                                <input id="name" type="text" class="form-control" name="name" value="{{ old('name') }}" required autofocus>
-
-                                @if ($errors->has('name'))
-                                    <span class="help-block">
-                                        <strong>{{ $errors->first('name') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
-                            <label for="email" class="col-md-4 control-label">E-Mail Address</label>
-
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" required>
-
-                                @if ($errors->has('email'))
-                                    <span class="help-block">
-                                        <strong>{{ $errors->first('email') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
-                            <label for="password" class="col-md-4 control-label">Password</label>
-
-                            <div class="col-md-6">
-                                <input id="password" type="password" class="form-control" name="password" required>
-
-                                @if ($errors->has('password'))
-                                    <span class="help-block">
-                                        <strong>{{ $errors->first('password') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="form-group{{ $errors->has('password_confirmation') ? ' has-error' : '' }}">
-                            <label for="password-confirm" class="col-md-4 control-label">Confirm Password</label>
-
-                            <div class="col-md-6">
-                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required>
-
-                                @if ($errors->has('password_confirmation'))
-                                    <span class="help-block">
-                                        <strong>{{ $errors->first('password_confirmation') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="col-md-6 col-md-offset-4">
-                                <button type="submit" class="btn btn-primary">
-                                    Register
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-@endsection
+	<md-card>
+		<md-card-content>
+			<form method="POST" action="/register" class="form-medium">
+				<div layout="row" flex>
+					{!! csrf_field() !!}
+					<!-- Company -->
+					<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+						<label>Company</label>
+						<input type="text" name="company" value="{{ old('company') }}" required>
+					</md-input-container>
+				</div>
+				<div layout="row">
+					<!-- Name -->
+					<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+						<label>Name</label>
+						<input type="text" name="name" value="{{ old('name') }}" required>
+					</md-input-container>
+					<!-- User Name -->
+					<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+						<label>User Name</label>
+						<input type="text" name="username" value="{{ old('username') }}" required>
+					</md-input-container>
+				</div>
+				<div layout="row">
+					<!-- Password -->
+					<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+						<label>Password</label>
+						<input type="password" name="password" required>
+						 @if ($errors->has('password'))
+							<div class="pattern">{{ $errors->first('password') }}</div>
+                        @endif
+					</md-input-container>
+					<!-- Confirm Password -->
+					<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+						<label>Confirm Password</label>
+						<input type="password" name="password_confirmation" required>
+						 @if ($errors->has('password_confirmation'))
+							<div class="pattern">{{ $errors->first('password_confirmation') }}</div>
+                        @endif
+					</md-input-container>
+				</div>
+					<div class="md-actions" layout="row" layout-align="end center">
+						<!-- Register -->
+						<md-button type="submit" class="md-primary md-raised">Register</md-button>
+					</div>
+				</div>
+			</form>
+		</md-card-content>
+	</md-card>
+@stop

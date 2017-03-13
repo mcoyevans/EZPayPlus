@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 
 use App\Company;
+use App\User;
 use App\City;
+use Auth;
 use Gate;
 use DB;
 
@@ -60,7 +62,37 @@ class CompanyController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'company' => 'required',
+            'name' => 'required',
+            'username' => 'required|unique:users',
+            'password' => 'required|confirmed'
+        ]);
+
+        // DB::transaction(function() use($request){
+            $company = new Company();
+
+            $company->name = $request->company;
+
+            $company->save();
+
+            $user = new User;
+
+            $user->name = $request->name;
+            $user->username = $request->username;
+            $user->password = bcrypt($request->password);
+            $user->group_id = 1;
+
+            $user->save();
+
+            if (Auth::attempt(['username' => $request->username, 'password' => $request->password])) {
+                // Authentication passed...
+                return redirect('/home');
+            }
+
+            return redirect('/login');
+        // });
+
     }
 
     /**

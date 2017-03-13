@@ -11,10 +11,13 @@
 |
 */
 
+Auth::routes();
 
 Route::get('/', 'HomeController@home');
 
-Auth::routes();
+Route::get('/register', 'HomeController@register');
+Route::get('/login', 'HomeController@home');
+Route::post('/register', 'CompanyController@store');
 
 /* Determines what type of user then returns the appropriate views*/
 Route::get('/home', 'HomeController@index');

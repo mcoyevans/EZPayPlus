@@ -33,6 +33,9 @@ elixir(function(mix) {
         /* App Scripts */
         .scriptsIn('public/app/components/app', 'public/js/app.js')
 
+        /* Auth Scripts */
+        .scriptsIn('public/app/components/auth', 'public/js/auth.js')
+
         /* HRIS Scripts */
         .scriptsIn('public/app/components/hris', 'public/js/hris.js')
 
