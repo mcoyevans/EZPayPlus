@@ -77,6 +77,8 @@ Route::group(['prefix' => 'user'], function(){
 	Route::post('check-password', 'UserController@checkPassword');
 	Route::post('enlist', 'UserController@enlist');
 	Route::post('logout', 'UserController@logout');
+	Route::post('upload-avatar/{userID}', 'UserController@uploadAvatar');
+	Route::get('avatar/{userID}', 'UserController@avatar');
 });
 
 /* Company Routes */

@@ -10,9 +10,50 @@ use App\User;
 use Auth;
 use Hash;
 use Gate;
+use Storage;
 
 class UserController extends Controller
 {
+    /**
+     * View user avatar and upload new avatar.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function avatar($id)
+    {
+        $user = User::withTrashed()->where('id', $id)->first();
+
+        return response()->file(storage_path() .'/app/'. $user->avatar_path);
+    }
+
+    /**
+     * Upload post photo.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function uploadAvatar(Request $request, $id)
+    {
+        if($request->user()->id != $id)
+        {
+            abort(403, 'Unauthorized action');
+        }
+
+        $user = User::where('id', $request->user()->id)->first();
+
+        if($user->avatar_path)
+        {
+            Storage::delete($user->avatar_path);
+        }
+
+        $path = Storage::putFileAs('avatars', $request->file('file'), $request->user()->id);
+
+        $user->avatar_path = $path;
+
+        $user->save();
+
+        return $user->avatar_path;
+    }
+    
     /**
      * Display a listing of the resource with parameters.
      *
