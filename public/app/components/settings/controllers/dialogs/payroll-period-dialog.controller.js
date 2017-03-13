@@ -135,6 +135,13 @@ settings
 					$scope.payroll_period.end_cut_off = new Date(back_up_date.end_cut_off);
 					$scope.payroll_period.payout = new Date(back_up_date.payout);
 				})
+				.error(function(){
+					$scope.error = true;
+
+					$scope.payroll_period.start_cut_off = new Date(back_up_date.start_cut_off);
+					$scope.payroll_period.end_cut_off = new Date(back_up_date.end_cut_off);
+					$scope.payroll_period.payout = new Date(back_up_date.payout);	
+				})
 		}
 
 		$scope.submit = function(){
