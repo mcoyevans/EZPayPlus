@@ -20,24 +20,24 @@
                         <div ng-message="required">Name is required.</div>
                     </div>
                 </md-input-container>
-                <!-- Email -->
-                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm ng-if="!edit">
-                    <label>Email</label>
-                    <input type="email" name="Email" required minlength="10" maxlength="100" ng-pattern="/^.+@.+\..+$/" ng-model="user.email" ng-blur="checkDuplicate()" ng-disabled="busy">
-                    <div class="pattern" ng-if="duplicate && userForm.Email.$valid">Email already in use.</div>
-                    <div ng-messages="userForm.Email.$error" ng-if="userForm.Email.$touched">
-                        <div ng-message-exp="['required', 'minlength', 'maxlength', 'pattern']">
-                            Email must be between 10 and 100 characters long and look like an e-mail address.
-                        </div>
-                    </div>
-                </md-input-container>
                 <!-- Username -->
-                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm ng-if="!edit">
                     <label>Username</label>
                     <input type="text" name="Username" required ng-model="user.username" ng-blur="checkDuplicateUsername()" ng-disabled="busy">
                     <div class="pattern" ng-if="duplicate_username && userForm.Username.$valid">Username already in use.</div>
                     <div ng-messages="userForm.Username.$error" ng-if="userForm.Username.$touched">
                         <div ng-message="required">Username is required.</div>
+                    </div>
+                </md-input-container>
+                <!-- Email -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Email</label>
+                    <input type="email" name="Email" minlength="10" maxlength="100" ng-pattern="/^.+@.+\..+$/" ng-model="user.email" ng-blur="checkDuplicate()" ng-disabled="busy">
+                    <div class="pattern" ng-if="duplicate && userForm.Email.$valid">Email already in use.</div>
+                    <div ng-messages="userForm.Email.$error" ng-if="userForm.Email.$touched">
+                        <div ng-message-exp="['required', 'minlength', 'maxlength', 'pattern']">
+                            Email must be between 10 and 100 characters long and look like an e-mail address.
+                        </div>
                     </div>
                 </md-input-container>
             </div>
