@@ -568,7 +568,7 @@ hris
 
 			request.orderBy = [
 				{
-					'label': 'employee_number',
+					'label': 'created_at',
 					'sort' : 'desc'
 				}
 			]

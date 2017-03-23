@@ -1,6 +1,6 @@
 <form name="form.employeeForm" flex ng-if="show">
 	<md-subheader class="md-primary">Primary Information</md-subheader>
-	<md-button class="md-primary" ng-click="test()">Auto Fill</md-button>
+	<!-- <md-button class="md-primary" ng-click="test()">Auto Fill</md-button> -->
 	<div layout="row" flex layout-align="center center">
 		<md-card layout="column" flex flex-gt-md="80">
 			<md-card-content>
@@ -8,7 +8,7 @@
 					<!-- Employee ID -->
 					<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
 						<label>Employee ID</label>
-						<input type="number" name="EmployeeID" ng-model="employee.employee_number" min="0" required ng-blur="checkDuplicate()" ng-disabled="busy">
+						<input type="text" name="EmployeeID" ng-model="employee.employee_number" required ng-blur="checkDuplicate()" ng-disabled="busy">
 						<div class="hint" ng-if="last_employee_number && form.employeeForm.EmployeeID.$untouched">Last Employee ID used was {{last_employee_number}}.</div>
 						<div class="pattern" ng-if="duplicate">Employee ID already in use.</div>
 						<div ng-messages="form.employeeForm.EmployeeID.$error" ng-if="form.employeeForm.EmployeeID.$touched">
