@@ -75,6 +75,7 @@ class CreatePayrollEntriesTable extends Migration
             $table->float('absent')->nullable();
             $table->float('taxable_income');
             $table->float('gross_pay');
+            $table->float('partial_thirteenth_month_pay');
             $table->float('total_deductions');
             $table->float('additional_earnings')->nullable();
             $table->float('additional_deductions')->nullable();

@@ -69,6 +69,8 @@ Route::resource('sss', 'SSSController');
 Route::resource('tax', 'TaxController');
 Route::resource('tax-code', 'TaxCodeController');
 Route::resource('time-interpretation', 'TimeInterpretationController');
+Route::resource('thirhteenth-month-pay-process', 'ThirteenthMonthPayProcessController');
+Route::resource('thirhteenth-month-pay-entry', 'ThirteenthMonthPayEntryController');
 Route::resource('user', 'UserController');
 
 /* User Routes */

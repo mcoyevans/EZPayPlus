@@ -773,6 +773,2030 @@ settings
 		};
 	}]);
 settings
+	.controller('createBranchDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.branch = {};
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post('/branch/check-duplicate', $scope.branch)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.branchForm.$invalid){
+				angular.forEach($scope.branchForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+				Helper.post('/branch', $scope.branch)
+					.success(function(duplicate){
+						if(duplicate){
+							$scope.busy = false;
+							return;
+						}
+
+						Helper.stop();
+					})
+					.error(function(){
+						$scope.busy = false;
+						$scope.error = true;
+					});
+			}
+		}
+	}]);
+settings
+	.controller('createCostCenterDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.cost_center = {};
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post('/cost-center/check-duplicate', $scope.cost_center)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.costCenterForm.$invalid){
+				angular.forEach($scope.costCenterForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+				Helper.post('/cost-center', $scope.cost_center)
+					.success(function(duplicate){
+						if(duplicate){
+							$scope.busy = false;
+							return;
+						}
+
+						Helper.stop();
+					})
+					.error(function(){
+						$scope.busy = false;
+						$scope.error = true;
+					});
+			}
+		}
+	}]);
+settings
+	.controller('createGroupDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.group = {};
+		$scope.group.modules = [];
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		Helper.get('/module')
+			.success(function(data){
+				$scope.modules = data;
+			})
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post('/group/check-duplicate', $scope.group)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.groupForm.$invalid){
+				angular.forEach($scope.groupForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+				
+				Helper.post('/group', $scope.group)
+					.success(function(duplicate){
+						if(duplicate){
+							$scope.busy = false;
+							return;
+						}
+
+						Helper.stop();
+					})
+					.error(function(){
+						$scope.busy = false;
+						$scope.error = true;
+					});
+			}
+		}
+	}]);
+settings
+	.controller('createHouseBankDialogController', ['$scope', '$filter', 'Helper', function($scope, $filter, Helper){
+		$scope.house_bank = {};
+		$scope.currency = {};
+		$scope.duplicateBankAccountNumber = false;
+		$scope.duplicateGLAccount = false;
+
+		$scope.busy = false;
+
+		Helper.get('/currency')
+			.success(function(data){
+				$scope.currencies = data;
+			})
+
+		$scope.currency.getItems = function(query){
+			var results = query ? $filter('filter')($scope.currencies, query) : $scope.currencies;
+			return results;
+		}
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(query){
+			Helper.post('/house-bank/check-duplicate', query)
+				.success(function(data){
+					if(query.bank_account_number)
+					{
+						$scope.duplicateBankAccountNumber = data;
+					}
+					else if(query.gl_account)
+					{
+						$scope.duplicateGLAccount = data;
+					}
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.houseBankForm.$invalid){
+				angular.forEach($scope.houseBankForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			if(!$scope.duplicateBankAccountNumber && !$scope.duplicateGLAccount)
+			{
+				$scope.busy = true;
+				Helper.post('/house-bank', $scope.house_bank)
+					.success(function(duplicate){
+						if(duplicate){
+							$scope.busy = false;
+							return;
+						}
+
+						Helper.stop();
+					})
+					.error(function(){
+						$scope.busy = false;
+						$scope.error = true;
+					});
+			}
+		}
+	}]);
+settings
+	.controller('createUserDialogController', ['$scope', 'Helper', function($scope, Helper){
+		var user = Helper.authUser();
+
+		$scope.user = {};
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+		
+		Helper.post('/group/enlist')
+			.success(function(data){
+				$scope.groups = data;
+			})
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post('/user/check-email', $scope.user)
+				.success(function(data){
+					$scope.duplicate = data ? true : false;
+				})
+		}
+
+		$scope.checkDuplicateUsername = function(){
+			Helper.post('/user/check-username', $scope.user)
+				.success(function(data){
+					$scope.duplicate_username = data ? true : false;
+				})
+		}
+
+		$scope.submit = function(){
+			$scope.error = false;
+			if($scope.userForm.$invalid){
+				angular.forEach($scope.userForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			if(!$scope.duplicate && !$scope.duplicate_username && $scope.user.password == $scope.user.confirm)
+			{
+				$scope.busy = true;
+				Helper.post('/user', $scope.user)
+					.success(function(duplicate){
+						if(duplicate){
+							$scope.busy = false;
+							return;
+						}
+
+						Helper.stop();
+					})
+					.error(function(){
+						$scope.busy = false;
+						$scope.error = true;
+					});
+			}
+		}
+	}]);
+settings
+	.controller('earningsDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.config = Helper.fetch();
+
+		Helper.get('/de-minimis')
+			.success(function(data){
+				$scope.de_minimis = data;
+			})
+
+		if($scope.config.action == 'create')
+		{
+			$scope.allowance_type = {};
+		}
+		else if($scope.config.action == 'edit')
+		{
+			Helper.get($scope.config.url + '/' + $scope.config.id)
+				.success(function(data){
+					$scope.allowance_type = data;
+				})
+		}
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post($scope.config.url + '/check-duplicate', $scope.allowance_type)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.earningsForm.$invalid){
+				angular.forEach($scope.earningsForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+
+				if($scope.config.action == 'create')
+				{
+					Helper.post($scope.config.url, $scope.allowance_type)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+				else if($scope.config.action == 'edit')
+				{
+					Helper.put($scope.config.url + '/' + $scope.config.id, $scope.allowance_type)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+			}
+		}
+	}]);
+settings
+	.controller('editBranchDialogController', ['$scope', 'Helper', function($scope, Helper){
+		var branch = Helper.fetch();
+
+		Helper.get('/branch/' + branch.id)
+			.success(function(data){
+				$scope.branch = data;
+			})
+			.error(function(){
+				Preloader.error();
+			});
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post('/branch/check-duplicate', $scope.branch)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.branchForm.$invalid){
+				angular.forEach($scope.branchForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+				Helper.put('/branch/' + $scope.branch.id, $scope.branch)
+					.success(function(duplicate){
+						if(duplicate){
+							$scope.busy = false;
+							return;
+						}
+
+						Helper.stop();
+					})
+					.error(function(){
+						$scope.busy = false;
+						$scope.error = true;
+					});
+			}
+		}
+	}]);
+settings
+	.controller('editCostCenterDialogController', ['$scope', 'Helper', function($scope, Helper){
+		var cost_center = Helper.fetch();
+
+		Helper.get('/cost-center/' + cost_center.id)
+			.success(function(data){
+				$scope.cost_center = data;
+			})
+			.error(function(){
+				Preloader.error();
+			});
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post('/cost-center/check-duplicate', $scope.cost_center)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.costCenterForm.$invalid){
+				angular.forEach($scope.costCenterForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+				Helper.put('/cost-center/' + $scope.cost_center.id, $scope.cost_center)
+					.success(function(duplicate){
+						if(duplicate){
+							$scope.busy = false;
+							return;
+						}
+
+						Helper.stop();
+					})
+					.error(function(){
+						$scope.busy = false;
+						$scope.error = true;
+					});
+			}
+		}
+	}]);
+settings
+	.controller('editGroupDialogController', ['$scope', 'Helper', function($scope, Helper){
+		var group = Helper.fetch();
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		var query = {};
+		query.where = [
+			{
+				'label':'id',
+				'condition':'=',
+				'value': group.id,
+			}
+		];
+		query.first = true;
+
+		Helper.get('/module')
+			.success(function(data){
+				$scope.modules = data;
+
+				$scope.count = $scope.modules.length;
+				Helper.post('/group/enlist', query)
+					.success(function(data){
+						$scope.group = data;
+						$scope.group.modules = [];
+
+						angular.forEach($scope.modules, function(item, key){
+							$scope.group.modules.push(null);
+
+							var query = {};
+							query.with = [
+								{
+									'relation':'module',
+									'withTrashed': false,
+								},
+							];
+							query.where = [
+								{
+									'label': 'group_id',
+									'condition': '=',
+									'value': group.id,
+								},
+								{
+									'label': 'module_id',
+									'condition': '=',
+									'value': item.id,
+								},
+							];
+							query.first = true;
+
+							Helper.post('/group-module/enlist', query)
+								.success(function(data){
+									$scope.count--;
+									if(data)
+									{
+										$scope.group.modules.splice(key, 1, data.module);
+									}
+								});
+						});
+					});
+			});
+		
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post('/group/check-duplicate', $scope.group)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.groupForm.$invalid){
+				angular.forEach($scope.groupForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+				
+				Helper.put('/group/' + group.id, $scope.group)
+					.success(function(duplicate){
+						if(duplicate){
+							$scope.busy = false;
+							return;
+						}
+
+						Helper.stop();
+					})
+					.error(function(){
+						$scope.busy = false;
+						$scope.error = true;
+					});
+			}
+		}
+	}]);
+settings
+	.controller('editHouseBankDialogController', ['$scope', '$filter', 'Helper', function($scope, $filter, Helper){
+		var house_bank = Helper.fetch();
+
+		$scope.currency = {};
+		$scope.duplicateBankAccountNumber = false;
+		$scope.duplicateGLAccount = false;
+
+		$scope.busy = false;
+
+		var query = {};
+		query.where = [
+			{
+				'label':'id',
+				'condition':'=',
+				'value':house_bank.id,
+			}
+		];
+		query.with = [
+			{
+				'relation':'currency',
+				'withTrashed':false,
+			},
+		];
+		query.first = true;
+
+		Helper.post('/house-bank/enlist', query)
+			.success(function(data){
+				$scope.house_bank = data;
+
+				Helper.get('/currency')
+					.success(function(data){
+						$scope.currencies = data;
+						$scope.currency.getItems();						
+					})
+			});
+
+		$scope.currency.getItems = function(query){
+			var results = query ? $filter('filter')($scope.currencies, query) : $scope.currencies;
+			return results;
+		}
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(query){
+			query.id = house_bank.id;
+			Helper.post('/house-bank/check-duplicate', query)
+				.success(function(data){
+					if(query.bank_account_number)
+					{
+						$scope.duplicateBankAccountNumber = data;
+					}
+					else if(query.gl_account)
+					{
+						$scope.duplicateGLAccount = data;
+					}
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.houseBankForm.$invalid){
+				angular.forEach($scope.houseBankForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			if(!$scope.duplicateBankAccountNumber && !$scope.duplicateGLAccount)
+			{
+				$scope.busy = true;
+				Helper.put('/house-bank/' + $scope.house_bank.id, $scope.house_bank)
+					.success(function(duplicate){
+						if(duplicate){
+							$scope.busy = false;
+							return;
+						}
+
+						Helper.stop();
+					})
+					.error(function(){
+						$scope.busy = false;
+						$scope.error = true;
+					});
+			}
+		}
+	}]);
+settings
+	.controller('editProfileDialogController', ['$scope', '$filter', 'Helper', function($scope, $filter, Helper){
+		$scope.company = {};
+		$scope.company.country_id = 177; //Philippines
+
+		$scope.busy = false;
+
+		var busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}
+
+		$scope.checkCity = function(){
+			var query = {};
+			query.search = $scope.company.city;
+			query.strict_search = true;
+
+			Helper.post('/city/enlist', query)
+				.success(function(data){
+					$scope.cities = data;
+					$scope.showError = data.length ? false : true;
+
+					if($scope.company.province_id)
+					{
+						$scope.checkProvince();
+					}
+				})
+		}
+
+		$scope.fetchProvinces = function(){
+			Helper.post('/province/enlist', $scope.company)
+				.success(function(data){
+					$scope.provinces = data;
+				})
+		}
+
+		$scope.checkProvince = function(){
+			var query = {};
+			query.where = [
+				{
+					'label': 'id',
+					'condition': '=',
+					'value': $scope.company.province_id
+				}
+			];
+			query.city = $scope.company.city;
+			query.result = 'first';
+
+			Helper.post('/province/enlist', query)
+				.success(function(data){
+					$scope.noMatches = data.cities.length ? false : true;
+				})
+		}
+
+		$scope.formatPagIBIG = function(){
+			if($scope.companyForm.PagIBIG.$valid)
+			{
+				var first = $scope.pagibig.slice(0,4);
+				var second = $scope.pagibig.slice(4,8);
+				var third = $scope.pagibig.slice(8,12);
+
+				$scope.company.pagibig = first + '-' + second + '-' + third;
+			}
+		}
+
+		$scope.formatPhilHealth = function(){
+			if($scope.companyForm.PhilHealth.$valid)
+			{
+				var first = $scope.philhealth.slice(0,2);
+				var second = $scope.philhealth.slice(2,11);
+				var third = $scope.philhealth.slice(11,12);
+
+				$scope.company.philhealth = first + '-' + second + '-' + third;
+			}
+		}
+
+		$scope.formatSSS = function(){
+			if($scope.companyForm.SSS.$valid)
+			{
+				var first = $scope.sss.slice(0,2);
+				var second = $scope.sss.slice(2,9);
+				var third = $scope.sss.slice(9,10);
+
+				$scope.company.sss = first + '-' + second + '-' + third;
+			}
+		}	
+
+		$scope.formatTIN = function(){
+			if($scope.companyForm.TIN.$valid)
+			{
+				var first = $scope.tin.slice(0,3);
+				var second = $scope.tin.slice(3,6);
+				var third = $scope.tin.slice(6,9);
+
+				$scope.company.tin = first + '-' + second + '-' + third;
+			}
+		}		
+
+		$scope.submit = function(){
+			if($scope.companyForm.$invalid){
+				angular.forEach($scope.companyForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			
+			$scope.busy = true;
+			Helper.put('/company/1', $scope.company)
+				.success(function(duplicate){
+					Helper.stop();
+				})
+				.error(function(){
+					$scope.busy = false;
+					$scope.error = true;
+				});
+		}
+
+		$scope.init = function()
+		{
+			var query = {};
+
+			query.with = ['city'];
+
+			Helper.post('/company/enlist', query)
+				.success(function(data){
+					data.city = data.city.name;
+
+					$scope.pagibig = data.pagibig.replace(/-/g, '');
+					$scope.philhealth = data.philhealth.replace(/-/g, '');
+					$scope.sss = data.sss.replace(/-/g, '');
+					$scope.tin = data.tin.replace(/-/g, '');
+
+					$scope.company = data;
+
+					$scope.checkCity();
+					$scope.fetchProvinces();
+				})
+		}();
+	}]);
+settings
+	.controller('editUserDialogController', ['$scope', 'Helper', function($scope, Helper){
+		var user = Helper.authUser();
+
+		var dataUser = Helper.fetch();
+		
+		$scope.edit = true;
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		Helper.get('/user/' + dataUser.id)
+			.success(function(data){
+				$scope.user = data;
+			})
+
+		Helper.post('/group/enlist')
+			.success(function(data){
+				$scope.groups = data;
+			})
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post('/user/check-email', $scope.user)
+				.success(function(data){
+					$scope.duplicate = data ? true : false;
+				})
+		}
+
+		$scope.checkDuplicateUsername = function(){
+			Helper.post('/user/check-username', $scope.user)
+				.success(function(data){
+					$scope.duplicate_username = data ? true : false;
+				})
+		}
+
+		$scope.submit = function(){
+			$scope.error = false;
+			if($scope.userForm.$invalid){
+				angular.forEach($scope.userForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+				Helper.put('/user/' + dataUser.id , $scope.user)
+					.success(function(duplicate){
+						if(duplicate){
+							$scope.busy = false;
+							return;
+						}
+
+						Helper.stop();
+					})
+					.error(function(){
+						$scope.busy = false;
+						$scope.error = true;
+					});
+			}
+		}
+	}]);
+settings
+	.controller('holidayDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.config = Helper.fetch();
+
+		$scope.holiday = {};
+
+		$scope.types = ['Regular Holiday', 'Special Non-Working Holiday']
+
+		if($scope.config.action == 'create')
+		{
+			$scope.holiday.date = new Date();
+
+			$scope.holiday.branches = [];
+			$scope.holiday.cost_centers = [];
+
+			Helper.get('/branch')
+				.success(function(data){
+					$scope.branches = data;
+				})
+
+			Helper.get('/cost-center')
+				.success(function(data){
+					$scope.cost_centers = data;
+				})
+		}
+
+		else if($scope.config.action == 'edit')
+		{
+			var query = {
+				'where': [
+					{
+						'label': 'id',
+						'condition': '=',
+						'value': $scope.config.id,
+					},
+				],
+				'first': true,
+			}
+
+			Helper.post('/holiday/enlist', query)
+				.success(function(data){
+					data.date = new Date(data.date);
+
+					$scope.holiday = data;
+
+					$scope.holiday.branches = [];
+					$scope.holiday.cost_centers = [];
+
+					Helper.get('/branch')
+						.success(function(data){
+							$scope.branches = data;
+
+							$scope.branches_count = $scope.branches.length;
+							angular.forEach($scope.branches, function(item, key){
+								$scope.holiday.branches.push(null);
+
+								var query = {};
+								query.with = [
+									{
+										'relation':'branch',
+										'withTrashed': false,
+									},
+								];
+								query.where = [
+									{
+										'label': 'holiday_id',
+										'condition': '=',
+										'value': $scope.config.id,
+									},
+									{
+										'label': 'branch_id',
+										'condition': '=',
+										'value': item.id,
+									},
+								];
+								query.first = true;
+
+								Helper.post('/branch-holiday/enlist', query)
+									.success(function(data){
+										$scope.branches_count--;
+										if(data)
+										{
+											$scope.holiday.branches.splice(key, 1, data.branch);
+										}
+									});
+							});
+						})
+
+					Helper.get('/cost-center')
+						.success(function(data){
+							$scope.cost_centers = data;
+
+							$scope.cost_centers_count = $scope.cost_centers.length;
+							angular.forEach($scope.cost_centers, function(item, key){
+								$scope.holiday.cost_centers.push(null);
+
+								var query = {};
+								query.with = [
+									{
+										'relation':'cost_center',
+										'withTrashed': false,
+									},
+								];
+								query.where = [
+									{
+										'label': 'holiday_id',
+										'condition': '=',
+										'value': $scope.config.id,
+									},
+									{
+										'label': 'cost_center_id',
+										'condition': '=',
+										'value': item.id,
+									},
+								];
+								query.first = true;
+
+								Helper.post('/cost-center-holiday/enlist', query)
+									.success(function(data){
+										$scope.cost_centers_count--;
+										if(data)
+										{
+											$scope.holiday.cost_centers.splice(key, 1, data.cost_center);
+										}
+									});
+							});
+						})
+				})
+				.error(function(){
+					Helper.error();
+				})
+		}
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			var back_up_date = {}
+
+			back_up_date.date = new Date($scope.holiday.date);
+
+			$scope.holiday.date = $scope.holiday.date.toDateString();
+
+			Helper.post('/holiday/check-duplicate', $scope.holiday)
+				.success(function(data){
+					$scope.duplicate = data;
+
+					$scope.holiday.date = new Date(back_up_date.date);
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.holidayForm.$invalid){
+				angular.forEach($scope.holidayForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+
+			angular.forEach($scope.holiday.branches, function(item){
+
+			});
+
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+
+				var back_up_date = {}
+
+				back_up_date.date = new Date($scope.holiday.date);
+
+				$scope.holiday.date = $scope.holiday.date.toDateString();
+
+				if($scope.config.action == 'create')
+				{
+					Helper.post('/holiday', $scope.holiday)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+
+							$scope.holiday.date = new Date(back_up_date.date);
+						});
+				}
+				if($scope.config.action == 'edit')
+				{
+					Helper.put('/holiday/' + $scope.config.id, $scope.holiday)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+
+							$scope.holiday.date = new Date(back_up_date.date);
+						});
+				}
+			}
+		}
+	}]);
+settings
+	.controller('leaveTypeDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.config = Helper.fetch();
+
+		if($scope.config.action == 'create')
+		{
+			$scope.leave = {};
+		}
+		else if($scope.config.action == 'edit')
+		{
+			Helper.get($scope.config.url + '/' + $scope.config.id)
+				.success(function(data){
+					$scope.leave = data;
+					$scope.leave.paid = data.paid ? true : false;
+					$scope.leave.convertible = data.convertible ? true : false;
+				})
+		}
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post($scope.config.url + '/check-duplicate', $scope.leave)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.leaveTypeForm.$invalid){
+				angular.forEach($scope.leaveTypeForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+
+				if($scope.config.action == 'create')
+				{
+					Helper.post($scope.config.url, $scope.leave)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+				else if($scope.config.action == 'edit')
+				{
+					Helper.put($scope.config.url + '/' + $scope.config.id, $scope.leave)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+			}
+		}
+	}]);
+settings
+	.controller('nameDescriptionDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.config = Helper.fetch();
+
+		if($scope.config.action == 'create')
+		{
+			$scope.model = {};
+		}
+		else if($scope.config.action == 'edit')
+		{
+			Helper.get($scope.config.url + '/' + $scope.config.id)
+				.success(function(data){
+					$scope.model = data;
+				})
+		}
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post($scope.config.url + '/check-duplicate', $scope.model)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.modelForm.$invalid){
+				angular.forEach($scope.modelForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+
+				if($scope.config.action == 'create')
+				{
+					Helper.post($scope.config.url, $scope.model)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+				else if($scope.config.action == 'edit')
+				{
+					Helper.put($scope.config.url + '/' + $scope.config.id, $scope.model)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+			}
+		}
+	}]);
+settings
+	.controller('payrollConfigurationDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.config = Helper.fetch();
+
+		$scope.payroll = {};
+
+		$scope.pay_frequencies = ['Semi-monthly', 'Monthly'];
+
+		$scope.thirteenth_month_pay_basis = ['Base', 'Gross'];
+
+		if($scope.config.action == 'create')
+		{
+			$scope.payroll.thirteenth_month_pay_basis = 'Base';
+
+			$scope.payroll.government_contributions = [
+				{
+					'name':'Withholding Tax',
+				},
+				{
+					'name':'SSS',
+				},
+				{
+					'name':'Pagibig',
+				},
+				{
+					'name':'Philhealth',
+				},
+			]
+		}
+
+		else if($scope.config.action == 'edit')
+		{
+			var query = {
+				'with': [
+					{
+						'relation': 'government_contributions',
+						'withTrashed': false,
+					},
+				],
+				'where': [
+					{
+						'label': 'id',
+						'condition': '=',
+						'value': $scope.config.id,
+					},
+				],
+				'first': true,
+			}
+
+			Helper.post('/payroll/enlist', query)
+				.success(function(data){
+					angular.forEach(data.government_contributions, function(item){
+						$scope.checkGovernmentContribution(item);
+					})
+
+					$scope.payroll = data;
+				})
+				.error(function(){
+					Helper.error();
+				})
+		}
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post('/payroll/check-duplicate', $scope.payroll)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.resetGovernmentContributions = function(){
+			angular.forEach($scope.payroll.government_contributions, function(item){
+				if($scope.payroll.pay_frequency == 'Semi-monthly')
+				{
+					item.third_cut_off = 0;
+					item.fourth_cut_off = 0;
+				}
+				else if($scope.payroll.pay_frequency == 'Monthly')
+				{
+					item.second_cut_off = 0;
+					item.third_cut_off = 0;
+					item.fourth_cut_off = 0;
+				}
+			});
+		}
+
+		$scope.checkGovernmentContribution = function(item){
+			if(item.first_cut_off || item.second_cut_off || item.third_cut_off || item.fourth_cut_off)
+			{
+				item.checked = true;
+			}
+			else{
+				item.checked = false;				
+			}
+		}
+
+		$scope.submit = function(){
+			$scope.unchecked = false;
+
+			if($scope.payrollForm.$invalid){
+				angular.forEach($scope.payrollForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+
+			angular.forEach($scope.payroll.government_contributions, function(item){
+				if(!item.checked){
+					$scope.unchecked = true;
+				}
+			});
+
+			if(!$scope.duplicate && !$scope.unchecked)
+			{
+				$scope.busy = true;
+				if($scope.config.action == 'create')
+				{
+					Helper.post('/payroll', $scope.payroll)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+				if($scope.config.action == 'edit')
+				{
+					Helper.put('/payroll/' + $scope.config.id, $scope.payroll)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+			}
+		}
+
+		Helper.get('/time-interpretation')
+			.success(function(data){
+				$scope.time_interepretations = data;
+			})
+	}]);
+settings
+	.controller('payrollPeriodDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.config = Helper.fetch();
+
+		$scope.payroll_period = {};
+
+		$scope.today = new Date();
+
+		if($scope.config.action == 'create')
+		{
+			$scope.payroll_period.start_cut_off = new Date();
+			$scope.payroll_period.end_cut_off = new Date();
+			$scope.payroll_period.payout = new Date();
+		}
+
+		else if($scope.config.action == 'edit')
+		{
+			var query = {
+				'with': [
+					{
+						'relation': 'payroll',
+						'withTrashed': false,
+					},
+				],
+				'where': [
+					{
+						'label': 'id',
+						'condition': '=',
+						'value': $scope.config.id,
+					},
+				],
+				'first': true,
+			}
+
+			Helper.post('/payroll-period/enlist', query)
+				.success(function(data){
+					data.start_cut_off = new Date(data.start_cut_off);
+					data.end_cut_off = new Date(data.end_cut_off);
+					data.payout = new Date(data.payout);
+
+					$scope.payroll_period = data;
+				})
+				.error(function(){
+					Helper.error();
+				})
+		}
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkCutOffs = function(date){
+			if(date == 'start')
+			{
+				if($scope.payroll_period.start_cut_off > $scope.payroll_period.end_cut_off)
+				{
+					$scope.payroll_period.end_cut_off = new Date($scope.payroll_period.start_cut_off);	
+				}
+			}
+			else if(date == 'end')
+			{
+				if($scope.payroll_period.end_cut_off > $scope.payroll_period.payout)
+				{
+					$scope.payroll_period.payout = new Date($scope.payroll_period.end_cut_off);	
+				}	
+			}
+
+			if($scope.payroll_period.payroll_id)
+			{
+				var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+				var query = {
+					'withCount': [
+						{
+							'relation': 'payroll_periods',
+							'withTrashed': false,
+							'whereBetween': months[$scope.payroll_period.start_cut_off.getMonth()],
+						},
+					],
+					'where': [
+						{
+							'label': 'id',
+							'condition': '=',
+							'value': $scope.payroll_period.payroll_id,
+						},
+					],
+					'first' : true,
+				}
+
+				Helper.post('/payroll/enlist', query)
+					.success(function(data){
+						if(data.pay_frequency == 'Weekly')
+						{
+							var max_cut_off = 4;
+						}
+						else if(data.pay_frequency == 'Semi-monthly')
+						{
+							var max_cut_off = 2; 
+						}
+						else if(data.pay_frequency == 'Monthly')
+						{
+							var max_cut_off = 1; 
+						}
+
+						$scope.limit = data.payroll_periods_count == max_cut_off; 
+					})
+					.error(function(){
+						$scope.error = true
+					});
+			}
+
+			$scope.checkDuplicate();
+		}
+
+		$scope.checkDuplicate = function(){
+			var back_up_date = {}
+
+			back_up_date.start_cut_off = new Date($scope.payroll_period.start_cut_off);
+			back_up_date.end_cut_off = new Date($scope.payroll_period.end_cut_off);
+			back_up_date.payout = new Date($scope.payroll_period.payout);
+
+			$scope.payroll_period.start_cut_off = $scope.payroll_period.start_cut_off.toDateString();
+			$scope.payroll_period.end_cut_off = $scope.payroll_period.end_cut_off.toDateString();
+			$scope.payroll_period.payout = $scope.payroll_period.payout.toDateString();
+
+			Helper.post('/payroll-period/check-duplicate', $scope.payroll_period)
+				.success(function(data){
+					$scope.duplicate = data;
+
+					$scope.payroll_period.start_cut_off = new Date(back_up_date.start_cut_off);
+					$scope.payroll_period.end_cut_off = new Date(back_up_date.end_cut_off);
+					$scope.payroll_period.payout = new Date(back_up_date.payout);
+				})
+				.error(function(){
+					$scope.error = true;
+
+					$scope.payroll_period.start_cut_off = new Date(back_up_date.start_cut_off);
+					$scope.payroll_period.end_cut_off = new Date(back_up_date.end_cut_off);
+					$scope.payroll_period.payout = new Date(back_up_date.payout);	
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.payrollPeriodForm.$invalid){
+				angular.forEach($scope.payrollPeriodForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+
+			if(!$scope.duplicate && !$scope.limit)
+			{
+				$scope.busy = true;
+
+				var back_up_date = {}
+
+				back_up_date.start_cut_off = new Date($scope.payroll_period.start_cut_off);
+				back_up_date.end_cut_off = new Date($scope.payroll_period.end_cut_off);
+				back_up_date.payout = new Date($scope.payroll_period.payout);
+
+				$scope.payroll_period.start_cut_off = $scope.payroll_period.start_cut_off.toDateString();
+				$scope.payroll_period.end_cut_off = $scope.payroll_period.end_cut_off.toDateString();
+				$scope.payroll_period.payout = $scope.payroll_period.payout.toDateString();
+
+				if($scope.config.action == 'create')
+				{
+					Helper.post('/payroll-period', $scope.payroll_period)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+
+							$scope.payroll_period.start_cut_off = new Date(back_up_date.start_cut_off);
+							$scope.payroll_period.end_cut_off = new Date(back_up_date.end_cut_off);
+							$scope.payroll_period.payout = new Date(back_up_date.payout);
+						});
+				}
+				if($scope.config.action == 'edit')
+				{
+					Helper.put('/payroll-period/' + $scope.config.id, $scope.payroll_period)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+
+							$scope.payroll_period.start_cut_off = new Date(back_up_date.start_cut_off);
+							$scope.payroll_period.end_cut_off = new Date(back_up_date.end_cut_off);
+							$scope.payroll_period.payout = new Date(back_up_date.payout);
+						});
+				}
+			}
+		}
+
+		Helper.get('/payroll')
+			.success(function(data){
+				$scope.payrolls = data;
+			})
+	}]);
+settings
+	.controller('positionDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.config = Helper.fetch();
+
+		Helper.get('/department')
+			.success(function(data){
+				$scope.departments = data;
+			})
+
+		Helper.get('/job-category')
+			.success(function(data){
+				$scope.job_categories = data;
+			})
+
+		Helper.get('/labor-type')
+			.success(function(data){
+				$scope.labor_types = data;
+			})		
+
+		if($scope.config.action == 'create')
+		{
+			$scope.position = {};
+		}
+		else if($scope.config.action == 'edit')
+		{
+			Helper.get($scope.config.url + '/' + $scope.config.id)
+				.success(function(data){
+					$scope.position = data;
+				})
+		}
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post($scope.config.url + '/check-duplicate', $scope.position)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.positionForm.$invalid){
+				angular.forEach($scope.positionForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+
+				if($scope.config.action == 'create')
+				{
+					Helper.post($scope.config.url, $scope.position)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+				else if($scope.config.action == 'edit')
+				{
+					Helper.put($scope.config.url + '/' + $scope.config.id, $scope.position)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+			}
+		}
+	}]);
+settings
+	.controller('sanctionLevelDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.config = Helper.fetch();
+
+		Helper.get('/sanction-type')
+			.success(function(data){
+				$scope.sanctions = data;
+			})
+
+		if($scope.config.action == 'create')
+		{
+			$scope.sanction_level = {};
+		}
+		else if($scope.config.action == 'edit')
+		{
+			Helper.get($scope.config.url + '/' + $scope.config.id)
+				.success(function(data){
+					$scope.sanction_level = data;
+				})
+		}
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post($scope.config.url + '/check-duplicate', $scope.sanction_level)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.sanctionLevelForm.$invalid){
+				angular.forEach($scope.sanctionLevelForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+
+				if($scope.config.action == 'create')
+				{
+					Helper.post($scope.config.url, $scope.sanction_level)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+				else if($scope.config.action == 'edit')
+				{
+					Helper.put($scope.config.url + '/' + $scope.config.id, $scope.sanction_level)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+			}
+		}
+	}]);
+settings
+	.controller('shiftScheduleDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.config = Helper.fetch();
+
+		if($scope.config.action == 'create')
+		{
+			$scope.shift_schedule = {};
+		}
+		else if($scope.config.action == 'edit')
+		{
+			Helper.get($scope.config.url + '/' + $scope.config.id)
+				.success(function(data){
+					$scope.shift_schedule = data;
+					$scope.shift_schedule.paid = data.paid ? true : false;
+					$scope.shift_schedule.convertible = data.convertible ? true : false;
+				})
+		}
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post($scope.config.url + '/check-duplicate', $scope.shift_schedule)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.shiftScheduleForm.$invalid){
+				angular.forEach($scope.shiftScheduleForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+
+				if($scope.config.action == 'create')
+				{
+					Helper.post($scope.config.url, $scope.shift_schedule)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+				else if($scope.config.action == 'edit')
+				{
+					Helper.put($scope.config.url + '/' + $scope.config.id, $scope.shift_schedule)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+			}
+		}
+	}]);
+settings
+	.controller('timeInterpretationDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.config = Helper.fetch();
+
+		if($scope.config.action == 'create')
+		{
+			$scope.time_interpretation = {};
+		}
+		else if($scope.config.action == 'edit')
+		{
+			Helper.get($scope.config.url + '/' + $scope.config.id)
+				.success(function(data){
+					$scope.regular_working_hours = data.regular_working_hours;
+					$scope.night_differential = data.night_differential;
+					$scope.overtime = data.overtime;
+					$scope.overtime_night_differential = data.overtime_night_differential;
+					$scope.rest_day_rate = data.rest_day_rate;
+					$scope.rest_day_night_differential = data.rest_day_night_differential;
+					$scope.rest_day_overtime = data.rest_day_overtime;
+					$scope.rest_day_overtime_night_differential = data.rest_day_overtime_night_differential;
+
+					$scope.special_holiday_rate = data.special_holiday_rate;
+					$scope.special_holiday_night_differential = data.special_holiday_night_differential;
+					$scope.special_holiday_overtime = data.special_holiday_overtime;
+					$scope.special_holiday_overtime_night_differential = data.special_holiday_overtime_night_differential;
+					$scope.special_holiday_rest_day_rate = data.special_holiday_rest_day_rate;
+					$scope.special_holiday_rest_day_night_differential = data.special_holiday_rest_day_night_differential;
+					$scope.special_holiday_rest_day_overtime = data.special_holiday_rest_day_overtime;
+					$scope.special_holiday_rest_day_overtime_night_differential = data.special_holiday_rest_day_overtime_night_differential;
+
+					$scope.regular_holiday_rate = data.regular_holiday_rate;
+					$scope.regular_holiday_night_differential = data.regular_holiday_night_differential;
+					$scope.regular_holiday_overtime = data.regular_holiday_overtime;
+					$scope.regular_holiday_overtime_night_differential = data.regular_holiday_overtime_night_differential;
+					$scope.regular_holiday_rest_day_rate = data.regular_holiday_rest_day_rate;
+					$scope.regular_holiday_rest_day_night_differential = data.regular_holiday_rest_day_night_differential;
+					$scope.regular_holiday_rest_day_overtime = data.regular_holiday_rest_day_overtime;
+					$scope.regular_holiday_rest_day_overtime_night_differential = data.regular_holiday_rest_day_overtime_night_differential;
+
+					$scope.time_interpretation = data;
+				})
+		}
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post($scope.config.url + '/check-duplicate', $scope.time_interpretation)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.timeInterpretationForm.$invalid){
+				angular.forEach($scope.timeInterpretationForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+
+				if($scope.config.action == 'create')
+				{
+					Helper.post($scope.config.url, $scope.time_interpretation)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+				else if($scope.config.action == 'edit')
+				{
+					Helper.put($scope.config.url + '/' + $scope.config.id, $scope.time_interpretation)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+			}
+		}
+	}]);
+settings
 	.controller('adminSettingsSubheaderController', ['$scope', 'Helper', function($scope, Helper){
 		var setInit = function(data){
 			Helper.set(data);
@@ -3051,2026 +5075,6 @@ settings
 		];
 
 		setInit($scope.subheader.navs[0]);
-	}]);
-settings
-	.controller('createBranchDialogController', ['$scope', 'Helper', function($scope, Helper){
-		$scope.branch = {};
-		$scope.duplicate = false;
-
-		$scope.busy = false;
-
-		$scope.cancel = function(){
-			Helper.cancel();
-		}		
-
-		$scope.checkDuplicate = function(){
-			Helper.post('/branch/check-duplicate', $scope.branch)
-				.success(function(data){
-					$scope.duplicate = data;
-				})
-		}
-
-		$scope.submit = function(){
-			if($scope.branchForm.$invalid){
-				angular.forEach($scope.branchForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-
-				return;
-			}
-			if(!$scope.duplicate)
-			{
-				$scope.busy = true;
-				Helper.post('/branch', $scope.branch)
-					.success(function(duplicate){
-						if(duplicate){
-							$scope.busy = false;
-							return;
-						}
-
-						Helper.stop();
-					})
-					.error(function(){
-						$scope.busy = false;
-						$scope.error = true;
-					});
-			}
-		}
-	}]);
-settings
-	.controller('createCostCenterDialogController', ['$scope', 'Helper', function($scope, Helper){
-		$scope.cost_center = {};
-		$scope.duplicate = false;
-
-		$scope.busy = false;
-
-		$scope.cancel = function(){
-			Helper.cancel();
-		}		
-
-		$scope.checkDuplicate = function(){
-			Helper.post('/cost-center/check-duplicate', $scope.cost_center)
-				.success(function(data){
-					$scope.duplicate = data;
-				})
-		}
-
-		$scope.submit = function(){
-			if($scope.costCenterForm.$invalid){
-				angular.forEach($scope.costCenterForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-
-				return;
-			}
-			if(!$scope.duplicate)
-			{
-				$scope.busy = true;
-				Helper.post('/cost-center', $scope.cost_center)
-					.success(function(duplicate){
-						if(duplicate){
-							$scope.busy = false;
-							return;
-						}
-
-						Helper.stop();
-					})
-					.error(function(){
-						$scope.busy = false;
-						$scope.error = true;
-					});
-			}
-		}
-	}]);
-settings
-	.controller('createGroupDialogController', ['$scope', 'Helper', function($scope, Helper){
-		$scope.group = {};
-		$scope.group.modules = [];
-		$scope.duplicate = false;
-
-		$scope.busy = false;
-
-		Helper.get('/module')
-			.success(function(data){
-				$scope.modules = data;
-			})
-
-		$scope.cancel = function(){
-			Helper.cancel();
-		}		
-
-		$scope.checkDuplicate = function(){
-			Helper.post('/group/check-duplicate', $scope.group)
-				.success(function(data){
-					$scope.duplicate = data;
-				})
-		}
-
-		$scope.submit = function(){
-			if($scope.groupForm.$invalid){
-				angular.forEach($scope.groupForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-
-				return;
-			}
-			if(!$scope.duplicate)
-			{
-				$scope.busy = true;
-				
-				Helper.post('/group', $scope.group)
-					.success(function(duplicate){
-						if(duplicate){
-							$scope.busy = false;
-							return;
-						}
-
-						Helper.stop();
-					})
-					.error(function(){
-						$scope.busy = false;
-						$scope.error = true;
-					});
-			}
-		}
-	}]);
-settings
-	.controller('createHouseBankDialogController', ['$scope', '$filter', 'Helper', function($scope, $filter, Helper){
-		$scope.house_bank = {};
-		$scope.currency = {};
-		$scope.duplicateBankAccountNumber = false;
-		$scope.duplicateGLAccount = false;
-
-		$scope.busy = false;
-
-		Helper.get('/currency')
-			.success(function(data){
-				$scope.currencies = data;
-			})
-
-		$scope.currency.getItems = function(query){
-			var results = query ? $filter('filter')($scope.currencies, query) : $scope.currencies;
-			return results;
-		}
-
-		$scope.cancel = function(){
-			Helper.cancel();
-		}		
-
-		$scope.checkDuplicate = function(query){
-			Helper.post('/house-bank/check-duplicate', query)
-				.success(function(data){
-					if(query.bank_account_number)
-					{
-						$scope.duplicateBankAccountNumber = data;
-					}
-					else if(query.gl_account)
-					{
-						$scope.duplicateGLAccount = data;
-					}
-				})
-		}
-
-		$scope.submit = function(){
-			if($scope.houseBankForm.$invalid){
-				angular.forEach($scope.houseBankForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-
-				return;
-			}
-			if(!$scope.duplicateBankAccountNumber && !$scope.duplicateGLAccount)
-			{
-				$scope.busy = true;
-				Helper.post('/house-bank', $scope.house_bank)
-					.success(function(duplicate){
-						if(duplicate){
-							$scope.busy = false;
-							return;
-						}
-
-						Helper.stop();
-					})
-					.error(function(){
-						$scope.busy = false;
-						$scope.error = true;
-					});
-			}
-		}
-	}]);
-settings
-	.controller('createUserDialogController', ['$scope', 'Helper', function($scope, Helper){
-		var user = Helper.authUser();
-
-		$scope.user = {};
-
-		$scope.duplicate = false;
-
-		$scope.busy = false;
-		
-		Helper.post('/group/enlist')
-			.success(function(data){
-				$scope.groups = data;
-			})
-
-		$scope.cancel = function(){
-			Helper.cancel();
-		}		
-
-		$scope.checkDuplicate = function(){
-			Helper.post('/user/check-email', $scope.user)
-				.success(function(data){
-					$scope.duplicate = data ? true : false;
-				})
-		}
-
-		$scope.checkDuplicateUsername = function(){
-			Helper.post('/user/check-username', $scope.user)
-				.success(function(data){
-					$scope.duplicate_username = data ? true : false;
-				})
-		}
-
-		$scope.submit = function(){
-			$scope.error = false;
-			if($scope.userForm.$invalid){
-				angular.forEach($scope.userForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-
-				return;
-			}
-			if(!$scope.duplicate && !$scope.duplicate_username && $scope.user.password == $scope.user.confirm)
-			{
-				$scope.busy = true;
-				Helper.post('/user', $scope.user)
-					.success(function(duplicate){
-						if(duplicate){
-							$scope.busy = false;
-							return;
-						}
-
-						Helper.stop();
-					})
-					.error(function(){
-						$scope.busy = false;
-						$scope.error = true;
-					});
-			}
-		}
-	}]);
-settings
-	.controller('earningsDialogController', ['$scope', 'Helper', function($scope, Helper){
-		$scope.config = Helper.fetch();
-
-		Helper.get('/de-minimis')
-			.success(function(data){
-				$scope.de_minimis = data;
-			})
-
-		if($scope.config.action == 'create')
-		{
-			$scope.allowance_type = {};
-		}
-		else if($scope.config.action == 'edit')
-		{
-			Helper.get($scope.config.url + '/' + $scope.config.id)
-				.success(function(data){
-					$scope.allowance_type = data;
-				})
-		}
-
-		$scope.duplicate = false;
-
-		$scope.busy = false;
-
-		$scope.cancel = function(){
-			Helper.cancel();
-		}		
-
-		$scope.checkDuplicate = function(){
-			Helper.post($scope.config.url + '/check-duplicate', $scope.allowance_type)
-				.success(function(data){
-					$scope.duplicate = data;
-				})
-		}
-
-		$scope.submit = function(){
-			if($scope.earningsForm.$invalid){
-				angular.forEach($scope.earningsForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-
-				return;
-			}
-
-			if(!$scope.duplicate)
-			{
-				$scope.busy = true;
-
-				if($scope.config.action == 'create')
-				{
-					Helper.post($scope.config.url, $scope.allowance_type)
-						.success(function(duplicate){
-							if(duplicate){
-								$scope.busy = false;
-								return;
-							}
-
-							Helper.stop();
-						})
-						.error(function(){
-							$scope.busy = false;
-							$scope.error = true;
-						});
-				}
-				else if($scope.config.action == 'edit')
-				{
-					Helper.put($scope.config.url + '/' + $scope.config.id, $scope.allowance_type)
-						.success(function(duplicate){
-							if(duplicate){
-								$scope.busy = false;
-								return;
-							}
-
-							Helper.stop();
-						})
-						.error(function(){
-							$scope.busy = false;
-							$scope.error = true;
-						});
-				}
-			}
-		}
-	}]);
-settings
-	.controller('editBranchDialogController', ['$scope', 'Helper', function($scope, Helper){
-		var branch = Helper.fetch();
-
-		Helper.get('/branch/' + branch.id)
-			.success(function(data){
-				$scope.branch = data;
-			})
-			.error(function(){
-				Preloader.error();
-			});
-
-		$scope.duplicate = false;
-
-		$scope.busy = false;
-
-		$scope.cancel = function(){
-			Helper.cancel();
-		}		
-
-		$scope.checkDuplicate = function(){
-			Helper.post('/branch/check-duplicate', $scope.branch)
-				.success(function(data){
-					$scope.duplicate = data;
-				})
-		}
-
-		$scope.submit = function(){
-			if($scope.branchForm.$invalid){
-				angular.forEach($scope.branchForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-
-				return;
-			}
-			if(!$scope.duplicate)
-			{
-				$scope.busy = true;
-				Helper.put('/branch/' + $scope.branch.id, $scope.branch)
-					.success(function(duplicate){
-						if(duplicate){
-							$scope.busy = false;
-							return;
-						}
-
-						Helper.stop();
-					})
-					.error(function(){
-						$scope.busy = false;
-						$scope.error = true;
-					});
-			}
-		}
-	}]);
-settings
-	.controller('editCostCenterDialogController', ['$scope', 'Helper', function($scope, Helper){
-		var cost_center = Helper.fetch();
-
-		Helper.get('/cost-center/' + cost_center.id)
-			.success(function(data){
-				$scope.cost_center = data;
-			})
-			.error(function(){
-				Preloader.error();
-			});
-
-		$scope.duplicate = false;
-
-		$scope.busy = false;
-
-		$scope.cancel = function(){
-			Helper.cancel();
-		}		
-
-		$scope.checkDuplicate = function(){
-			Helper.post('/cost-center/check-duplicate', $scope.cost_center)
-				.success(function(data){
-					$scope.duplicate = data;
-				})
-		}
-
-		$scope.submit = function(){
-			if($scope.costCenterForm.$invalid){
-				angular.forEach($scope.costCenterForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-
-				return;
-			}
-			if(!$scope.duplicate)
-			{
-				$scope.busy = true;
-				Helper.put('/cost-center/' + $scope.cost_center.id, $scope.cost_center)
-					.success(function(duplicate){
-						if(duplicate){
-							$scope.busy = false;
-							return;
-						}
-
-						Helper.stop();
-					})
-					.error(function(){
-						$scope.busy = false;
-						$scope.error = true;
-					});
-			}
-		}
-	}]);
-settings
-	.controller('editGroupDialogController', ['$scope', 'Helper', function($scope, Helper){
-		var group = Helper.fetch();
-		$scope.duplicate = false;
-
-		$scope.busy = false;
-
-		var query = {};
-		query.where = [
-			{
-				'label':'id',
-				'condition':'=',
-				'value': group.id,
-			}
-		];
-		query.first = true;
-
-		Helper.get('/module')
-			.success(function(data){
-				$scope.modules = data;
-
-				$scope.count = $scope.modules.length;
-				Helper.post('/group/enlist', query)
-					.success(function(data){
-						$scope.group = data;
-						$scope.group.modules = [];
-
-						angular.forEach($scope.modules, function(item, key){
-							$scope.group.modules.push(null);
-
-							var query = {};
-							query.with = [
-								{
-									'relation':'module',
-									'withTrashed': false,
-								},
-							];
-							query.where = [
-								{
-									'label': 'group_id',
-									'condition': '=',
-									'value': group.id,
-								},
-								{
-									'label': 'module_id',
-									'condition': '=',
-									'value': item.id,
-								},
-							];
-							query.first = true;
-
-							Helper.post('/group-module/enlist', query)
-								.success(function(data){
-									$scope.count--;
-									if(data)
-									{
-										$scope.group.modules.splice(key, 1, data.module);
-									}
-								});
-						});
-					});
-			});
-		
-
-		$scope.cancel = function(){
-			Helper.cancel();
-		}		
-
-		$scope.checkDuplicate = function(){
-			Helper.post('/group/check-duplicate', $scope.group)
-				.success(function(data){
-					$scope.duplicate = data;
-				})
-		}
-
-		$scope.submit = function(){
-			if($scope.groupForm.$invalid){
-				angular.forEach($scope.groupForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-
-				return;
-			}
-			if(!$scope.duplicate)
-			{
-				$scope.busy = true;
-				
-				Helper.put('/group/' + group.id, $scope.group)
-					.success(function(duplicate){
-						if(duplicate){
-							$scope.busy = false;
-							return;
-						}
-
-						Helper.stop();
-					})
-					.error(function(){
-						$scope.busy = false;
-						$scope.error = true;
-					});
-			}
-		}
-	}]);
-settings
-	.controller('editHouseBankDialogController', ['$scope', '$filter', 'Helper', function($scope, $filter, Helper){
-		var house_bank = Helper.fetch();
-
-		$scope.currency = {};
-		$scope.duplicateBankAccountNumber = false;
-		$scope.duplicateGLAccount = false;
-
-		$scope.busy = false;
-
-		var query = {};
-		query.where = [
-			{
-				'label':'id',
-				'condition':'=',
-				'value':house_bank.id,
-			}
-		];
-		query.with = [
-			{
-				'relation':'currency',
-				'withTrashed':false,
-			},
-		];
-		query.first = true;
-
-		Helper.post('/house-bank/enlist', query)
-			.success(function(data){
-				$scope.house_bank = data;
-
-				Helper.get('/currency')
-					.success(function(data){
-						$scope.currencies = data;
-						$scope.currency.getItems();						
-					})
-			});
-
-		$scope.currency.getItems = function(query){
-			var results = query ? $filter('filter')($scope.currencies, query) : $scope.currencies;
-			return results;
-		}
-
-		$scope.cancel = function(){
-			Helper.cancel();
-		}		
-
-		$scope.checkDuplicate = function(query){
-			query.id = house_bank.id;
-			Helper.post('/house-bank/check-duplicate', query)
-				.success(function(data){
-					if(query.bank_account_number)
-					{
-						$scope.duplicateBankAccountNumber = data;
-					}
-					else if(query.gl_account)
-					{
-						$scope.duplicateGLAccount = data;
-					}
-				})
-		}
-
-		$scope.submit = function(){
-			if($scope.houseBankForm.$invalid){
-				angular.forEach($scope.houseBankForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-
-				return;
-			}
-			if(!$scope.duplicateBankAccountNumber && !$scope.duplicateGLAccount)
-			{
-				$scope.busy = true;
-				Helper.put('/house-bank/' + $scope.house_bank.id, $scope.house_bank)
-					.success(function(duplicate){
-						if(duplicate){
-							$scope.busy = false;
-							return;
-						}
-
-						Helper.stop();
-					})
-					.error(function(){
-						$scope.busy = false;
-						$scope.error = true;
-					});
-			}
-		}
-	}]);
-settings
-	.controller('editProfileDialogController', ['$scope', '$filter', 'Helper', function($scope, $filter, Helper){
-		$scope.company = {};
-		$scope.company.country_id = 177; //Philippines
-
-		$scope.busy = false;
-
-		var busy = false;
-
-		$scope.cancel = function(){
-			Helper.cancel();
-		}
-
-		$scope.checkCity = function(){
-			var query = {};
-			query.search = $scope.company.city;
-			query.strict_search = true;
-
-			Helper.post('/city/enlist', query)
-				.success(function(data){
-					$scope.cities = data;
-					$scope.showError = data.length ? false : true;
-
-					if($scope.company.province_id)
-					{
-						$scope.checkProvince();
-					}
-				})
-		}
-
-		$scope.fetchProvinces = function(){
-			Helper.post('/province/enlist', $scope.company)
-				.success(function(data){
-					$scope.provinces = data;
-				})
-		}
-
-		$scope.checkProvince = function(){
-			var query = {};
-			query.where = [
-				{
-					'label': 'id',
-					'condition': '=',
-					'value': $scope.company.province_id
-				}
-			];
-			query.city = $scope.company.city;
-			query.result = 'first';
-
-			Helper.post('/province/enlist', query)
-				.success(function(data){
-					$scope.noMatches = data.cities.length ? false : true;
-				})
-		}
-
-		$scope.formatPagIBIG = function(){
-			if($scope.companyForm.PagIBIG.$valid)
-			{
-				var first = $scope.pagibig.slice(0,4);
-				var second = $scope.pagibig.slice(4,8);
-				var third = $scope.pagibig.slice(8,12);
-
-				$scope.company.pagibig = first + '-' + second + '-' + third;
-			}
-		}
-
-		$scope.formatPhilHealth = function(){
-			if($scope.companyForm.PhilHealth.$valid)
-			{
-				var first = $scope.philhealth.slice(0,2);
-				var second = $scope.philhealth.slice(2,11);
-				var third = $scope.philhealth.slice(11,12);
-
-				$scope.company.philhealth = first + '-' + second + '-' + third;
-			}
-		}
-
-		$scope.formatSSS = function(){
-			if($scope.companyForm.SSS.$valid)
-			{
-				var first = $scope.sss.slice(0,2);
-				var second = $scope.sss.slice(2,9);
-				var third = $scope.sss.slice(9,10);
-
-				$scope.company.sss = first + '-' + second + '-' + third;
-			}
-		}	
-
-		$scope.formatTIN = function(){
-			if($scope.companyForm.TIN.$valid)
-			{
-				var first = $scope.tin.slice(0,3);
-				var second = $scope.tin.slice(3,6);
-				var third = $scope.tin.slice(6,9);
-
-				$scope.company.tin = first + '-' + second + '-' + third;
-			}
-		}		
-
-		$scope.submit = function(){
-			if($scope.companyForm.$invalid){
-				angular.forEach($scope.companyForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-
-				return;
-			}
-			
-			$scope.busy = true;
-			Helper.put('/company/1', $scope.company)
-				.success(function(duplicate){
-					Helper.stop();
-				})
-				.error(function(){
-					$scope.busy = false;
-					$scope.error = true;
-				});
-		}
-
-		$scope.init = function()
-		{
-			var query = {};
-
-			query.with = ['city'];
-
-			Helper.post('/company/enlist', query)
-				.success(function(data){
-					data.city = data.city.name;
-
-					$scope.pagibig = data.pagibig.replace(/-/g, '');
-					$scope.philhealth = data.philhealth.replace(/-/g, '');
-					$scope.sss = data.sss.replace(/-/g, '');
-					$scope.tin = data.tin.replace(/-/g, '');
-
-					$scope.company = data;
-
-					$scope.checkCity();
-					$scope.fetchProvinces();
-				})
-		}();
-	}]);
-settings
-	.controller('editUserDialogController', ['$scope', 'Helper', function($scope, Helper){
-		var user = Helper.authUser();
-
-		var dataUser = Helper.fetch();
-		
-		$scope.edit = true;
-
-		$scope.duplicate = false;
-
-		$scope.busy = false;
-
-		Helper.get('/user/' + dataUser.id)
-			.success(function(data){
-				$scope.user = data;
-			})
-
-		Helper.post('/group/enlist')
-			.success(function(data){
-				$scope.groups = data;
-			})
-
-		$scope.cancel = function(){
-			Helper.cancel();
-		}		
-
-		$scope.checkDuplicate = function(){
-			Helper.post('/user/check-email', $scope.user)
-				.success(function(data){
-					$scope.duplicate = data ? true : false;
-				})
-		}
-
-		$scope.checkDuplicateUsername = function(){
-			Helper.post('/user/check-username', $scope.user)
-				.success(function(data){
-					$scope.duplicate_username = data ? true : false;
-				})
-		}
-
-		$scope.submit = function(){
-			$scope.error = false;
-			if($scope.userForm.$invalid){
-				angular.forEach($scope.userForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-
-				return;
-			}
-			if(!$scope.duplicate)
-			{
-				$scope.busy = true;
-				Helper.put('/user/' + dataUser.id , $scope.user)
-					.success(function(duplicate){
-						if(duplicate){
-							$scope.busy = false;
-							return;
-						}
-
-						Helper.stop();
-					})
-					.error(function(){
-						$scope.busy = false;
-						$scope.error = true;
-					});
-			}
-		}
-	}]);
-settings
-	.controller('holidayDialogController', ['$scope', 'Helper', function($scope, Helper){
-		$scope.config = Helper.fetch();
-
-		$scope.holiday = {};
-
-		$scope.types = ['Regular Holiday', 'Special Non-Working Holiday']
-
-		if($scope.config.action == 'create')
-		{
-			$scope.holiday.date = new Date();
-
-			$scope.holiday.branches = [];
-			$scope.holiday.cost_centers = [];
-
-			Helper.get('/branch')
-				.success(function(data){
-					$scope.branches = data;
-				})
-
-			Helper.get('/cost-center')
-				.success(function(data){
-					$scope.cost_centers = data;
-				})
-		}
-
-		else if($scope.config.action == 'edit')
-		{
-			var query = {
-				'where': [
-					{
-						'label': 'id',
-						'condition': '=',
-						'value': $scope.config.id,
-					},
-				],
-				'first': true,
-			}
-
-			Helper.post('/holiday/enlist', query)
-				.success(function(data){
-					data.date = new Date(data.date);
-
-					$scope.holiday = data;
-
-					$scope.holiday.branches = [];
-					$scope.holiday.cost_centers = [];
-
-					Helper.get('/branch')
-						.success(function(data){
-							$scope.branches = data;
-
-							$scope.branches_count = $scope.branches.length;
-							angular.forEach($scope.branches, function(item, key){
-								$scope.holiday.branches.push(null);
-
-								var query = {};
-								query.with = [
-									{
-										'relation':'branch',
-										'withTrashed': false,
-									},
-								];
-								query.where = [
-									{
-										'label': 'holiday_id',
-										'condition': '=',
-										'value': $scope.config.id,
-									},
-									{
-										'label': 'branch_id',
-										'condition': '=',
-										'value': item.id,
-									},
-								];
-								query.first = true;
-
-								Helper.post('/branch-holiday/enlist', query)
-									.success(function(data){
-										$scope.branches_count--;
-										if(data)
-										{
-											$scope.holiday.branches.splice(key, 1, data.branch);
-										}
-									});
-							});
-						})
-
-					Helper.get('/cost-center')
-						.success(function(data){
-							$scope.cost_centers = data;
-
-							$scope.cost_centers_count = $scope.cost_centers.length;
-							angular.forEach($scope.cost_centers, function(item, key){
-								$scope.holiday.cost_centers.push(null);
-
-								var query = {};
-								query.with = [
-									{
-										'relation':'cost_center',
-										'withTrashed': false,
-									},
-								];
-								query.where = [
-									{
-										'label': 'holiday_id',
-										'condition': '=',
-										'value': $scope.config.id,
-									},
-									{
-										'label': 'cost_center_id',
-										'condition': '=',
-										'value': item.id,
-									},
-								];
-								query.first = true;
-
-								Helper.post('/cost-center-holiday/enlist', query)
-									.success(function(data){
-										$scope.cost_centers_count--;
-										if(data)
-										{
-											$scope.holiday.cost_centers.splice(key, 1, data.cost_center);
-										}
-									});
-							});
-						})
-				})
-				.error(function(){
-					Helper.error();
-				})
-		}
-
-		$scope.duplicate = false;
-
-		$scope.busy = false;
-
-		$scope.cancel = function(){
-			Helper.cancel();
-		}		
-
-		$scope.checkDuplicate = function(){
-			var back_up_date = {}
-
-			back_up_date.date = new Date($scope.holiday.date);
-
-			$scope.holiday.date = $scope.holiday.date.toDateString();
-
-			Helper.post('/holiday/check-duplicate', $scope.holiday)
-				.success(function(data){
-					$scope.duplicate = data;
-
-					$scope.holiday.date = new Date(back_up_date.date);
-				})
-		}
-
-		$scope.submit = function(){
-			if($scope.holidayForm.$invalid){
-				angular.forEach($scope.holidayForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-
-				return;
-			}
-
-			angular.forEach($scope.holiday.branches, function(item){
-
-			});
-
-			if(!$scope.duplicate)
-			{
-				$scope.busy = true;
-
-				var back_up_date = {}
-
-				back_up_date.date = new Date($scope.holiday.date);
-
-				$scope.holiday.date = $scope.holiday.date.toDateString();
-
-				if($scope.config.action == 'create')
-				{
-					Helper.post('/holiday', $scope.holiday)
-						.success(function(duplicate){
-							if(duplicate){
-								$scope.busy = false;
-								return;
-							}
-
-							Helper.stop();
-						})
-						.error(function(){
-							$scope.busy = false;
-							$scope.error = true;
-
-							$scope.holiday.date = new Date(back_up_date.date);
-						});
-				}
-				if($scope.config.action == 'edit')
-				{
-					Helper.put('/holiday/' + $scope.config.id, $scope.holiday)
-						.success(function(duplicate){
-							if(duplicate){
-								$scope.busy = false;
-								return;
-							}
-
-							Helper.stop();
-						})
-						.error(function(){
-							$scope.busy = false;
-							$scope.error = true;
-
-							$scope.holiday.date = new Date(back_up_date.date);
-						});
-				}
-			}
-		}
-	}]);
-settings
-	.controller('leaveTypeDialogController', ['$scope', 'Helper', function($scope, Helper){
-		$scope.config = Helper.fetch();
-
-		if($scope.config.action == 'create')
-		{
-			$scope.leave = {};
-		}
-		else if($scope.config.action == 'edit')
-		{
-			Helper.get($scope.config.url + '/' + $scope.config.id)
-				.success(function(data){
-					$scope.leave = data;
-					$scope.leave.paid = data.paid ? true : false;
-					$scope.leave.convertible = data.convertible ? true : false;
-				})
-		}
-
-		$scope.duplicate = false;
-
-		$scope.busy = false;
-
-		$scope.cancel = function(){
-			Helper.cancel();
-		}		
-
-		$scope.checkDuplicate = function(){
-			Helper.post($scope.config.url + '/check-duplicate', $scope.leave)
-				.success(function(data){
-					$scope.duplicate = data;
-				})
-		}
-
-		$scope.submit = function(){
-			if($scope.leaveTypeForm.$invalid){
-				angular.forEach($scope.leaveTypeForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-
-				return;
-			}
-
-			if(!$scope.duplicate)
-			{
-				$scope.busy = true;
-
-				if($scope.config.action == 'create')
-				{
-					Helper.post($scope.config.url, $scope.leave)
-						.success(function(duplicate){
-							if(duplicate){
-								$scope.busy = false;
-								return;
-							}
-
-							Helper.stop();
-						})
-						.error(function(){
-							$scope.busy = false;
-							$scope.error = true;
-						});
-				}
-				else if($scope.config.action == 'edit')
-				{
-					Helper.put($scope.config.url + '/' + $scope.config.id, $scope.leave)
-						.success(function(duplicate){
-							if(duplicate){
-								$scope.busy = false;
-								return;
-							}
-
-							Helper.stop();
-						})
-						.error(function(){
-							$scope.busy = false;
-							$scope.error = true;
-						});
-				}
-			}
-		}
-	}]);
-settings
-	.controller('nameDescriptionDialogController', ['$scope', 'Helper', function($scope, Helper){
-		$scope.config = Helper.fetch();
-
-		if($scope.config.action == 'create')
-		{
-			$scope.model = {};
-		}
-		else if($scope.config.action == 'edit')
-		{
-			Helper.get($scope.config.url + '/' + $scope.config.id)
-				.success(function(data){
-					$scope.model = data;
-				})
-		}
-
-		$scope.duplicate = false;
-
-		$scope.busy = false;
-
-		$scope.cancel = function(){
-			Helper.cancel();
-		}		
-
-		$scope.checkDuplicate = function(){
-			Helper.post($scope.config.url + '/check-duplicate', $scope.model)
-				.success(function(data){
-					$scope.duplicate = data;
-				})
-		}
-
-		$scope.submit = function(){
-			if($scope.modelForm.$invalid){
-				angular.forEach($scope.modelForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-
-				return;
-			}
-
-			if(!$scope.duplicate)
-			{
-				$scope.busy = true;
-
-				if($scope.config.action == 'create')
-				{
-					Helper.post($scope.config.url, $scope.model)
-						.success(function(duplicate){
-							if(duplicate){
-								$scope.busy = false;
-								return;
-							}
-
-							Helper.stop();
-						})
-						.error(function(){
-							$scope.busy = false;
-							$scope.error = true;
-						});
-				}
-				else if($scope.config.action == 'edit')
-				{
-					Helper.put($scope.config.url + '/' + $scope.config.id, $scope.model)
-						.success(function(duplicate){
-							if(duplicate){
-								$scope.busy = false;
-								return;
-							}
-
-							Helper.stop();
-						})
-						.error(function(){
-							$scope.busy = false;
-							$scope.error = true;
-						});
-				}
-			}
-		}
-	}]);
-settings
-	.controller('payrollConfigurationDialogController', ['$scope', 'Helper', function($scope, Helper){
-		$scope.config = Helper.fetch();
-
-		$scope.payroll = {};
-
-		$scope.pay_frequencies = ['Semi-monthly', 'Monthly'];
-
-		if($scope.config.action == 'create')
-		{
-			$scope.payroll.government_contributions = [
-				{
-					'name':'Withholding Tax',
-				},
-				{
-					'name':'SSS',
-				},
-				{
-					'name':'Pagibig',
-				},
-				{
-					'name':'Philhealth',
-				},
-			]
-		}
-
-		else if($scope.config.action == 'edit')
-		{
-			var query = {
-				'with': [
-					{
-						'relation': 'government_contributions',
-						'withTrashed': false,
-					},
-				],
-				'where': [
-					{
-						'label': 'id',
-						'condition': '=',
-						'value': $scope.config.id,
-					},
-				],
-				'first': true,
-			}
-
-			Helper.post('/payroll/enlist', query)
-				.success(function(data){
-					angular.forEach(data.government_contributions, function(item){
-						$scope.checkGovernmentContribution(item);
-					})
-
-					$scope.payroll = data;
-				})
-				.error(function(){
-					Helper.error();
-				})
-		}
-
-		$scope.duplicate = false;
-
-		$scope.busy = false;
-
-		$scope.cancel = function(){
-			Helper.cancel();
-		}		
-
-		$scope.checkDuplicate = function(){
-			Helper.post('/payroll/check-duplicate', $scope.payroll)
-				.success(function(data){
-					$scope.duplicate = data;
-				})
-		}
-
-		$scope.resetGovernmentContributions = function(){
-			angular.forEach($scope.payroll.government_contributions, function(item){
-				if($scope.payroll.pay_frequency == 'Semi-monthly')
-				{
-					item.third_cut_off = 0;
-					item.fourth_cut_off = 0;
-				}
-				else if($scope.payroll.pay_frequency == 'Monthly')
-				{
-					item.second_cut_off = 0;
-					item.third_cut_off = 0;
-					item.fourth_cut_off = 0;
-				}
-			});
-		}
-
-		$scope.checkGovernmentContribution = function(item){
-			if(item.first_cut_off || item.second_cut_off || item.third_cut_off || item.fourth_cut_off)
-			{
-				item.checked = true;
-			}
-			else{
-				item.checked = false;				
-			}
-		}
-
-		$scope.submit = function(){
-			$scope.unchecked = false;
-
-			if($scope.payrollForm.$invalid){
-				angular.forEach($scope.payrollForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-
-				return;
-			}
-
-			angular.forEach($scope.payroll.government_contributions, function(item){
-				if(!item.checked){
-					$scope.unchecked = true;
-				}
-			});
-
-			if(!$scope.duplicate && !$scope.unchecked)
-			{
-				$scope.busy = true;
-				if($scope.config.action == 'create')
-				{
-					Helper.post('/payroll', $scope.payroll)
-						.success(function(duplicate){
-							if(duplicate){
-								$scope.busy = false;
-								return;
-							}
-
-							Helper.stop();
-						})
-						.error(function(){
-							$scope.busy = false;
-							$scope.error = true;
-						});
-				}
-				if($scope.config.action == 'edit')
-				{
-					Helper.put('/payroll/' + $scope.config.id, $scope.payroll)
-						.success(function(duplicate){
-							if(duplicate){
-								$scope.busy = false;
-								return;
-							}
-
-							Helper.stop();
-						})
-						.error(function(){
-							$scope.busy = false;
-							$scope.error = true;
-						});
-				}
-			}
-		}
-
-		Helper.get('/time-interpretation')
-			.success(function(data){
-				$scope.time_interepretations = data;
-			})
-	}]);
-settings
-	.controller('payrollPeriodDialogController', ['$scope', 'Helper', function($scope, Helper){
-		$scope.config = Helper.fetch();
-
-		$scope.payroll_period = {};
-
-		$scope.today = new Date();
-
-		if($scope.config.action == 'create')
-		{
-			$scope.payroll_period.start_cut_off = new Date();
-			$scope.payroll_period.end_cut_off = new Date();
-			$scope.payroll_period.payout = new Date();
-		}
-
-		else if($scope.config.action == 'edit')
-		{
-			var query = {
-				'with': [
-					{
-						'relation': 'payroll',
-						'withTrashed': false,
-					},
-				],
-				'where': [
-					{
-						'label': 'id',
-						'condition': '=',
-						'value': $scope.config.id,
-					},
-				],
-				'first': true,
-			}
-
-			Helper.post('/payroll-period/enlist', query)
-				.success(function(data){
-					data.start_cut_off = new Date(data.start_cut_off);
-					data.end_cut_off = new Date(data.end_cut_off);
-					data.payout = new Date(data.payout);
-
-					$scope.payroll_period = data;
-				})
-				.error(function(){
-					Helper.error();
-				})
-		}
-
-		$scope.duplicate = false;
-
-		$scope.busy = false;
-
-		$scope.cancel = function(){
-			Helper.cancel();
-		}		
-
-		$scope.checkCutOffs = function(date){
-			if(date == 'start')
-			{
-				if($scope.payroll_period.start_cut_off > $scope.payroll_period.end_cut_off)
-				{
-					$scope.payroll_period.end_cut_off = new Date($scope.payroll_period.start_cut_off);	
-				}
-			}
-			else if(date == 'end')
-			{
-				if($scope.payroll_period.end_cut_off > $scope.payroll_period.payout)
-				{
-					$scope.payroll_period.payout = new Date($scope.payroll_period.end_cut_off);	
-				}	
-			}
-
-			if($scope.payroll_period.payroll_id)
-			{
-				var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-
-				var query = {
-					'withCount': [
-						{
-							'relation': 'payroll_periods',
-							'withTrashed': false,
-							'whereBetween': months[$scope.payroll_period.start_cut_off.getMonth()],
-						},
-					],
-					'where': [
-						{
-							'label': 'id',
-							'condition': '=',
-							'value': $scope.payroll_period.payroll_id,
-						},
-					],
-					'first' : true,
-				}
-
-				Helper.post('/payroll/enlist', query)
-					.success(function(data){
-						if(data.pay_frequency == 'Weekly')
-						{
-							var max_cut_off = 4;
-						}
-						else if(data.pay_frequency == 'Semi-monthly')
-						{
-							var max_cut_off = 2; 
-						}
-						else if(data.pay_frequency == 'Monthly')
-						{
-							var max_cut_off = 1; 
-						}
-
-						$scope.limit = data.payroll_periods_count == max_cut_off; 
-					})
-					.error(function(){
-						$scope.error = true
-					});
-			}
-
-			$scope.checkDuplicate();
-		}
-
-		$scope.checkDuplicate = function(){
-			var back_up_date = {}
-
-			back_up_date.start_cut_off = new Date($scope.payroll_period.start_cut_off);
-			back_up_date.end_cut_off = new Date($scope.payroll_period.end_cut_off);
-			back_up_date.payout = new Date($scope.payroll_period.payout);
-
-			$scope.payroll_period.start_cut_off = $scope.payroll_period.start_cut_off.toDateString();
-			$scope.payroll_period.end_cut_off = $scope.payroll_period.end_cut_off.toDateString();
-			$scope.payroll_period.payout = $scope.payroll_period.payout.toDateString();
-
-			Helper.post('/payroll-period/check-duplicate', $scope.payroll_period)
-				.success(function(data){
-					$scope.duplicate = data;
-
-					$scope.payroll_period.start_cut_off = new Date(back_up_date.start_cut_off);
-					$scope.payroll_period.end_cut_off = new Date(back_up_date.end_cut_off);
-					$scope.payroll_period.payout = new Date(back_up_date.payout);
-				})
-				.error(function(){
-					$scope.error = true;
-
-					$scope.payroll_period.start_cut_off = new Date(back_up_date.start_cut_off);
-					$scope.payroll_period.end_cut_off = new Date(back_up_date.end_cut_off);
-					$scope.payroll_period.payout = new Date(back_up_date.payout);	
-				})
-		}
-
-		$scope.submit = function(){
-			if($scope.payrollPeriodForm.$invalid){
-				angular.forEach($scope.payrollPeriodForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-
-				return;
-			}
-
-			if(!$scope.duplicate && !$scope.limit)
-			{
-				$scope.busy = true;
-
-				var back_up_date = {}
-
-				back_up_date.start_cut_off = new Date($scope.payroll_period.start_cut_off);
-				back_up_date.end_cut_off = new Date($scope.payroll_period.end_cut_off);
-				back_up_date.payout = new Date($scope.payroll_period.payout);
-
-				$scope.payroll_period.start_cut_off = $scope.payroll_period.start_cut_off.toDateString();
-				$scope.payroll_period.end_cut_off = $scope.payroll_period.end_cut_off.toDateString();
-				$scope.payroll_period.payout = $scope.payroll_period.payout.toDateString();
-
-				if($scope.config.action == 'create')
-				{
-					Helper.post('/payroll-period', $scope.payroll_period)
-						.success(function(duplicate){
-							if(duplicate){
-								$scope.busy = false;
-								return;
-							}
-
-							Helper.stop();
-						})
-						.error(function(){
-							$scope.busy = false;
-							$scope.error = true;
-
-							$scope.payroll_period.start_cut_off = new Date(back_up_date.start_cut_off);
-							$scope.payroll_period.end_cut_off = new Date(back_up_date.end_cut_off);
-							$scope.payroll_period.payout = new Date(back_up_date.payout);
-						});
-				}
-				if($scope.config.action == 'edit')
-				{
-					Helper.put('/payroll-period/' + $scope.config.id, $scope.payroll_period)
-						.success(function(duplicate){
-							if(duplicate){
-								$scope.busy = false;
-								return;
-							}
-
-							Helper.stop();
-						})
-						.error(function(){
-							$scope.busy = false;
-							$scope.error = true;
-
-							$scope.payroll_period.start_cut_off = new Date(back_up_date.start_cut_off);
-							$scope.payroll_period.end_cut_off = new Date(back_up_date.end_cut_off);
-							$scope.payroll_period.payout = new Date(back_up_date.payout);
-						});
-				}
-			}
-		}
-
-		Helper.get('/payroll')
-			.success(function(data){
-				$scope.payrolls = data;
-			})
-	}]);
-settings
-	.controller('positionDialogController', ['$scope', 'Helper', function($scope, Helper){
-		$scope.config = Helper.fetch();
-
-		Helper.get('/department')
-			.success(function(data){
-				$scope.departments = data;
-			})
-
-		Helper.get('/job-category')
-			.success(function(data){
-				$scope.job_categories = data;
-			})
-
-		Helper.get('/labor-type')
-			.success(function(data){
-				$scope.labor_types = data;
-			})		
-
-		if($scope.config.action == 'create')
-		{
-			$scope.position = {};
-		}
-		else if($scope.config.action == 'edit')
-		{
-			Helper.get($scope.config.url + '/' + $scope.config.id)
-				.success(function(data){
-					$scope.position = data;
-				})
-		}
-
-		$scope.duplicate = false;
-
-		$scope.busy = false;
-
-		$scope.cancel = function(){
-			Helper.cancel();
-		}		
-
-		$scope.checkDuplicate = function(){
-			Helper.post($scope.config.url + '/check-duplicate', $scope.position)
-				.success(function(data){
-					$scope.duplicate = data;
-				})
-		}
-
-		$scope.submit = function(){
-			if($scope.positionForm.$invalid){
-				angular.forEach($scope.positionForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-
-				return;
-			}
-
-			if(!$scope.duplicate)
-			{
-				$scope.busy = true;
-
-				if($scope.config.action == 'create')
-				{
-					Helper.post($scope.config.url, $scope.position)
-						.success(function(duplicate){
-							if(duplicate){
-								$scope.busy = false;
-								return;
-							}
-
-							Helper.stop();
-						})
-						.error(function(){
-							$scope.busy = false;
-							$scope.error = true;
-						});
-				}
-				else if($scope.config.action == 'edit')
-				{
-					Helper.put($scope.config.url + '/' + $scope.config.id, $scope.position)
-						.success(function(duplicate){
-							if(duplicate){
-								$scope.busy = false;
-								return;
-							}
-
-							Helper.stop();
-						})
-						.error(function(){
-							$scope.busy = false;
-							$scope.error = true;
-						});
-				}
-			}
-		}
-	}]);
-settings
-	.controller('sanctionLevelDialogController', ['$scope', 'Helper', function($scope, Helper){
-		$scope.config = Helper.fetch();
-
-		Helper.get('/sanction-type')
-			.success(function(data){
-				$scope.sanctions = data;
-			})
-
-		if($scope.config.action == 'create')
-		{
-			$scope.sanction_level = {};
-		}
-		else if($scope.config.action == 'edit')
-		{
-			Helper.get($scope.config.url + '/' + $scope.config.id)
-				.success(function(data){
-					$scope.sanction_level = data;
-				})
-		}
-
-		$scope.duplicate = false;
-
-		$scope.busy = false;
-
-		$scope.cancel = function(){
-			Helper.cancel();
-		}		
-
-		$scope.checkDuplicate = function(){
-			Helper.post($scope.config.url + '/check-duplicate', $scope.sanction_level)
-				.success(function(data){
-					$scope.duplicate = data;
-				})
-		}
-
-		$scope.submit = function(){
-			if($scope.sanctionLevelForm.$invalid){
-				angular.forEach($scope.sanctionLevelForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-
-				return;
-			}
-
-			if(!$scope.duplicate)
-			{
-				$scope.busy = true;
-
-				if($scope.config.action == 'create')
-				{
-					Helper.post($scope.config.url, $scope.sanction_level)
-						.success(function(duplicate){
-							if(duplicate){
-								$scope.busy = false;
-								return;
-							}
-
-							Helper.stop();
-						})
-						.error(function(){
-							$scope.busy = false;
-							$scope.error = true;
-						});
-				}
-				else if($scope.config.action == 'edit')
-				{
-					Helper.put($scope.config.url + '/' + $scope.config.id, $scope.sanction_level)
-						.success(function(duplicate){
-							if(duplicate){
-								$scope.busy = false;
-								return;
-							}
-
-							Helper.stop();
-						})
-						.error(function(){
-							$scope.busy = false;
-							$scope.error = true;
-						});
-				}
-			}
-		}
-	}]);
-settings
-	.controller('shiftScheduleDialogController', ['$scope', 'Helper', function($scope, Helper){
-		$scope.config = Helper.fetch();
-
-		if($scope.config.action == 'create')
-		{
-			$scope.shift_schedule = {};
-		}
-		else if($scope.config.action == 'edit')
-		{
-			Helper.get($scope.config.url + '/' + $scope.config.id)
-				.success(function(data){
-					$scope.shift_schedule = data;
-					$scope.shift_schedule.paid = data.paid ? true : false;
-					$scope.shift_schedule.convertible = data.convertible ? true : false;
-				})
-		}
-
-		$scope.duplicate = false;
-
-		$scope.busy = false;
-
-		$scope.cancel = function(){
-			Helper.cancel();
-		}		
-
-		$scope.checkDuplicate = function(){
-			Helper.post($scope.config.url + '/check-duplicate', $scope.shift_schedule)
-				.success(function(data){
-					$scope.duplicate = data;
-				})
-		}
-
-		$scope.submit = function(){
-			if($scope.shiftScheduleForm.$invalid){
-				angular.forEach($scope.shiftScheduleForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-
-				return;
-			}
-
-			if(!$scope.duplicate)
-			{
-				$scope.busy = true;
-
-				if($scope.config.action == 'create')
-				{
-					Helper.post($scope.config.url, $scope.shift_schedule)
-						.success(function(duplicate){
-							if(duplicate){
-								$scope.busy = false;
-								return;
-							}
-
-							Helper.stop();
-						})
-						.error(function(){
-							$scope.busy = false;
-							$scope.error = true;
-						});
-				}
-				else if($scope.config.action == 'edit')
-				{
-					Helper.put($scope.config.url + '/' + $scope.config.id, $scope.shift_schedule)
-						.success(function(duplicate){
-							if(duplicate){
-								$scope.busy = false;
-								return;
-							}
-
-							Helper.stop();
-						})
-						.error(function(){
-							$scope.busy = false;
-							$scope.error = true;
-						});
-				}
-			}
-		}
-	}]);
-settings
-	.controller('timeInterpretationDialogController', ['$scope', 'Helper', function($scope, Helper){
-		$scope.config = Helper.fetch();
-
-		if($scope.config.action == 'create')
-		{
-			$scope.time_interpretation = {};
-		}
-		else if($scope.config.action == 'edit')
-		{
-			Helper.get($scope.config.url + '/' + $scope.config.id)
-				.success(function(data){
-					$scope.regular_working_hours = data.regular_working_hours;
-					$scope.night_differential = data.night_differential;
-					$scope.overtime = data.overtime;
-					$scope.overtime_night_differential = data.overtime_night_differential;
-					$scope.rest_day_rate = data.rest_day_rate;
-					$scope.rest_day_night_differential = data.rest_day_night_differential;
-					$scope.rest_day_overtime = data.rest_day_overtime;
-					$scope.rest_day_overtime_night_differential = data.rest_day_overtime_night_differential;
-
-					$scope.special_holiday_rate = data.special_holiday_rate;
-					$scope.special_holiday_night_differential = data.special_holiday_night_differential;
-					$scope.special_holiday_overtime = data.special_holiday_overtime;
-					$scope.special_holiday_overtime_night_differential = data.special_holiday_overtime_night_differential;
-					$scope.special_holiday_rest_day_rate = data.special_holiday_rest_day_rate;
-					$scope.special_holiday_rest_day_night_differential = data.special_holiday_rest_day_night_differential;
-					$scope.special_holiday_rest_day_overtime = data.special_holiday_rest_day_overtime;
-					$scope.special_holiday_rest_day_overtime_night_differential = data.special_holiday_rest_day_overtime_night_differential;
-
-					$scope.regular_holiday_rate = data.regular_holiday_rate;
-					$scope.regular_holiday_night_differential = data.regular_holiday_night_differential;
-					$scope.regular_holiday_overtime = data.regular_holiday_overtime;
-					$scope.regular_holiday_overtime_night_differential = data.regular_holiday_overtime_night_differential;
-					$scope.regular_holiday_rest_day_rate = data.regular_holiday_rest_day_rate;
-					$scope.regular_holiday_rest_day_night_differential = data.regular_holiday_rest_day_night_differential;
-					$scope.regular_holiday_rest_day_overtime = data.regular_holiday_rest_day_overtime;
-					$scope.regular_holiday_rest_day_overtime_night_differential = data.regular_holiday_rest_day_overtime_night_differential;
-
-					$scope.time_interpretation = data;
-				})
-		}
-
-		$scope.duplicate = false;
-
-		$scope.busy = false;
-
-		$scope.cancel = function(){
-			Helper.cancel();
-		}		
-
-		$scope.checkDuplicate = function(){
-			Helper.post($scope.config.url + '/check-duplicate', $scope.time_interpretation)
-				.success(function(data){
-					$scope.duplicate = data;
-				})
-		}
-
-		$scope.submit = function(){
-			if($scope.timeInterpretationForm.$invalid){
-				angular.forEach($scope.timeInterpretationForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-
-				return;
-			}
-
-			if(!$scope.duplicate)
-			{
-				$scope.busy = true;
-
-				if($scope.config.action == 'create')
-				{
-					Helper.post($scope.config.url, $scope.time_interpretation)
-						.success(function(duplicate){
-							if(duplicate){
-								$scope.busy = false;
-								return;
-							}
-
-							Helper.stop();
-						})
-						.error(function(){
-							$scope.busy = false;
-							$scope.error = true;
-						});
-				}
-				else if($scope.config.action == 'edit')
-				{
-					Helper.put($scope.config.url + '/' + $scope.config.id, $scope.time_interpretation)
-						.success(function(duplicate){
-							if(duplicate){
-								$scope.busy = false;
-								return;
-							}
-
-							Helper.stop();
-						})
-						.error(function(){
-							$scope.busy = false;
-							$scope.error = true;
-						});
-				}
-			}
-		}
 	}]);
 settings
 	.controller('adminSettingsToolbarController', ['$scope', '$filter', function($scope, $filter){

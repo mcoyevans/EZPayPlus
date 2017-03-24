@@ -75,4 +75,9 @@ class Employee extends Model
     {
         return $this->hasMany('App\PayrollEntry');
     }
+
+    public function thirteen_month_pay_entries()
+    {
+        return $this->hasMany('App\ThirteenthMonthPayEntry');
+    }
 }

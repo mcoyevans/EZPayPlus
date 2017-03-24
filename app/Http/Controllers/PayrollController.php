@@ -154,6 +154,7 @@ class PayrollController extends Controller
             'pay_frequency' => 'required',
             'time_interpretation_id' => 'required',
             'government_contributions' => 'required',
+            'thirteenth_month_pay_basis' => 'required',
         ]);
 
         DB::transaction(function() use($request){
@@ -166,6 +167,7 @@ class PayrollController extends Controller
             $payroll->working_hours_per_day = $request->working_hours_per_day;
             $payroll->pay_frequency = $request->pay_frequency;
             $payroll->time_interpretation_id = $request->time_interpretation_id;
+            $payroll->thirteenth_month_pay_basis = $request->thirteenth_month_pay_basis;
 
             $payroll->save();
 
@@ -243,6 +245,7 @@ class PayrollController extends Controller
             'pay_frequency' => 'required',
             'time_interpretation_id' => 'required',
             'government_contributions' => 'required',
+            'thirteenth_month_pay_basis' => 'required',
         ]);
 
         DB::transaction(function() use($request, $paryoll){
@@ -253,6 +256,7 @@ class PayrollController extends Controller
             $payroll->working_hours_per_day = $request->working_hours_per_day;
             $payroll->pay_frequency = $request->pay_frequency;
             $payroll->time_interpretation_id = $request->time_interpretation_id;
+            $payroll->thirteenth_month_pay_basis = $request->thirteenth_month_pay_basis;
 
             $payroll->save();
 

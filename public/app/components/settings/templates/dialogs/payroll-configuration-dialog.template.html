@@ -82,6 +82,16 @@
                         <div ng-message="required">Time interpretation is required.</div>
                     </div>
                 </md-input-container>
+                <!-- Thirteenth Month Pay Basis -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Thirteenth Month Pay Basis</label>
+                    <md-select name="thirteenthMonthPayBasis" ng-model="payroll.thirteenth_month_pay_basis" required ng-disabled="busy">
+                        <md-option ng-repeat="item in thirteenth_month_pay_basis" value="{{item}}">{{item}}</md-option>
+                    </md-select>
+                    <div ng-messages="payrollForm.thirteenthMonthPayBasis.$error" ng-if="payrollForm.thirteenthMonthPayBasis.$touched">
+                        <div ng-message="required">Thirteenth month pay basis is required.</div>
+                    </div>
+                </md-input-container>
             </div>
             <md-subheader class="md-no-sticky">Government Contribution</md-subheader>
             <div layout="row" flex>

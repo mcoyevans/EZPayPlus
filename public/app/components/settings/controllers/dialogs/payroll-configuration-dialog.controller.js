@@ -6,8 +6,12 @@ settings
 
 		$scope.pay_frequencies = ['Semi-monthly', 'Monthly'];
 
+		$scope.thirteenth_month_pay_basis = ['Base', 'Gross'];
+
 		if($scope.config.action == 'create')
 		{
+			$scope.payroll.thirteenth_month_pay_basis = 'Base';
+
 			$scope.payroll.government_contributions = [
 				{
 					'name':'Withholding Tax',

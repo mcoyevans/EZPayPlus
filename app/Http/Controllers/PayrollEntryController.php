@@ -113,7 +113,7 @@ class PayrollEntryController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $payroll_process = PayrollProcess::find($request->payroll_process_id);
+        $payroll_process = PayrollProcess::with('payroll')->where('id', $request->payroll_process_id)->first();
 
         if($payroll_process->locked || $payroll_process->processed)
         {
@@ -134,7 +134,7 @@ class PayrollEntryController extends Controller
             'employee' => 'required',
         ]);
 
-        DB::transaction(function() use($request){
+        DB::transaction(function() use($request, $payroll_process){
             $payroll_entry = new PayrollEntry;
 
             $payroll_entry->payroll_process_id = $request->payroll_process_id;
@@ -212,6 +212,15 @@ class PayrollEntryController extends Controller
             
             $payroll_entry->gross_pay = $payroll_entry->regular_working_hours_pay - $payroll_entry->tardy - $payroll_entry->absent + $payroll_entry->night_differential_pay + $payroll_entry->overtime_pay + $payroll_entry->overtime_night_differential_pay + $payroll_entry->rest_day_pay + $payroll_entry->rest_day_overtime_pay + $payroll_entry->rest_day_night_differential_pay + $payroll_entry->rest_day_overtime_night_differential_pay + $payroll_entry->regular_holiday_pay + $payroll_entry->regular_holiday_overtime_pay + $payroll_entry->regular_holiday_night_differential_pay + $payroll_entry->regular_holiday_overtime_night_differential_pay + $payroll_entry->regular_holiday_rest_day_pay + $payroll_entry->regular_holiday_rest_day_overtime_pay + $payroll_entry->regular_holiday_rest_day_night_differential_pay + $payroll_entry->regular_holiday_rest_day_overtime_night_differential_pay + $payroll_entry->special_holiday_pay + $payroll_entry->special_holiday_overtime_pay + $payroll_entry->special_holiday_night_differential_pay + $payroll_entry->special_holiday_overtime_night_differential_pay + $payroll_entry->special_holiday_rest_day_pay + $payroll_entry->special_holiday_rest_day_overtime_pay + $payroll_entry->special_holiday_rest_day_night_differential_pay + $payroll_entry->special_holiday_rest_day_overtime_night_differential_pay;
 
+            if($payroll_process->payroll->thirteenth_month_pay_basis == 'Gross')
+            {
+                $payroll_entry->partial_thirteenth_month_pay = round($payroll_entry->gross_pay / 12);
+            }
+            else if($payroll_process->payroll->thirteenth_month_pay_basis == 'Base')
+            {
+                $payroll_entry->partial_thirteenth_month_pay = round($payroll_entry->regular_working_hours_pay / 12);
+            }
+
             if($request->has('allowances'))
             {
                 $payroll_entry->additional_earnings = 0;
@@ -284,6 +293,8 @@ class PayrollEntryController extends Controller
                     $government_contribution->save();                    
                 }
             }
+
+
         });
     }
 

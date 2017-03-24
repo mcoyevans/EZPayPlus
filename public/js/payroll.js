@@ -532,7 +532,6 @@ payroll
 				var taxable_income = $scope.payroll_entry.regular_working_hours_pay - $scope.payroll_entry.tardy - $scope.payroll_entry.absent + $scope.payroll_entry.night_differential_pay + $scope.payroll_entry.overtime_pay + $scope.payroll_entry.overtime_night_differential_pay + $scope.payroll_entry.rest_day_pay + $scope.payroll_entry.rest_day_overtime_pay + $scope.payroll_entry.rest_day_night_differential_pay + $scope.payroll_entry.rest_day_overtime_night_differential_pay + $scope.payroll_entry.regular_holiday_pay + $scope.payroll_entry.regular_holiday_overtime_pay + $scope.payroll_entry.regular_holiday_night_differential_pay + $scope.payroll_entry.regular_holiday_overtime_night_differential_pay + $scope.payroll_entry.regular_holiday_rest_day_pay + $scope.payroll_entry.regular_holiday_rest_day_overtime_pay + $scope.payroll_entry.regular_holiday_rest_day_night_differential_pay + $scope.payroll_entry.regular_holiday_rest_day_overtime_night_differential_pay + $scope.payroll_entry.special_holiday_pay + $scope.payroll_entry.special_holiday_overtime_pay + $scope.payroll_entry.special_holiday_night_differential_pay + $scope.payroll_entry.special_holiday_overtime_night_differential_pay + $scope.payroll_entry.special_holiday_rest_day_pay + $scope.payroll_entry.special_holiday_rest_day_overtime_pay + $scope.payroll_entry.special_holiday_rest_day_night_differential_pay + $scope.payroll_entry.special_holiday_rest_day_overtime_night_differential_pay;
 				$scope.government_contribution_deduction = 0;
 
-				console.log(taxable_income);
 
 				var sss = $filter('filter')($scope.payroll_entry.government_contributions, 'SSS')[0];
 				var philhealth = $filter('filter')($scope.payroll_entry.government_contributions, 'Philhealth')[0];
@@ -1569,6 +1568,96 @@ payroll
 			// Payroll Process
 			{
 				'label':'Payroll Processes',
+				'url': '/payroll-process/enlist',
+				'request' : {
+					'with' : [
+						{
+							'relation':'batch',
+							'withTrashed': false,
+						},
+						{
+							'relation':'payroll',
+							'withTrashed': false,
+						},
+						{
+							'relation':'payroll_period',
+							'withTrashed': false,
+						},
+					],
+					'paginate':20,
+				},
+				'fab': {
+					'fullscreen' : true,
+					'controller':'payrollProcessDialogController',
+					'template':'/app/components/payroll/templates/dialogs/payroll-process-form-dialog.template.html',
+					'message': 'Payroll process saved.',
+					'action' : 'create',
+					'fullscreen' : true,
+					'url': '/payroll-process',
+					'label': 'Payroll process',
+				},
+				'menu': [
+					{
+						'label': 'Edit',
+						'icon': 'mdi-pencil',
+						'show': true,
+						action: function(data){
+							data.action = 'edit';
+							data.url = '/payroll-process';
+							data.label = 'Payroll process';
+
+							Helper.set(data);
+
+							var dialog = {};
+							dialog.controller = 'payrollProcessDialogController';
+							dialog.template = '/app/components/payroll/templates/dialogs/payroll-process-form-dialog.template.html';
+
+							Helper.customDialog(dialog)
+								.then(function(){
+									Helper.notify('Payroll process updated.');
+									$scope.$emit('refresh');
+								}, function(){
+									return;
+								})
+						},
+					},
+					{
+						'label': 'Delete',
+						'icon': 'mdi-delete',
+						'show': true,
+						action: function(data){
+							var dialog = {};
+							dialog.title = 'Delete';
+							dialog.message = 'Delete ' + new Date(data.payroll_period.start_cut_off).toLocaleDateString() + ' - ' + new Date(data.payroll_period.end_cut_off).toLocaleDateString() + ' payroll process?'
+							dialog.ok = 'Delete';
+							dialog.cancel = 'Cancel';
+
+							Helper.confirm(dialog)
+								.then(function(){
+									Helper.delete('/payroll-process/' + data.id)
+										.success(function(){
+											Helper.notify('Payroll process deleted.');
+											$scope.$emit('refresh');
+										})
+										.error(function(){
+											Helper.error();
+										});
+								}, function(){
+									return;
+								})
+						},
+					},
+				],
+				view: function(data){
+					$state.go('main.payroll-process', {payrollProcessID: data.id});
+				},
+				action: function(current){
+					setInit(current);
+				},
+			},
+			// Thirteenth Month Pay Process
+			{
+				'label':'Thirteenth Month Pay Processes',
 				'url': '/payroll-process/enlist',
 				'request' : {
 					'with' : [
