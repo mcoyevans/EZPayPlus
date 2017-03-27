@@ -130,15 +130,15 @@ class CompanyController extends Controller
         {
             $this->validate($request, [
                 'name' => 'required',
-                'address' => 'required',
-                'city' => 'required',
-                'province_id' => 'required|numeric',
-                'postal_code' => 'required',
-                'contact_number' => 'required',
-                'pagibig' => 'required',
-                'philhealth' => 'required',
-                'sss' => 'required',
-                'tin' => 'required',
+                // 'address' => 'required',
+                // 'city' => 'required',
+                // 'province_id' => 'required|numeric',
+                // 'postal_code' => 'required',
+                // 'contact_number' => 'required',
+                // 'pagibig' => 'required',
+                // 'philhealth' => 'required',
+                // 'sss' => 'required',
+                // 'tin' => 'required',
             ]);
 
             DB::transaction(function() use ($request, $id){
@@ -146,7 +146,7 @@ class CompanyController extends Controller
 
                 $company->name = $request->name;
                 $company->address = $request->address;
-                $company->city_id = City::where('name', $request->city)->where('province_id', $request->province_id)->firstOrFail()->id;
+                $company->city_id = $request->city && $request->province_id ? City::where('name', $request->city)->where('province_id', $request->province_id)->firstOrFail()->id : null;
                 $company->province_id = $request->province_id;
                 $company->postal_code = $request->postal_code;
                 $company->contact_number = $request->contact_number;
