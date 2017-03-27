@@ -69,8 +69,8 @@ Route::resource('sss', 'SSSController');
 Route::resource('tax', 'TaxController');
 Route::resource('tax-code', 'TaxCodeController');
 Route::resource('time-interpretation', 'TimeInterpretationController');
-Route::resource('thirhteenth-month-pay-process', 'ThirteenthMonthPayProcessController');
-Route::resource('thirhteenth-month-pay-entry', 'ThirteenthMonthPayEntryController');
+Route::resource('thirteenth-month-pay-process', 'ThirteenthMonthPayProcessController');
+Route::resource('thirteenth-month-pay-entry', 'ThirteenthMonthPayEntryController');
 Route::resource('user', 'UserController');
 
 /* User Routes */
@@ -281,4 +281,9 @@ Route::group(['prefix' => 'payroll-entry'], function(){
 /* Government Contribution */
 Route::group(['prefix' => 'government-contribution'], function(){
 	Route::post('enlist', 'GovernmentContributionController@enlist');
+});
+
+Route::group(['prefix' => 'thirteenth-month-pay-process'], function(){
+	Route::post('/check-duplicate', 'ThirteenthMonthPayProcessController@checkDuplicate');
+	Route::post('/enlist', 'ThirteenthMonthPayProcessController@enlist');
 });

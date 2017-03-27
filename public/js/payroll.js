@@ -76,6 +76,12 @@ payroll
 				data.payroll_period.end_cut_off = new Date(data.payroll_period.end_cut_off);
 				data.payroll_period.payout = new Date(data.payroll_period.payout);
 			}
+			else if($scope.subheader.current.label == 'Thirteenth Month Pay Processes')
+			{
+				data.start = new Date(data.start);
+				data.end = new Date(data.end);
+				data.payout = new Date(data.payout);	
+			}
 		}
 
 		$scope.init = function(query, refresh){
@@ -141,8 +147,20 @@ payroll
 								// Enables again the pagination call for next call.
 								$scope.type.busy = false;
 								$scope.isLoading = false;
+							})
+							.error(function(){
+								Helper.failed()
+									.then(function(){
+										$scope.type.paginateLoad();
+									});
 							});
 					}
+				})
+				.error(function(){
+					Helper.failed()
+						.then(function(){
+							$scope.init(query, refresh);
+						})
 				});
 		}
 
@@ -1283,6 +1301,10 @@ payroll
 		];	
 	}]);
 payroll
+	.controller('thirteenthMonthPayProcessContentContainerController', ['$scope', 'Helper', function($scope, Helper){
+
+	}]);
+payroll
 	.controller('payrollEntryDialogController', ['$scope', '$state', 'Helper', function($scope, $state, Helper){
 		$scope.config = Helper.fetch();
 
@@ -1557,6 +1579,160 @@ payroll
 			})
 	}]);
 payroll
+	.controller('thirteenthMonthPayProcessDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.config = Helper.fetch();
+
+		$scope.thirteenth_month_pay_process = {};
+
+		$scope.today = new Date();
+
+		if($scope.config.action == 'create')
+		{
+			$scope.thirteenth_month_pay_process.start = new Date(new Date().getFullYear(), 0, 1);
+			$scope.thirteenth_month_pay_process.end = new Date(new Date().getFullYear(), 11, 31);
+			$scope.thirteenth_month_pay_process.payout = new Date(new Date().getFullYear(), 11, 24);
+		}
+
+		else if($scope.config.action == 'edit')
+		{
+			var query = {
+				'where': [
+					{
+						'label': 'id',
+						'condition': '=',
+						'value': $scope.config.id,
+					},
+				],
+				'first': true,
+			}
+
+			Helper.post('/thirteenth-month-pay-process/enlist', query)
+				.success(function(data){
+					$scope.thirteenth_month_pay_process = data;
+
+					$scope.thirteenth_month_pay_process.start = new Date($scope.thirteenth_month_pay_process.start);
+					$scope.thirteenth_month_pay_process.end = new Date($scope.thirteenth_month_pay_process.end);
+					$scope.thirteenth_month_pay_process.payout = new Date($scope.thirteenth_month_pay_process.payout);
+				})
+				.error(function(){
+					Helper.error();
+				})
+		}
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(date){
+			if(date == 'start')
+			{
+				if($scope.thirteenth_month_pay_process.start > $scope.thirteenth_month_pay_process.end)
+				{
+					$scope.thirteenth_month_pay_process.end = new Date($scope.thirteenth_month_pay_process.start);	
+				}
+			}
+			else if(date == 'end')
+			{
+				if($scope.thirteenth_month_pay_process.end > $scope.thirteenth_month_pay_process.payout)
+				{
+					$scope.thirteenth_month_pay_process.payout = new Date($scope.thirteenth_month_pay_process.end);	
+				}	
+			}
+
+			var query = {
+				'id': $scope.thirteenth_month_pay_process.id,
+				'batch_id': $scope.thirteenth_month_pay_process.batch_id,
+				'start': $scope.thirteenth_month_pay_process.start.toDateString(),
+				'end': $scope.thirteenth_month_pay_process.end.toDateString(),
+				'payout': $scope.thirteenth_month_pay_process.payout.toDateString(),
+			}
+
+			Helper.post('/thirteenth-month-pay-process/check-duplicate', query)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+				.error(function(){
+					$scope.error = true;
+				})
+		}
+
+		var convertDates = function(){
+			$scope.thirteenth_month_pay_process.start = new Date($scope.thirteenth_month_pay_process.start);
+			$scope.thirteenth_month_pay_process.end = new Date($scope.thirteenth_month_pay_process.end);
+			$scope.thirteenth_month_pay_process.payout = new Date($scope.thirteenth_month_pay_process.payout);
+		}
+
+		$scope.submit = function(){
+			if($scope.thirteenthMonthPayProcessForm.$invalid){
+				angular.forEach($scope.thirteenthMonthPayProcessForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+
+				$scope.thirteenth_month_pay_process.start = $scope.thirteenth_month_pay_process.start.toDateString();
+				$scope.thirteenth_month_pay_process.end = $scope.thirteenth_month_pay_process.end.toDateString();
+				$scope.thirteenth_month_pay_process.payout = $scope.thirteenth_month_pay_process.payout.toDateString();
+
+				if($scope.config.action == 'create')
+				{
+					Helper.post('/thirteenth-month-pay-process', $scope.thirteenth_month_pay_process)
+						.success(function(duplicate){
+							if(duplicate){
+								convertDates();
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							convertDates();
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+				if($scope.config.action == 'edit')
+				{
+					Helper.put('/thirteenth-month-pay-process/' + $scope.config.id, $scope.thirteenth_month_pay_process)
+						.success(function(duplicate){
+							if(duplicate){
+								convertDates();
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							convertDates();
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+			}
+		}
+
+		Helper.get('/batch')
+			.success(function(data){
+				$scope.batches = data;
+			})
+			.error(function(){
+				Helper.error();
+			})
+	}]);
+payroll
 	.controller('payrollSubheaderController', ['$scope', '$state', 'Helper', function($scope, $state, Helper){
 		var setInit = function(data){
 			Helper.set(data);
@@ -1658,19 +1834,11 @@ payroll
 			// Thirteenth Month Pay Process
 			{
 				'label':'Thirteenth Month Pay Processes',
-				'url': '/payroll-process/enlist',
+				'url': '/thirteenth-month-pay-process/enlist',
 				'request' : {
 					'with' : [
 						{
 							'relation':'batch',
-							'withTrashed': false,
-						},
-						{
-							'relation':'payroll',
-							'withTrashed': false,
-						},
-						{
-							'relation':'payroll_period',
 							'withTrashed': false,
 						},
 					],
@@ -1678,13 +1846,13 @@ payroll
 				},
 				'fab': {
 					'fullscreen' : true,
-					'controller':'payrollProcessDialogController',
-					'template':'/app/components/payroll/templates/dialogs/payroll-process-form-dialog.template.html',
-					'message': 'Payroll process saved.',
+					'controller':'thirteenthMonthPayProcessDialogController',
+					'template':'/app/components/payroll/templates/dialogs/thirteenth-month-pay-process-form-dialog.template.html',
+					'message': 'Thirteenth month pay process saved.',
 					'action' : 'create',
 					'fullscreen' : true,
-					'url': '/payroll-process',
-					'label': 'Payroll process',
+					'url': '/thirteenth-month-pay-process',
+					'label': 'Thirteenth month pay process',
 				},
 				'menu': [
 					{
@@ -1693,18 +1861,18 @@ payroll
 						'show': true,
 						action: function(data){
 							data.action = 'edit';
-							data.url = '/payroll-process';
-							data.label = 'Payroll process';
+							data.url = '/thirteenth-month-pay-process';
+							data.label = 'Thirteenth month pay process';
 
 							Helper.set(data);
 
 							var dialog = {};
-							dialog.controller = 'payrollProcessDialogController';
-							dialog.template = '/app/components/payroll/templates/dialogs/payroll-process-form-dialog.template.html';
+							dialog.controller = 'thirteenthMonthPayProcessDialogController';
+							dialog.template = '/app/components/payroll/templates/dialogs/thirteenth-month-pay-process-form-dialog.template.html';
 
 							Helper.customDialog(dialog)
 								.then(function(){
-									Helper.notify('Payroll process updated.');
+									Helper.notify('Thirteenth month pay process updated.');
 									$scope.$emit('refresh');
 								}, function(){
 									return;
@@ -1718,15 +1886,15 @@ payroll
 						action: function(data){
 							var dialog = {};
 							dialog.title = 'Delete';
-							dialog.message = 'Delete ' + new Date(data.payroll_period.start_cut_off).toLocaleDateString() + ' - ' + new Date(data.payroll_period.end_cut_off).toLocaleDateString() + ' payroll process?'
+							dialog.message = 'Delete ' + new Date(data.start).toLocaleDateString() + ' - ' + new Date(data.end).toLocaleDateString() + ' thirteenth month pay process?'
 							dialog.ok = 'Delete';
 							dialog.cancel = 'Cancel';
 
 							Helper.confirm(dialog)
 								.then(function(){
-									Helper.delete('/payroll-process/' + data.id)
+									Helper.delete('/thirteenth-month-pay-process/' + data.id)
 										.success(function(){
-											Helper.notify('Payroll process deleted.');
+											Helper.notify('Thirteenth month pay process deleted.');
 											$scope.$emit('refresh');
 										})
 										.error(function(){
@@ -1739,7 +1907,7 @@ payroll
 					},
 				],
 				view: function(data){
-					$state.go('main.payroll-process', {payrollProcessID: data.id});
+					$state.go('main.thirteenth-month-pay-process', {payrollProcessID: data.id});
 				},
 				action: function(current){
 					setInit(current);

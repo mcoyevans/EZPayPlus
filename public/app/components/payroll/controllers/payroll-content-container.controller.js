@@ -75,6 +75,12 @@ payroll
 				data.payroll_period.end_cut_off = new Date(data.payroll_period.end_cut_off);
 				data.payroll_period.payout = new Date(data.payroll_period.payout);
 			}
+			else if($scope.subheader.current.label == 'Thirteenth Month Pay Processes')
+			{
+				data.start = new Date(data.start);
+				data.end = new Date(data.end);
+				data.payout = new Date(data.payout);	
+			}
 		}
 
 		$scope.init = function(query, refresh){
@@ -140,8 +146,20 @@ payroll
 								// Enables again the pagination call for next call.
 								$scope.type.busy = false;
 								$scope.isLoading = false;
+							})
+							.error(function(){
+								Helper.failed()
+									.then(function(){
+										$scope.type.paginateLoad();
+									});
 							});
 					}
+				})
+				.error(function(){
+					Helper.failed()
+						.then(function(){
+							$scope.init(query, refresh);
+						})
 				});
 		}
 

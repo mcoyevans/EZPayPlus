@@ -17,7 +17,7 @@ class CreateThirteenthMonthPayProcessesTable extends Migration
             $table->increments('id');
             $table->dateTime('start');
             $table->dateTime('end');
-            $table->dateTime('payout_date');
+            $table->dateTime('payout');
             $table->integer('batch_id')->unsigned();
             $table->boolean('locked')->default(false);
             $table->boolean('processed')->default(false);

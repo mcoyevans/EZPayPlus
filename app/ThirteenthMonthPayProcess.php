@@ -10,4 +10,9 @@ class ThirteenthMonthPayProcess extends Model
     {
     	return $this->belongsTo('App\Batch');
     }
+
+    public function thirteenth_month_pay_entries()
+    {
+    	return $this->hasMany('App\ThirteenthMonthPayEntry');
+    }
 }
