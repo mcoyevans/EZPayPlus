@@ -127,14 +127,15 @@ settings
 
 			Helper.post('/company/enlist', query)
 				.success(function(data){
-					data.city = data.city.name;
-
-					$scope.pagibig = data.pagibig.replace(/-/g, '');
-					$scope.philhealth = data.philhealth.replace(/-/g, '');
-					$scope.sss = data.sss.replace(/-/g, '');
-					$scope.tin = data.tin.replace(/-/g, '');
-
 					$scope.company = data;
+
+					$scope.company.city = $scope.company.city.name;
+
+					$scope.pagibig = $scope.company.pagibig.replace(/-/g, '');
+					$scope.philhealth = $scope.company.philhealth.replace(/-/g, '');
+					$scope.sss = $scope.company.sss.replace(/-/g, '');
+					$scope.tin = $scope.company.tin.replace(/-/g, '');
+
 
 					$scope.checkCity();
 					$scope.fetchProvinces();
