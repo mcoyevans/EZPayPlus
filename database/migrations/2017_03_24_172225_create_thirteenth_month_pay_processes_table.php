@@ -18,6 +18,7 @@ class CreateThirteenthMonthPayProcessesTable extends Migration
             $table->dateTime('start');
             $table->dateTime('end');
             $table->dateTime('payout');
+            $table->float('tax_ceiling')->unsigned()->default(82000.00);
             $table->integer('batch_id')->unsigned();
             $table->boolean('locked')->default(false);
             $table->boolean('processed')->default(false);

@@ -3,10 +3,10 @@
 		<md-list>
 			<md-list-item class="md-3-line" ng-repeat="type in type.items | filter: toolbar.searchText | orderBy:sortType:sortReverse" ng-if="showInactive || !type.deleted_at" ng-click="view(type)">
 				<h2 class="md-avatar" ng-class="type.deleted_at ? 'accent-bg': 'primary-bg'" layout="row" layout-align="center center">
-					<span class="md-headline white-text">{{type.payroll.name.charAt(0).toUpperCase()}} {{type.batch.name.charAt(0).toUpperCase()}}</span></span>
+					<span class="md-headline white-text">{{type.payroll.name.charAt(0).toUpperCase()}} <span ng-if="!type.payroll">{{type.batch.name.charAt(0).toUpperCase()}}</span></span>
 				</h2>
 				<div class="md-list-item-text">
-					<h3>{{type.payroll.name}} <span ng-if="type.payroll.description">- {{type.payroll.description}}</span> {{type.batch.name}} - {{type.batch.description}}</h3>
+					<h3>{{type.payroll.name}} <span ng-if="type.payroll.description">- {{type.payroll.description}}</span> <span ng-if="!type.payroll">{{type.batch.name}} - {{type.batch.description}}</span></h3>
 					<h4>
 	                    <span ng-if="type.payroll_period.start_cut_off">Start Cut-off: {{type.payroll_period.start_cut_off | date: 'EEE, MMM. dd, yyyy'}} |</span>
 	                    <span ng-if="type.payroll_period.end_cut_off">End Cut-off: {{type.payroll_period.end_cut_off | date: 'EEE, MMM. dd, yyyy'}} |</span>

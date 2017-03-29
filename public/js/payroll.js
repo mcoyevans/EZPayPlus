@@ -1255,7 +1255,7 @@ payroll
 						$scope.model.busy = true;
 						$scope.isLoading = true;
 						// Calls the next page of pagination.
-						Helper.post('/birthday/enlist' + '?page=' + $scope.model.page, query)
+						Helper.post('/payroll-entry/enlist' + '?page=' + $scope.model.page, query)
 							.success(function(data){
 								// increment the page to set up next page for next AJAX Call
 								$scope.model.page++;
@@ -1301,8 +1301,271 @@ payroll
 		];	
 	}]);
 payroll
-	.controller('thirteenthMonthPayProcessContentContainerController', ['$scope', 'Helper', function($scope, Helper){
+	.controller('thirteenthMonthPayProcessContentContainerController', ['$scope', '$state', '$stateParams', 'Helper', function($scope, $state, $stateParams, Helper){
+		$scope.$emit('closeSidenav');
 
+		/*
+		 * Object for toolbar
+		 *
+		*/
+		$scope.toolbar = {};
+
+		var thirteenthMonthPayProcessID = $stateParams.thirteenthMonthPayProcessID;
+
+		var query = {
+			'with': [
+				{
+					'relation': 'batch',
+					'withTrashed': true,
+				},
+			],
+			'where': [
+				{
+					'label': 'id',
+					'condition': '=',
+					'value' : thirteenthMonthPayProcessID,
+				}
+			],
+			'first' : true,
+		}
+
+		Helper.post('/thirteenth-month-pay-process/enlist', query)
+			.success(function(data){
+				if(!data)
+				{
+					return $state.go('page-not-found');
+				}
+
+				$scope.thirteenth_month_pay_process = data;
+
+				$scope.toolbar.parentState = data.batch.name;
+				$scope.toolbar.childState = new Date(data.start).toDateString() + ' - ' + new Date(data.end).toDateString();
+
+				if($scope.thirteenth_month_pay_process.locked && !$scope.thirteenth_month_pay_process.processed)
+				{
+					$scope.subheader.menu.push(
+						{
+							'label': 'Process Thirteenth Month Pay',
+							'icon': 'mdi-comment-processing',
+							action: function(){
+
+							},
+						}
+					);
+				}
+				else if(!$scope.thirteenth_month_pay_process.locked && !$scope.thirteenth_month_pay_process.processed){
+					$scope.subheader.menu.push(
+						{
+							'label': 'Lock Thirteenth Month Pay',
+							'icon': 'mdi-lock',
+							action: function(){
+								var dialog = {}
+
+								dialog.title = 'Lock Thirteenth Month Pay'
+								dialog.message = 'Adding or editing payroll entries will be disabled upon locking this payroll process.'
+								dialog.ok = 'Lock',
+								dialog.cancel = 'Cancel',
+
+								Helper.confirm(dialog)
+									.then(function(){
+										Helper.preload();
+										Helper.post('/thirteenth-month-pay-process/lock', $scope.thirteenth_month_pay_process)
+											.success(function(){
+												Helper.stop();
+												Helper.notify('Thirteenth month pay process locked.');
+												$state.go($state.current, {}, {reload:true});
+											})
+											.error(function(){
+												Helper.error();
+											})
+									}, function(){
+										return;
+									})
+							},
+						},
+						{
+							'label': 'Process Thirteenth Month Pay',
+							'icon': 'mdi-comment-processing',
+							action: function(){
+							
+							},
+						}
+					);	
+				}
+
+				$scope.isLoading = true;
+				$scope.$broadcast('close');
+
+				$scope.init($scope.request);
+
+			})
+
+		/*
+		 * Object for subheader
+		 *
+		*/
+		$scope.subheader = {};
+		$scope.subheader.show = true;
+
+		$scope.subheader.toggleActive = function(){
+			$scope.showInactive = !$scope.showInactive;
+		}
+		$scope.subheader.sortBy = function(filter){
+			filter.sortReverse = !filter.sortReverse;			
+			$scope.sortType = filter.type;
+			$scope.sortReverse = filter.sortReverse;
+		}
+
+		$scope.subheader.menu = []
+		
+		/*
+		 * Object for fab
+		 *
+		*/
+		$scope.fab = {};
+		$scope.fab.icon = 'mdi-plus';
+
+		$scope.fab.label = 'Thirteenth Month Pay Entry';
+
+		$scope.fab.action = function(){
+			var dialog = {
+				'template': '/app/components/payroll/templates/dialogs/thirteenth-month-pay-entry-form-dialog.template.html',
+				'controller': 'thirteenthMonthPayEntryDialogController',
+			}
+
+			$scope.thirteenth_month_pay_process.action = 'create';
+
+			Helper.set($scope.thirteenth_month_pay_process);
+
+			Helper.customDialog(dialog)
+				.then(function(){
+					Helper.notify('Thirteenth month pay entry created.');
+				})
+		}
+
+		/* Action originates from toolbar */
+		$scope.$on('search', function(){
+			$scope.request.search = $scope.toolbar.searchText;
+			$scope.refresh();
+			$scope.showInactive = true;
+		});
+
+		/* Listens for any request for refresh */
+		$scope.$on('refresh', function(){
+			$scope.request.search = null;
+			$scope.$broadcast('close');
+			$scope.refresh();
+		});
+
+		$scope.viewThirteenthMonthPayEntry = function(data){
+			var config = data;
+
+			if($scope.thirteenth_month_pay_process.locked || $scope.thirteenth_month_pay_process.processed)
+			{
+				data.view_only = true;
+			}
+
+			Helper.set(data);
+
+			var dialog = {
+				'template': '/app/components/payroll/templates/dialogs/thirteenth-month-pay-entry-dialog.template.html',
+				'controller': 'thirteenthMonthPayEntryDialogController',
+			}
+
+			Helper.customDialog(dialog)
+				.then(function(){
+
+				}, function(){
+
+				});
+		}
+
+		/* Formats every data in the paginated call */
+		var pushItem = function(data){
+			
+		}
+
+		$scope.init = function(query){
+			$scope.model = {};
+			$scope.model.items = [];
+			$scope.toolbar.items = [];
+
+			// 2 is default so the next page to be loaded will be page 2 
+			$scope.model.page = 2;
+
+			Helper.post('/thirteenth-month-pay-entry/enlist', query)
+				.success(function(data){
+					$scope.model.details = data;
+					$scope.model.items = data.data;
+					$scope.model.show = true;
+
+					$scope.fab.show = $scope.thirteenth_month_pay_process.locked || $scope.thirteenth_month_pay_process.processed ? false : true;
+
+					if(data.data.length){
+						// iterate over each record and set the format
+						angular.forEach(data.data, function(item){
+							pushItem(item);
+						});
+					}
+
+					$scope.model.paginateLoad = function(){
+						// kills the function if ajax is busy or pagination reaches last page
+						if($scope.model.busy || ($scope.model.page > $scope.model.details.last_page)){
+							$scope.isLoading = false;
+							return;
+						}
+						/**
+						 * Executes pagination call
+						 *
+						*/
+						// sets to true to disable pagination call if still busy.
+						$scope.model.busy = true;
+						$scope.isLoading = true;
+						// Calls the next page of pagination.
+						Helper.post('/thirteenth-month-pay-entry/enlist' + '?page=' + $scope.model.page, query)
+							.success(function(data){
+								// increment the page to set up next page for next AJAX Call
+								$scope.model.page++;
+
+								// iterate over each data then splice it to the data array
+								angular.forEach(data.data, function(item, key){
+									pushItem(item);
+									$scope.model.items.push(item);
+								});
+
+								// Enables again the pagination call for next call.
+								$scope.model.busy = false;
+								$scope.isLoading = false;
+							});
+					}
+				});
+		}
+
+		$scope.refresh = function(){
+			$scope.isLoading = true;
+  			$scope.model.show = false;
+
+  			$scope.init($scope.request);
+		};
+
+		$scope.request = {};
+
+		$scope.request.paginate = 20;
+
+		$scope.request.with = [
+			{
+				'relation':'employee',
+				'withTrashed': false,
+			},
+		];
+
+		$scope.request.where = [
+			{
+				'label': 'thirteenth_month_pay_process_id',
+				'condition': '=',
+				'value': thirteenthMonthPayProcessID,
+			},
+		];
 	}]);
 payroll
 	.controller('payrollEntryDialogController', ['$scope', '$state', 'Helper', function($scope, $state, Helper){
@@ -1577,6 +1840,142 @@ payroll
 			.success(function(data){
 				$scope.batches = data;
 			})
+	}]);
+payroll
+	.controller('thirteenthMonthPayEntryDialogController', ['$scope', '$state', 'Helper', function($scope, $state, Helper){
+		$scope.thirteenth_month_pay_process = Helper.fetch();
+
+		$scope.thirteenth_month_pay_process.start = new Date($scope.thirteenth_month_pay_process.start);
+		$scope.thirteenth_month_pay_process.end = new Date($scope.thirteenth_month_pay_process.end);
+
+		$scope.thirteenth_month_pay_entry = {}
+
+		$scope.thirteenth_month_pay_entry.thirteenth_month_pay_process_id = $scope.thirteenth_month_pay_process.id;
+
+		if($scope.thirteenth_month_pay_process.action == 'create')
+		{
+
+		}
+		else if($scope.thirteenth_month_pay_process.action == 'edit')
+		{
+
+		}
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}
+
+		var query = {
+			'where': [
+				{
+					'label':'batch_id',
+					'condition': '=',
+					'value': $scope.thirteenth_month_pay_process.batch_id,
+				},
+			],
+			'whereDoesntHave': [
+				{
+					'relation': 'thirteen_month_pay_entries',
+					'where': [
+						{
+							'label':'id',
+							'condition':'=',
+							'value':$scope.thirteenth_month_pay_process.id,
+						}
+					],
+				},
+			],
+		}
+
+		Helper.post('/employee/enlist', query)
+			.success(function(data){
+				$scope.employees = data;
+			})
+			.error(function(){
+				Helper.error();
+			})
+
+		$scope.partial_amount = 0;
+
+		$scope.fetchPartialAmount = function(){
+			$scope.checkDuplicate();
+
+			var query = {
+				'with': [
+					{
+						'relation': 'payroll_process.payroll_period',
+						'withTrashed': false,
+						'whereBetween': {
+							'label': 'start_cut_off',
+							'start': $scope.thirteenth_month_pay_process.start.toDateString(),
+							'end': $scope.thirteenth_month_pay_process.end.toDateString(),
+						},
+					},
+				],
+				'where': [
+					{
+						'label': 'employee_id',
+						'condition': '=',
+						'value': $scope.thirteenth_month_pay_entry.employee.id,
+					},
+				],
+			}
+
+			Helper.post('/payroll-entry/enlist', query)
+				.success(function(data){
+					$scope.payroll_entries = data;
+					
+					angular.forEach($scope.payroll_entries, function(item){
+						$scope.partial_amount += item.partial_thirteenth_month_pay;
+						item.payroll_process.payroll_period.start_cut_off = new Date(item.payroll_process.payroll_period.start_cut_off);
+						item.payroll_process.payroll_period.end_cut_off = new Date(item.payroll_process.payroll_period.end_cut_off);
+						item.payroll_process.payroll_period.payout = new Date(item.payroll_process.payroll_period.payout);
+					});
+
+					$scope.thirteenth_month_pay_entry.net_pay = $scope.partial_amount;
+				})
+				.error(function(){
+					Helper.error();
+				})
+		}
+
+		$scope.checkDuplicate = function(){
+			var query = {
+				'where': [
+					{
+						'label': 'thirteenth_month_pay_process_id',
+						'condition': '=',
+						'value': $scope.thirteenth_month_pay_process.id,
+					},
+					{
+						'label': 'employee_id',
+						'condition': '=',
+						'value': $scope.thirteenth_month_pay_entry.employee.id,
+					},
+				],
+				'first': true,
+			}
+
+			Helper.post('/thirteenth-month-pay-entry/enlist', query)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+				.error(function(){
+					Helper.error();
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.thirteenthMonthPayEntryForm.$invalid){
+				angular.forEach($scope.thirteenthMonthPayEntryForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+		}
 	}]);
 payroll
 	.controller('thirteenthMonthPayProcessDialogController', ['$scope', 'Helper', function($scope, Helper){
@@ -1907,7 +2306,7 @@ payroll
 					},
 				],
 				view: function(data){
-					$state.go('main.thirteenth-month-pay-process', {payrollProcessID: data.id});
+					$state.go('main.thirteenth-month-pay-process', {thirteenthMonthPayProcessID: data.id});
 				},
 				action: function(current){
 					setInit(current);
@@ -2044,6 +2443,50 @@ payroll
 				$scope.type.page = 1;
 				$scope.type.no_matches = false;
 				$scope.type.items = [];
+				$scope.searched = false;
+				$scope.$emit('refresh');
+			}
+		};
+
+		$scope.searchUserInput = function(){
+			$scope.$emit('search');
+			$scope.searched = true;
+		};
+	}]);
+payroll
+	.controller('thirteenthMonthPayProcessToolbarController', ['$scope', '$filter', function($scope, $filter){
+		$scope.$on('close', function(){
+			$scope.hideSearchBar();
+		});
+
+		$scope.toolbar.getItems = function(query){
+			var results = query ? $filter('filter')($scope.toolbar.items, query) : $scope.toolbar.items;
+			return results;
+		}
+
+		$scope.toolbar.searchAll = true;
+		/**
+		 * Reveals the search bar.
+		 *
+		*/
+		$scope.showSearchBar = function(){
+			$scope.model.busy = true;
+			$scope.searchBar = true;
+		};
+
+		/**
+		 * Hides the search bar.
+		 *
+		*/
+		$scope.hideSearchBar = function(){
+			$scope.searchBar = false;
+			$scope.toolbar.searchText = '';
+			$scope.toolbar.searchItem = '';
+			/* Cancels the paginate when the user sent a query */
+			if($scope.searched){
+				$scope.model.page = 1;
+				$scope.model.no_matches = false;
+				$scope.model.items = [];
 				$scope.searched = false;
 				$scope.$emit('refresh');
 			}

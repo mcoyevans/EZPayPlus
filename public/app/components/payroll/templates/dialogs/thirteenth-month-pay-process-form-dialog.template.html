@@ -16,7 +16,7 @@
                 <!-- Batch -->
                 <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
                     <label>Batch</label>
-                    <md-select name="Batch" ng-model="thirteenth_month_pay_process.batch_id" required ng-disabled="busy || !batches.length" ng-change="checkDuplicate()">
+                    <md-select name="Batch" ng-model="thirteenth_month_pay_process.batch_id" required ng-disabled="busy || !batches.length" ng-change="checkDuplicate()" ng-if="batches.length">
                         <md-option ng-repeat="batch in batches" value="{{batch.id}}">{{batch.name}} - {{batch.description}}</md-option>
                     </md-select>
                     <div ng-messages="thirteenthMonthPayProcessForm.Batch.$error" ng-if="thirteenthMonthPayProcessForm.Batch.$touched">

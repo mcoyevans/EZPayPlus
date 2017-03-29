@@ -159,6 +159,40 @@ app
 					}
 				}
 			})
+			.state('main.thirteenth-month-pay-process', {
+				url: 'thirteenth-month-pay-process/{thirteenthMonthPayProcessID}',
+				params: {'thirteenthMonthPayProcessID':null},
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/3')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'thirteenthMonthPayProcessContentContainerController',
+					},
+					'toolbar@main.thirteenth-month-pay-process': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'thirteenthMonthPayProcessToolbarController',
+					},
+					'left-sidenav@main.thirteenth-month-pay-process': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'subheader@main.thirteenth-month-pay-process': {
+						templateUrl: '/app/components/payroll/templates/subheaders/payroll-process-subheader.template.html',
+					},
+					'content@main.thirteenth-month-pay-process':{
+						templateUrl: '/app/components/payroll/templates/content/thirteenth-month-pay-process-content.template.html',
+					}
+				}
+			})
 			.state('main.manage-employee', {
 				url: 'employee/{employeeID}',
 				params: {'employeeID':null},

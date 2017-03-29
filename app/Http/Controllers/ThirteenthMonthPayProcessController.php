@@ -33,15 +33,17 @@ class ThirteenthMonthPayProcessController extends Controller
                 $query->orWhereBetween('end', [Carbon::parse($request->start), Carbon::parse($request->end)]);
             })->first();
         }
+        else{
+            $thirteenth_month_pay_process = ThirteenthMonthPayProcess::where('batch_id', $request->batch_id)->where(function($query) use($request){
+                // in between 
+                $query->where('start', '<=', Carbon::parse($request->start))->where('end', '>=', Carbon::parse($request->end));
+                // overlap on start of 
+                $query->orWhereBetween('start', [Carbon::parse($request->start), Carbon::parse($request->end)]);
+                // overlap on end of 
+                $query->orWhereBetween('end', [Carbon::parse($request->start), Carbon::parse($request->end)]);
+            })->first();
+        }
 
-        $thirteenth_month_pay_process = ThirteenthMonthPayProcess::where('batch_id', $request->batch_id)->where(function($query) use($request){
-            // in between 
-            $query->where('start', '<=', Carbon::parse($request->start))->where('end', '>=', Carbon::parse($request->end));
-            // overlap on start of 
-            $query->orWhereBetween('start', [Carbon::parse($request->start), Carbon::parse($request->end)]);
-            // overlap on end of 
-            $query->orWhereBetween('end', [Carbon::parse($request->start), Carbon::parse($request->end)]);
-        })->first();
 
         return $thirteenth_month_pay_process;
 

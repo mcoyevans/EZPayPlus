@@ -173,7 +173,7 @@ payroll
 					},
 				],
 				view: function(data){
-					$state.go('main.thirteenth-month-pay-process', {payrollProcessID: data.id});
+					$state.go('main.thirteenth-month-pay-process', {thirteenthMonthPayProcessID: data.id});
 				},
 				action: function(current){
 					setInit(current);

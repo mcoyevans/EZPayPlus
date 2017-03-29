@@ -1,0 +1,57 @@
+<md-dialog aria-label="Thirteenth Month Pay Entry Form"  flex flex-gt-sm="50" ng-cloak>
+    <form name="thirteenthMonthPayEntryForm">
+        <md-toolbar >
+            <div class="md-toolbar-tools">
+                <h2 class="white-text">{{thirteenth_month_pay_process.start | date: 'MMM. dd, yyyy'}} to {{thirteenth_month_pay_process.end | date: 'MMM. dd, yyyy'}}</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <md-icon class="mdi mdi-close mdi-24px" aria-label="Close dialog"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content flex layout-padding layout-wrap>
+            <md-subheader class="md-accent" ng-if="error">Oops! Something went wrong! An error occured. Please try again.</md-subheader>
+            <md-subheader class="md-accent" ng-if="duplicate">Thirteenth month pay entry already exists.</md-subheader>
+            <div layout="row" layout-wrap flex>
+                <!-- Employee -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Employee</label>
+                    <md-select name="Employee" ng-model="thirteenth_month_pay_entry.employee" required ng-disabled="busy" ng-change="fetchPartialAmount()">
+                        <md-option ng-repeat="employee in employees" ng-value="employee">{{employee.last_name}}, {{employee.first_name}} <span ng-if="employee.middle_name">{{employee.middle_name.charAt(0).toUpperCase()}}.</span> {{employee.suffix}}</md-option>
+                    </md-select>
+                    <div ng-messages="thirteenthMonthPayEntryForm.Employee.$error" ng-if="thirteenthMonthPayEntryForm.Employee.$touched">
+                        <div ng-message="required">Employee is required.</div>
+                    </div>
+                </md-input-container>
+            </div>
+            <md-subheader class="md-no-sticky">13th Month Pay Breakdown</md-subheader>
+            <md-list layout="row" layout-wrap flex>
+                <md-list-item ng-repeat="payroll_entry in payroll_entries" class="md-3-line" flex="30">
+                    <div class="md-list-item-text">
+                        <h3>{{payroll_entry.payroll_process.payroll_period.start_cut_off | date: 'MMM. dd, yyyy'}} to {{payroll_entry.payroll_process.payroll_period.end_cut_off | date: 'MMM. dd, yyyy'}}</h3>
+                        <h4>Payout: {{payroll_entry.payroll_process.payroll_period.payout | date: 'MMM. dd, yyyy'}}</h4>
+                        <p>{{payroll_entry.partial_thirteenth_month_pay | number: 2}}</p>
+                    </div>
+                </md-list-item>
+            </md-list>
+            <md-subheader class="md-no-sticky">Tax Ceiling: {{thirteenth_month_pay_process.tax_ceiling}}</md-subheader>
+            <div layout="row" layout-wrap flex>
+                <!-- Net Pay -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Net Pay</label>
+                    <input type="number" name="NetPay" ng-model="thirteenth_month_pay_entry.net_pay" required min="{{partial_amount}}" ng-disabled="busy">
+                    <div ng-messages="thirteenthMonthPayEntryForm.NetPay.$error">
+                        <div ng-message="required">Net Pay is required</div>
+                        <div ng-message="min">Net pay cannot be lower than the partial amount.</div>
+                    </div>
+                </md-input-container>
+            </div>
+        </md-dialog-content>
+    </form>
+    <div layout="row" layout-align="end center">   
+        <md-button ng-if="!busy" class="md-primary" aria-label="Submit" ng-click="submit()">
+            Submit
+        </md-button>
+        <md-progress-circular ng-if="busy" md-mode="indeterminate" class="md-primary" md-diameter="60"></md-progress-circular>
+    </div>
+</md-dialog>

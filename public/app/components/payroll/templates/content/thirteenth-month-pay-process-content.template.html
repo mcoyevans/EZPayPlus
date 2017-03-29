@@ -1,0 +1,31 @@
+<div infinite-scroll='model.paginateLoad()' infinite-scroll-distance="1" infinite-scroll-disabled="model.busy" infinite-scroll-parent ng-if="model.show">
+	<div ng-if="model.items.length" layout="row" flex layout-align="center center">
+		<div layout="column" flex flex-gt-md="70">
+			<table class="table">
+				<tr>
+					<th>Employee ID</th>
+					<th>Employee Name</th>
+					<th>Basic Pay</th>
+					<th>Taxable Amount</th>
+					<th>Net Pay</th>
+				</tr>
+				<tr ng-repeat="model in model.items | filter: toolbar.searchText | orderBy:sortType:sortReverse" ng-click="viewPayrollEntry(model)">
+					<td>{{model.employee.employee_number}}</td>
+					<td>{{model.employee.last_name}}, {{model.employee.first_name}} {{model.employee.middle_name.charAt(0).toUpperCase()}}.</td>
+					<td>{{model.employee.basic_salary}}</td>
+					<td>{{model.taxable_amount}}</td>
+					<td>{{model.net_pay}}</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>
+<div layout="row" layout-align="center center" layout-padding layout-margin ng-if="isLoading">
+	<md-progress-circular class="md-primary" md-diameter="60"></md-progress-circular>
+</div>
+<div layout-padding layout-margin ng-if="!model.items.length && model.show && !model.no_matches">
+	Nothing to display.
+</div>
+<div layout-padding layout-margin ng-if="model.no_matches && model.show">
+	<p>No results matching <strong class="accent-text">"{{query.searchText}}"</strong> were found.</p>
+</div>

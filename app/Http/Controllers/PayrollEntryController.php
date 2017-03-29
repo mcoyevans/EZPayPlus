@@ -45,6 +45,15 @@ class PayrollEntryController extends Controller
             for ($i=0; $i < count($request->with); $i++) { 
                 if(!$request->input('with')[$i]['withTrashed'])
                 {
+                    if(isset($request->input('with')[$i]['whereBetween']))
+                    {
+                        $payroll_entries->with([$request->input('with')[$i]['relation'] => function($query) use($request, $i){
+                            $query->whereBetween($request->input('with')[$i]['whereBetween']['label'], [Carbon::parse($request->input('with')[$i]['whereBetween']['start']), Carbon::parse($request->input('with')[$i]['whereBetween']['end'])]);
+                        }]);
+
+                        continue;
+                    }
+
                     $payroll_entries->with($request->input('with')[$i]['relation']);
                 }
                 else{
@@ -214,11 +223,11 @@ class PayrollEntryController extends Controller
 
             if($payroll_process->payroll->thirteenth_month_pay_basis == 'Gross')
             {
-                $payroll_entry->partial_thirteenth_month_pay = round($payroll_entry->gross_pay / 12);
+                $payroll_entry->partial_thirteenth_month_pay = round($payroll_entry->gross_pay / 12, 2);
             }
             else if($payroll_process->payroll->thirteenth_month_pay_basis == 'Base')
             {
-                $payroll_entry->partial_thirteenth_month_pay = round($payroll_entry->regular_working_hours_pay / 12);
+                $payroll_entry->partial_thirteenth_month_pay = round($payroll_entry->regular_working_hours_pay / 12, 2);
             }
 
             if($request->has('allowances'))

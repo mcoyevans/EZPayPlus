@@ -212,7 +212,7 @@ payroll
 						$scope.model.busy = true;
 						$scope.isLoading = true;
 						// Calls the next page of pagination.
-						Helper.post('/birthday/enlist' + '?page=' + $scope.model.page, query)
+						Helper.post('/payroll-entry/enlist' + '?page=' + $scope.model.page, query)
 							.success(function(data){
 								// increment the page to set up next page for next AJAX Call
 								$scope.model.page++;

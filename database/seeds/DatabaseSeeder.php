@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder
         $this->call(BatchesTableSeeder::class);
         $this->call(BranchesTableSeeder::class);
         $this->call(CitiesTableSeeder::class);
-        // $this->call(CompaniesTableSeeder::class);
+        $this->call(CompaniesTableSeeder::class);
         $this->call(CountriesTableSeeder::class);
         $this->call(CostCentersTableSeeder::class);
         $this->call(CurrenciesTableSeeder::class);

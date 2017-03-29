@@ -396,7 +396,7 @@ hris
 			$scope.employee.sss = '01-2345678-9';
 			$scope.employee.pagibig = '0123-4567-8901';
 			$scope.employee.philhealth = '01-234567890-1';
-			$scope.employee.time_interpretation_id = 1;
+			$scope.employee.time_interpretation_id = 2;
 			$scope.employee.basic_salary = 14000;
 			$scope.employee.allowance_types = [
 				{

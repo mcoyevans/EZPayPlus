@@ -556,7 +556,7 @@ hris
 			$scope.employee.sss = '01-2345678-9';
 			$scope.employee.pagibig = '0123-4567-8901';
 			$scope.employee.philhealth = '01-234567890-1';
-			$scope.employee.time_interpretation_id = 1;
+			$scope.employee.time_interpretation_id = 2;
 			$scope.employee.basic_salary = 14000;
 			$scope.employee.allowance_types = [
 				{
@@ -886,6 +886,73 @@ hris
 		}();
 	}]);
 hris
+	.controller('hrisSubheaderController', ['$scope', '$state', 'Helper', function($scope, $state, Helper){
+		$scope.subheader.menu = [
+			{
+				'label': 'Edit',
+				'icon': 'mdi-pencil',
+				'show':true,
+				action: function(data){
+					$state.go('main.manage-employee-information', {'employeeID':data.id});
+				},
+			},
+			{
+				'label': 'Delete',
+				'icon': 'mdi-delete',
+				'show':true,
+				action: function(data){
+					var dialog = {};
+					dialog.title = 'Delete';
+					dialog.message = 'Delete ' + data.first_name + '?'
+					dialog.ok = 'Delete';
+					dialog.cancel = 'Cancel';
+
+					Helper.confirm(dialog)
+						.then(function(){
+							Helper.delete('/employee/' + data.id)
+								.success(function(){
+									Helper.notify('Employee deleted.');
+									$scope.$emit('refresh');
+								})
+								.error(function(){
+									Helper.error();
+								});
+						}, function(){
+							return;
+						})
+				},
+			},
+		]
+
+		$scope.subheader.sort = [
+			{
+				'label': 'Employee Number',
+				'type': 'employee_number',
+				'sortReverse': false,
+			},
+			{
+				'label': 'First Name',
+				'type': 'first_name',
+				'sortReverse': false,
+			},
+			{
+				'label': 'Last Name',
+				'type': 'last_name',
+				'sortReverse': false,
+			},
+			{
+				'label': 'Age',
+				'type': 'age',
+				'sortReverse': false,
+			},
+			{
+				'label': 'Birthdate',
+				'type': 'birthdate',
+				'sortReverse': false,
+			},
+		]
+	}]);
+hris
 	.controller('employeeInformationDialogController', ['$scope', '$state', 'Helper', function($scope, $state, Helper){
 		var employee = Helper.fetch();
 
@@ -968,73 +1035,6 @@ hris
 		$scope.delete = function(){
 			Helper.stop($scope.employee.id);
 		}		
-	}]);
-hris
-	.controller('hrisSubheaderController', ['$scope', '$state', 'Helper', function($scope, $state, Helper){
-		$scope.subheader.menu = [
-			{
-				'label': 'Edit',
-				'icon': 'mdi-pencil',
-				'show':true,
-				action: function(data){
-					$state.go('main.manage-employee-information', {'employeeID':data.id});
-				},
-			},
-			{
-				'label': 'Delete',
-				'icon': 'mdi-delete',
-				'show':true,
-				action: function(data){
-					var dialog = {};
-					dialog.title = 'Delete';
-					dialog.message = 'Delete ' + data.first_name + '?'
-					dialog.ok = 'Delete';
-					dialog.cancel = 'Cancel';
-
-					Helper.confirm(dialog)
-						.then(function(){
-							Helper.delete('/employee/' + data.id)
-								.success(function(){
-									Helper.notify('Employee deleted.');
-									$scope.$emit('refresh');
-								})
-								.error(function(){
-									Helper.error();
-								});
-						}, function(){
-							return;
-						})
-				},
-			},
-		]
-
-		$scope.subheader.sort = [
-			{
-				'label': 'Employee Number',
-				'type': 'employee_number',
-				'sortReverse': false,
-			},
-			{
-				'label': 'First Name',
-				'type': 'first_name',
-				'sortReverse': false,
-			},
-			{
-				'label': 'Last Name',
-				'type': 'last_name',
-				'sortReverse': false,
-			},
-			{
-				'label': 'Age',
-				'type': 'age',
-				'sortReverse': false,
-			},
-			{
-				'label': 'Birthdate',
-				'type': 'birthdate',
-				'sortReverse': false,
-			},
-		]
 	}]);
 hris
 	.controller('hrisToolbarController', ['$scope', '$filter', function($scope, $filter){
