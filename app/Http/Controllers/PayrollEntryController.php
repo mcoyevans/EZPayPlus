@@ -349,6 +349,22 @@ class PayrollEntryController extends Controller
      */
     public function destroy($id)
     {
-        //
+        if(Gate::forUser(Auth::user())->denies('payroll'))
+        {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $payroll_entry = PayrollEntry::with('payroll_process')->where('id', $id)->first();
+
+        if($payroll_entry->payroll_process->locked || $payroll_entry->payroll_process->processed)
+        {
+            abort(403, 'Unable to delete payroll entry that was locked or processed.');
+        }
+
+        $payroll_entry->delete();
+
+        PayrollEntryGovernmentContribution::where('payroll_entry_id', $id)->delete();
+        PayrollEntryEmployeeAllowanceType::where('payroll_entry_id', $id)->delete();
+        PayrollEntryEmployeeDeductionType::where('payroll_entry_id', $id)->delete();
     }
 }

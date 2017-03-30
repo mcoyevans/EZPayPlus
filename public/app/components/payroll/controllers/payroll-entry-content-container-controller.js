@@ -825,7 +825,20 @@ payroll
 									'value': $scope.payroll_process.payroll.time_interpretation_id,
 								},
 							],
-							'whereDoesntHave': [
+						}
+
+						if(payrollEntryID)
+						{
+							employee_query.where.push(
+								{
+									'label':'id',
+									'condition': '=',
+									'value': payrollEntryID,	
+								}
+							);
+						}
+						else{
+							employee_query.whereDoesntHave = [
 								{
 									'relation': 'payroll_entries',
 									'where': [
@@ -836,7 +849,7 @@ payroll
 										},
 									],
 								},
-							],
+							]
 						}
 
 						var employees = function(){						

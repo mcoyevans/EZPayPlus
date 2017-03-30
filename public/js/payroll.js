@@ -998,7 +998,20 @@ payroll
 									'value': $scope.payroll_process.payroll.time_interpretation_id,
 								},
 							],
-							'whereDoesntHave': [
+						}
+
+						if(payrollEntryID)
+						{
+							employee_query.where.push(
+								{
+									'label':'id',
+									'condition': '=',
+									'value': payrollEntryID,	
+								}
+							);
+						}
+						else{
+							employee_query.whereDoesntHave = [
 								{
 									'relation': 'payroll_entries',
 									'where': [
@@ -1009,7 +1022,7 @@ payroll
 										},
 									],
 								},
-							],
+							]
 						}
 
 						var employees = function(){						
@@ -1568,7 +1581,7 @@ payroll
 		];
 	}]);
 payroll
-	.controller('payrollEntryDialogController', ['$scope', '$state', 'Helper', function($scope, $state, Helper){
+	.controller('payrollEntryDialogController', ['$scope', '$state', '$stateParams' 'Helper', function($scope, $state, $stateParams, Helper){
 		$scope.config = Helper.fetch();
 
 		var query = {
@@ -1635,7 +1648,18 @@ payroll
 
 			Helper.confirm(confirm)
 				.then(function(){
-					
+					Helper.preload();
+
+					Helper.delete('/payroll-entry/' + $scope.payroll_entry.id)
+						.success(function(){
+							Helper.stop();
+							Helper.notify('Payroll entry deleted.');
+							$state.go($state.current, {'payrollProcessID': $stateParams.payrollProcessID}, {reload: true});
+						})
+						.error(function(){
+							Helper.error();
+						});
+
 				}, function(){
 					return;
 				})
