@@ -21,6 +21,7 @@ class CreatePayrollEntriesTable extends Migration
             $table->float('days_absent')->nullable();
             $table->float('hours_tardy')->nullable();
             // Time
+            $table->float('regular_working_days');
             $table->float('regular_working_hours');
             $table->float('night_differential')->nullable();
             $table->float('overtime')->nullable();

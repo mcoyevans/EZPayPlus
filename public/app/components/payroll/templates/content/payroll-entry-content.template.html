@@ -19,7 +19,7 @@
 					</div>
 				</md-list-item>
 			</md-list>
-			<div layout="row" layout-wrap flex>
+			<div layout="row" layout-wrap flex ng-if="!form.edit">
 				<!-- Branch -->
 				<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
 					<label>Branch</label>
@@ -35,7 +35,7 @@
 					</md-select>
 				</md-input-container>
 			</div>
-			<div layout="row" layout-wrap flex>					
+			<div layout="row" layout-wrap flex ng-if="!form.edit">					
 				<!-- Employee -->
 				<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
 					<label>Employee</label>
@@ -610,8 +610,8 @@
                             <md-list>
                                 <md-list-item class="md-3-line" ng-repeat="allowance in payroll_entry.allowances">
                                     <div class="md-list-item-text">
-                                        <h3>{{allowance.name}}</h3>
-                                        <h4>{{allowance.description}}</h4>
+                                        <h3>{{allowance.name}} {{allowance.allowance_type.name}}</h3>
+                                        <h4>{{allowance.description}} {{allowance.allowance_type.desciption}}</h4>
                                         <p>{{allowance.amount}}</p>
                                     </div>
                                 </md-list-item>

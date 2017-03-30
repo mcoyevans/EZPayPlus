@@ -1,5 +1,5 @@
 payroll
-	.controller('payrollEntryDialogController', ['$scope', '$state', '$stateParams' 'Helper', function($scope, $state, $stateParams, Helper){
+	.controller('payrollEntryDialogController', ['$scope', '$state', '$stateParams', 'Helper', function($scope, $state, $stateParams, Helper){
 		$scope.config = Helper.fetch();
 
 		var query = {

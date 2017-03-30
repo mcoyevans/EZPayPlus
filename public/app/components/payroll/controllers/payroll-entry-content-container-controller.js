@@ -15,6 +15,8 @@ payroll
 
 		if(payrollEntryID)
 		{
+			$scope.form.edit = true;
+
 			var query = {
 				'with': [
 					{
@@ -23,6 +25,10 @@ payroll
 					},
 					{
 						'relation': 'employee.position',
+						'withTrashed': false,
+					},
+					{
+						'relation': 'employee.time_interpretation',
 						'withTrashed': false,
 					},
 					{
@@ -52,6 +58,16 @@ payroll
 				Helper.post('/payroll-entry/enlist', query)
 					.success(function(data){
 						$scope.payroll_entry = data;
+
+						$scope.toolbar.parentState = 'Payroll Entry';
+						$scope.toolbar.childState = $scope.payroll_entry.employee.last_name + ', ' + $scope.payroll_entry.employee.first_name;
+
+						$scope.form.branch_id = $scope.payroll_entry.employee.branch_id;
+						$scope.form.cost_center_id = $scope.payroll_entry.employee.cost_center_id;
+
+						$scope.getHolidays();
+						$scope.setEmployee(true);
+						$scope.setMaxRegularHours();
 					})
 					.error(function(){
 						Helper.failed()
@@ -60,8 +76,6 @@ payroll
 							});
 					});
 			}
-
-			payrollEntry();
 		}
 
 		/*
@@ -144,40 +158,68 @@ payroll
 			}
 		}
 
-		$scope.setEmployee = function(){
-			$scope.payroll_entry.employee_id = $scope.payroll_entry.employee.id;
-			$scope.payroll_entry.allowances = [];
-			$scope.payroll_entry.deductions = [];
-			$scope.payroll_entry.additional_earnings = 0;
-			$scope.payroll_entry.additional_deductions = 0;
+		$scope.setEmployee = function(edit){
+			if(!edit)
+			{
+				$scope.payroll_entry.employee_id = $scope.payroll_entry.employee.id;
+				$scope.payroll_entry.allowances = [];
+				$scope.payroll_entry.deductions = [];
+				$scope.payroll_entry.additional_earnings = 0;
+				$scope.payroll_entry.additional_deductions = 0;
 
-			angular.forEach($scope.payroll_entry.employee.allowance_types, function(item, key){
-				if(($scope.payroll_process.payroll_period.cut_off == 'first' && item.pivot.first_cut_off) || ($scope.payroll_process.payroll_period.cut_off == 'second' && item.pivot.second_cut_off)){
-					var allowance = {};
+				angular.forEach($scope.payroll_entry.employee.allowance_types, function(item, key){
+					if(($scope.payroll_process.payroll_period.cut_off == 'first' && item.pivot.first_cut_off) || ($scope.payroll_process.payroll_period.cut_off == 'second' && item.pivot.second_cut_off)){
+						var allowance = {};
 
-					allowance.name = item.name;
-					allowance.description = item.description;
-					allowance.amount = item.pivot.amount;
-					allowance.employee_allowance_type_id = item.pivot.id;
+						allowance.name = item.name;
+						allowance.description = item.description;
+						allowance.amount = item.pivot.amount;
+						allowance.employee_allowance_type_id = item.pivot.id;
 
-					$scope.payroll_entry.allowances.push(allowance);
-					$scope.payroll_entry.additional_earnings += allowance.amount;
-				}
-			});
+						$scope.payroll_entry.allowances.push(allowance);
+						$scope.payroll_entry.additional_earnings += allowance.amount;
+					}
+				});
 
-			angular.forEach($scope.payroll_entry.employee.deduction_types, function(item, key){
-				if(($scope.payroll_process.payroll_period.cut_off == 'first' && item.pivot.first_cut_off) || ($scope.payroll_process.payroll_period.cut_off == 'second' && item.pivot.second_cut_off)){
-					var deduction = {};
+				angular.forEach($scope.payroll_entry.employee.deduction_types, function(item, key){
+					if(($scope.payroll_process.payroll_period.cut_off == 'first' && item.pivot.first_cut_off) || ($scope.payroll_process.payroll_period.cut_off == 'second' && item.pivot.second_cut_off)){
+						var deduction = {};
 
-					deduction.name = item.name;
-					deduction.description = item.description;
-					deduction.amount = item.pivot.amount;
-					deduction.employee_deduction_type_id = item.pivot.id;
-					
-					$scope.payroll_entry.deductions.push(deduction);
-					$scope.payroll_entry.additional_deductions += deduction.amount;
-				}
-			});
+						deduction.name = item.name;
+						deduction.description = item.description;
+						deduction.amount = item.pivot.amount;
+						deduction.employee_deduction_type_id = item.pivot.id;
+						
+						$scope.payroll_entry.deductions.push(deduction);
+						$scope.payroll_entry.additional_deductions += deduction.amount;
+					}
+				});
+
+				$scope.regularWorkingHoursPay();
+				$scope.overtimePay();
+				$scope.nightDifferentialPay();
+				$scope.overtimeNightDifferentialPay();
+				$scope.regularHolidayPay();
+				$scope.regularHolidayOvertimePay();
+				$scope.regularHolidayNightDifferentialPay();
+				$scope.regularHolidayOvertimeNightDifferentialPay();
+				$scope.specialHolidayPay();
+				$scope.specialHolidayOvertimePay();
+				$scope.specialHolidayNightDifferentialPay();
+				$scope.specialHolidayOvertimeNightDifferentialPay();
+				$scope.restDayPay();
+				$scope.restDayOvertimePay();
+				$scope.restDayNightDifferentialPay();
+				$scope.restDayOvertimeNightDifferentialPay();
+				$scope.regularHolidayRestDayPay();
+				$scope.regularHolidayRestDayOvertimePay();
+				$scope.regularHolidayRestDayNightDifferentialPay();
+				$scope.regularHolidayRestDayOvertimeNightDifferentialPay();
+				$scope.specialHolidayRestDayPay();
+				$scope.specialHolidayRestDayOvertimePay();
+				$scope.specialHolidayRestDayNightDifferentialPay();
+				$scope.specialHolidayRestDayOvertimeNightDifferentialPay();
+			}
 
 			if($scope.payroll_entry.employee.time_interpretation.name == 'Monthly')
 			{
@@ -189,31 +231,6 @@ payroll
 				$scope.hourly_rate = $scope.daily_rate / $scope.payroll_process.payroll.working_hours_per_day;
 			}
 
-
-			$scope.regularWorkingHoursPay();
-			$scope.overtimePay();
-			$scope.nightDifferentialPay();
-			$scope.overtimeNightDifferentialPay();
-			$scope.regularHolidayPay();
-			$scope.regularHolidayOvertimePay();
-			$scope.regularHolidayNightDifferentialPay();
-			$scope.regularHolidayOvertimeNightDifferentialPay();
-			$scope.specialHolidayPay();
-			$scope.specialHolidayOvertimePay();
-			$scope.specialHolidayNightDifferentialPay();
-			$scope.specialHolidayOvertimeNightDifferentialPay();
-			$scope.restDayPay();
-			$scope.restDayOvertimePay();
-			$scope.restDayNightDifferentialPay();
-			$scope.restDayOvertimeNightDifferentialPay();
-			$scope.regularHolidayRestDayPay();
-			$scope.regularHolidayRestDayOvertimePay();
-			$scope.regularHolidayRestDayNightDifferentialPay();
-			$scope.regularHolidayRestDayOvertimeNightDifferentialPay();
-			$scope.specialHolidayRestDayPay();
-			$scope.specialHolidayRestDayOvertimePay();
-			$scope.specialHolidayRestDayNightDifferentialPay();
-			$scope.specialHolidayRestDayOvertimeNightDifferentialPay();
 
 			if($scope.payroll_process.payroll_period.cut_off == 'second')
 			{
@@ -288,7 +305,7 @@ payroll
 
 			$scope.max_regular_work_hours = days_worked * $scope.payroll_process.payroll.working_hours_per_day;
 
-			$scope.max_rest_day_work_hours = ($scope.max_regular_working_days - $scope.payroll_entry.regulor_working_days - $scope.holidays.length) * $scope.payroll_process.payroll.working_hours_per_day;
+			// $scope.max_rest_day_work_hours = ($scope.max_regular_working_days - $scope.payroll_entry.regular_working_days - $scope.holidays.length) * $scope.payroll_process.payroll.working_hours_per_day;
 			
 			$scope.payroll_entry.absent = $scope.payroll_entry.days_absent ? $scope.payroll_entry.days_absent * $scope.daily_rate : 0;
 		}
@@ -623,7 +640,10 @@ payroll
 		}
 
 		$scope.getHolidays = function(){
-			$scope.payroll_entry.employee = null;
+			if(!payrollEntryID)
+			{
+				$scope.payroll_entry.employee = null;
+			}
 
 			var holiday_query = {
 				'whereMonth': 
@@ -866,6 +886,11 @@ payroll
 						}
 
 						employees();
+
+						if(payrollEntryID)
+						{
+							payrollEntry();
+						}
 					})
 					.error(function(){
 						Helper.failed()
