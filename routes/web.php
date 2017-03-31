@@ -285,12 +285,13 @@ Route::group(['prefix' => 'government-contribution'], function(){
 
 /* Thirteenth Month Pay Process */
 Route::group(['prefix' => 'thirteenth-month-pay-process'], function(){
-	Route::post('/check-duplicate', 'ThirteenthMonthPayProcessController@checkDuplicate');
-	Route::post('/enlist', 'ThirteenthMonthPayProcessController@enlist');
+	Route::post('check-duplicate', 'ThirteenthMonthPayProcessController@checkDuplicate');
+	Route::post('enlist', 'ThirteenthMonthPayProcessController@enlist');
+	Route::post('lock', 'ThirteenthMonthPayProcessController@lock');
 });
 
 /* Thirteenth Month Pay Entry */
 Route::group(['prefix' => 'thirteenth-month-pay-entry'], function(){
-	Route::post('/check-duplicate', 'ThirteenthMonthPayEntryController@checkDuplicate');
-	Route::post('/enlist', 'ThirteenthMonthPayEntryController@enlist');
+	Route::post('check-duplicate', 'ThirteenthMonthPayEntryController@checkDuplicate');
+	Route::post('enlist', 'ThirteenthMonthPayEntryController@enlist');
 });

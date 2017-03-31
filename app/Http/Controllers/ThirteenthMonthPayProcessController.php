@@ -16,6 +16,25 @@ use Gate;
 class ThirteenthMonthPayProcessController extends Controller
 {
     /**
+     * Locks thirteenth month pay process.
+     *
+     * @return bool
+     */
+    public function lock(Request $request)
+    {
+        if(Gate::forUser($request->user())->denies('payroll'))
+        {
+            abort(403, 'Unauthorized access.');
+        }
+
+        $thirteenth_month_pay_process = ThirteenthMonthPayProcess::findOrFail($request->id);
+
+        $thirteenth_month_pay_process->locked = true;
+
+        $thirteenth_month_pay_process->save();
+    }
+
+    /**
      * Check resource for duplicate entry or conflicts.
      *
      * @return \Illuminate\Http\Response
