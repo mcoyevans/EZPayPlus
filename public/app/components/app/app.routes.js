@@ -193,6 +193,36 @@ app
 					}
 				}
 			})
+			.state('main.thirteenth-month-pay-entry', {
+				url: 'thirteenth-month-pay-process/{thirteenthMonthPayProcessID}/thirteenth-month-pay-entry/{thirteenthMonthPayEntryID}',
+				params: {'thirteenthMonthPayProcessID':null, 'thirteenthMonthPayEntryID':null},
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/3')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'thirteenthMonthPayEntryContentContainerController',
+					},
+					'toolbar@main.thirteenth-month-pay-entry': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+					},
+					'left-sidenav@main.thirteenth-month-pay-entry': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'content@main.thirteenth-month-pay-entry':{
+						templateUrl: '/app/components/payroll/templates/content/thirteenth-month-pay-entry-content.template.html',
+					}
+				}
+			})
 			.state('main.manage-employee', {
 				url: 'employee/{employeeID}',
 				params: {'employeeID':null},

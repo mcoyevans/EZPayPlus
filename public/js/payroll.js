@@ -1339,6 +1339,303 @@ payroll
 		];	
 	}]);
 payroll
+	.controller('thirteenthMonthPayEntryContentContainerController' , ['$scope', '$state', '$stateParams', 'Helper', function($scope, $state, $stateParams, Helper){
+		var thirteenthMonthPayEntryID = $stateParams.thirteenthMonthPayEntryID;
+		var thirteenthMonthPayProcessID = $stateParams.thirteenthMonthPayProcessID;
+
+		$scope.form = {}
+
+		if(thirteenthMonthPayEntryID)
+		{
+			var thirteenthMonthPayEntry = function(){
+				var query = {
+					'with': [
+						{
+							'relation': 'employee.tax_code',
+							'withTrashed': false,
+						},
+						{
+							'relation': 'employee.position',
+							'withTrashed': false,
+						},
+						{
+							'relation': 'thirteenth_month_pay_process',
+							'withTrashed': false,	
+						},
+					],
+					'where': [
+						{
+							'label': 'id',
+							'condition': '=',
+							'value': thirteenthMonthPayEntryID,
+						},
+					],
+					'first': true,
+				}
+
+				Helper.post('/thirteenth-month-pay-entry/enlist', query)
+					.success(function(data){
+						$scope.thirteenth_month_pay_entry = data;
+
+						$scope.edit = true;
+
+						$scope.fetchPartialAmount();
+					})
+					.error(function(){
+						Helper.failed()
+							.then(function(){
+								thirteenthMonthPayEntryID;
+							})
+					})
+			}
+
+			thirteenthMonthPayEntry();
+		}
+		else if(!thirteenthMonthPayEntryID)
+		{
+			$scope.thirteenth_month_pay_entry = {}
+
+			$scope.thirteenth_month_pay_entry.thirteenth_month_pay_process_id = thirteenthMonthPayProcessID;
+		}
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}
+
+		$scope.partial_amount = 0;
+ 
+		$scope.fetchPartialAmount = function(){
+			$scope.thirteenth_month_pay_entry.employee_id = $scope.thirteenth_month_pay_entry.employee.id;
+
+			$scope.checkDuplicate();
+
+			var query = {
+				'with': [
+					{
+						'relation': 'payroll_process.payroll_period',
+						'withTrashed': false,
+						'whereBetween': {
+							'label': 'start_cut_off',
+							'start': $scope.thirteenth_month_pay_process.start.toDateString(),
+							'end': $scope.thirteenth_month_pay_process.end.toDateString(),
+						},
+					},
+				],
+				'where': [
+					{
+						'label': 'employee_id',
+						'condition': '=',
+						'value': $scope.thirteenth_month_pay_entry.employee.id,
+					},
+				],
+			}
+
+			Helper.post('/payroll-entry/enlist', query)
+				.success(function(data){
+					$scope.payroll_entries = data;
+					
+					angular.forEach($scope.payroll_entries, function(item){
+						$scope.partial_amount += item.partial_thirteenth_month_pay;
+						item.payroll_process.payroll_period.start_cut_off = new Date(item.payroll_process.payroll_period.start_cut_off);
+						item.payroll_process.payroll_period.end_cut_off = new Date(item.payroll_process.payroll_period.end_cut_off);
+						item.payroll_process.payroll_period.payout = new Date(item.payroll_process.payroll_period.payout);
+					});
+
+					$scope.thirteenth_month_pay_entry.net_pay = $scope.partial_amount;
+				})
+				.error(function(){
+					Helper.error();
+				})
+		}
+
+		$scope.calculateTaxableAmount = function(){
+			if($scope.thirteenth_month_pay_entry.net_pay > $scope.thirteenth_month_pay_process.tax_ceiling)
+			{
+				$scope.thirteenth_month_pay_entry.taxable_amount = $scope.thirteenth_month_pay_entry.net_pay - $scope.thirteenth_month_pay_process.tax_ceiling;
+			}
+		}
+
+		$scope.checkDuplicate = function(){
+			var query = {
+				'where': [
+					{
+						'label': 'thirteenth_month_pay_process_id',
+						'condition': '=',
+						'value': $scope.thirteenth_month_pay_process.id,
+					},
+					{
+						'label': 'employee_id',
+						'condition': '=',
+						'value': $scope.thirteenth_month_pay_entry.employee.id,
+					},
+				],
+				'first': true,
+			}
+
+			Helper.post('/thirteenth-month-pay-entry/enlist', query)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+				.error(function(){
+					Helper.error();
+				})
+		}
+
+		/*
+		 * Object for toolbar
+		 *
+		*/
+		$scope.toolbar = {}
+
+		$scope.toolbar.parentState = 'Thirteenth Month Pay Entry';
+		$scope.toolbar.hideSearchIcon = true;
+
+
+		/*
+		 * Object for fab
+		 *
+		*/
+		$scope.fab = {};
+		$scope.fab.icon = 'mdi-check';
+
+		$scope.fab.label = 'Submit';
+		$scope.fab.show = true;
+
+		$scope.fab.action = function(){
+			if($scope.form.thirteenthMonthPayEntryForm.$invalid){
+				angular.forEach($scope.form.thirteenthMonthPayEntryForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+
+			Helper.preload();
+
+			$scope.busy = true;
+
+			if(!$scope.duplicate || $scope.busy)
+			{
+				if(!thirteenthMonthPayEntryID)
+				{
+					Helper.post('/thirteenth-month-pay-entry', $scope.thirteenth_month_pay_entry)
+						.success(function(data){
+							$scope.busy = false;
+							Helper.stop();
+
+							if(data){
+								Helper.alert('Duplicate Entry', 'Thirteenth month pay entry already exists.');
+								return;
+							}
+
+							Helper.notify('Thirteenth month pay entry created.');
+							$state.go('main.thirteenth-month-pay-process', {'thirteenthMonthPayProcessID': thirteenthMonthPayProcessID});
+
+						})
+						.error(function(){
+							$scope.busy = false;
+							Helper.error();
+						})
+				}
+				else{
+					Helper.put('/thirteenth-month-pay-entry/' + thirteenthMonthPayEntryID, $scope.thirteenth_month_pay_entry)
+						.success(function(data){
+							$scope.busy = false;
+							Helper.stop();
+
+							if(data){
+								Helper.alert('Duplicate Entry', 'Thirteenth month pay entry already exists.');
+								return;
+							}
+
+							Helper.notify('Changes saved.');
+							$state.go('main.thirteenth-month-pay-process', {'thirteenthMonthPayProcessID': thirteenthMonthPayProcessID});
+
+						})
+						.error(function(){
+							$scope.busy = false;
+							Helper.error();
+						})
+				}
+			}
+		}
+
+
+		$scope.init = function(){
+			var thirteenthMonthPayProcess = function(){			
+				var query = {
+					'where': [
+						{
+							'label': 'id',
+							'condition': '=',
+							'value': thirteenthMonthPayProcessID,
+						},
+					],
+					'first': true,
+				}
+
+				Helper.post('/thirteenth-month-pay-process/enlist', query)
+					.success(function(data){
+						$scope.thirteenth_month_pay_process = data;
+
+						$scope.thirteenth_month_pay_process.start = new Date($scope.thirteenth_month_pay_process.start);
+						$scope.thirteenth_month_pay_process.end = new Date($scope.thirteenth_month_pay_process.end);
+
+						$scope.toolbar.childState = new Date($scope.thirteenth_month_pay_process.start).toDateString() + ' ' + new Date($scope.thirteenth_month_pay_process.end).toDateString();
+
+						employees();
+					})
+					.error(function(){
+						Helper.failed()
+							.then(function(){
+								thirteenthMonthPayProcess();
+							});
+					})
+			}
+
+			var employees = function(){
+				var query = {
+					'where': [
+						{
+							'label':'batch_id',
+							'condition': '=',
+							'value': $scope.thirteenth_month_pay_process.batch_id,
+						},
+					],
+					'whereDoesntHave': [
+						{
+							'relation': 'thirteen_month_pay_entries',
+							'where': [
+								{
+									'label':'id',
+									'condition':'=',
+									'value':$scope.thirteenth_month_pay_process.id,
+								}
+							],
+						},
+					],
+				}
+
+				Helper.post('/employee/enlist', query)
+					.success(function(data){
+						$scope.employees = data;
+					})
+					.error(function(){
+						Helper.failed()
+							.then(function(){
+								employees();
+							});
+					})
+			}
+
+			thirteenthMonthPayProcess();
+		}
+
+		$scope.init();
+	}]);
+payroll
 	.controller('thirteenthMonthPayProcessContentContainerController', ['$scope', '$state', '$stateParams', 'Helper', function($scope, $state, $stateParams, Helper){
 		$scope.$emit('closeSidenav');
 
@@ -1466,19 +1763,7 @@ payroll
 		$scope.fab.label = 'Thirteenth Month Pay Entry';
 
 		$scope.fab.action = function(){
-			var dialog = {
-				'template': '/app/components/payroll/templates/dialogs/thirteenth-month-pay-entry-form-dialog.template.html',
-				'controller': 'thirteenthMonthPayEntryDialogController',
-			}
-
-			$scope.thirteenth_month_pay_process.action = 'create';
-
-			Helper.set($scope.thirteenth_month_pay_process);
-
-			Helper.customDialog(dialog)
-				.then(function(){
-					Helper.notify('Thirteenth month pay entry created.');
-				})
+			$state.go('main.thirteenth-month-pay-entry', {'thirteenthMonthPayProcessID': thirteenthMonthPayProcessID});
 		}
 
 		/* Action originates from toolbar */
@@ -1891,64 +2176,47 @@ payroll
 			})
 	}]);
 payroll
-	.controller('thirteenthMonthPayEntryDialogController', ['$scope', '$state', 'Helper', function($scope, $state, Helper){
-		$scope.thirteenth_month_pay_process = Helper.fetch();
+	.controller('thirteenthMonthPayEntryDialogController', ['$scope', '$state', '$stateParams', 'Helper', function($scope, $state, $stateParams, Helper){
+		$scope.config = Helper.fetch();
 
-		$scope.thirteenth_month_pay_process.start = new Date($scope.thirteenth_month_pay_process.start);
-		$scope.thirteenth_month_pay_process.end = new Date($scope.thirteenth_month_pay_process.end);
+		var thirteenthMonthPayEntry = function(){		
+			var query = {
+				'with': [
+					{
+						'relation': 'employee.tax_code',
+						'withTrashed': false,
+					},
+					{
+						'relation': 'employee.position',
+						'withTrashed': false,
+					},
+					{
+						'relation': 'thirteenth_month_pay_process',
+						'withTrashed': false,	
+					}
+				],
+				'where': [
+					{
+						'label': 'id',
+						'condition': '=',
+						'value': $scope.config.id,
+					},
+				],
+				'first': true,
+			}
 
-		$scope.thirteenth_month_pay_entry = {}
+			Helper.post('/thirteenth-month-pay-entry/enlist', query)
+				.success(function(data){
+					$scope.thirteenth_month_pay_entry = data;
 
-		$scope.thirteenth_month_pay_entry.thirteenth_month_pay_process_id = $scope.thirteenth_month_pay_process.id;
-
-		if($scope.thirteenth_month_pay_process.action == 'create')
-		{
-
-		}
-		else if($scope.thirteenth_month_pay_process.action == 'edit')
-		{
-
-		}
-
-		$scope.cancel = function(){
-			Helper.cancel();
-		}
-
-		var query = {
-			'where': [
-				{
-					'label':'batch_id',
-					'condition': '=',
-					'value': $scope.thirteenth_month_pay_process.batch_id,
-				},
-			],
-			'whereDoesntHave': [
-				{
-					'relation': 'thirteen_month_pay_entries',
-					'where': [
-						{
-							'label':'id',
-							'condition':'=',
-							'value':$scope.thirteenth_month_pay_process.id,
-						}
-					],
-				},
-			],
+					payrollEntries();
+				})
+				.error(function(){
+					Helper.error();
+				});
 		}
 
-		Helper.post('/employee/enlist', query)
-			.success(function(data){
-				$scope.employees = data;
-			})
-			.error(function(){
-				Helper.error();
-			})
-
-		$scope.partial_amount = 0;
-
-		$scope.fetchPartialAmount = function(){
-			$scope.checkDuplicate();
-
+		var payrollEntries = function(){
 			var query = {
 				'with': [
 					{
@@ -1956,8 +2224,8 @@ payroll
 						'withTrashed': false,
 						'whereBetween': {
 							'label': 'start_cut_off',
-							'start': $scope.thirteenth_month_pay_process.start.toDateString(),
-							'end': $scope.thirteenth_month_pay_process.end.toDateString(),
+							'start': new Date($scope.thirteenth_month_pay_entry.thirteenth_month_pay_process.start).toDateString(),
+							'end': new Date($scope.thirteenth_month_pay_entry.thirteenth_month_pay_process.end).toDateString(),
 						},
 					},
 				],
@@ -1973,58 +2241,55 @@ payroll
 			Helper.post('/payroll-entry/enlist', query)
 				.success(function(data){
 					$scope.payroll_entries = data;
-					
+
 					angular.forEach($scope.payroll_entries, function(item){
-						$scope.partial_amount += item.partial_thirteenth_month_pay;
 						item.payroll_process.payroll_period.start_cut_off = new Date(item.payroll_process.payroll_period.start_cut_off);
 						item.payroll_process.payroll_period.end_cut_off = new Date(item.payroll_process.payroll_period.end_cut_off);
 						item.payroll_process.payroll_period.payout = new Date(item.payroll_process.payroll_period.payout);
 					});
-
-					$scope.thirteenth_month_pay_entry.net_pay = $scope.partial_amount;
 				})
 				.error(function(){
 					Helper.error();
 				})
 		}
 
-		$scope.checkDuplicate = function(){
-			var query = {
-				'where': [
-					{
-						'label': 'thirteenth_month_pay_process_id',
-						'condition': '=',
-						'value': $scope.thirteenth_month_pay_process.id,
-					},
-					{
-						'label': 'employee_id',
-						'condition': '=',
-						'value': $scope.thirteenth_month_pay_entry.employee.id,
-					},
-				],
-				'first': true,
+		$scope.cancel = function(){
+			Helper.cancel();
+		}
+
+		$scope.edit = function(){
+			Helper.stop();
+			$state.go('main.thirteenth-month-pay-entry', {'thirteenthMonthPayProcessID': $stateParams.thirteenthMonthPayProcessID, 'thirteenthMonthPayEntryID': $scope.thirteenth_month_pay_entry.id});
+		}
+
+		$scope.delete = function(){
+			var confirm = {
+				'title': 'Delete Entry',
+				'message': 'This thirteenth month pay entry will be deleted permanently.',
+				'ok': 'Delete',
+				'cancel': 'Cancel',
 			}
 
-			Helper.post('/thirteenth-month-pay-entry/enlist', query)
-				.success(function(data){
-					$scope.duplicate = data;
-				})
-				.error(function(){
-					Helper.error();
+			Helper.confirm(confirm)
+				.then(function(){
+					Helper.preload();
+
+					Helper.delete('/thirteenth-month-pay-entry/' + $scope.thirteenth_month_pay_entry.id)
+						.success(function(){
+							Helper.stop();
+							Helper.notify('Thirteenth month pay entry deleted.');
+							$state.go($state.current, {'thirteenthMonthPayProcessID': $stateParams.thirteenthMonthPayProcessID}, {reload: true});
+						})
+						.error(function(){
+							Helper.error();
+						});
+
+				}, function(){
+					return;
 				})
 		}
 
-		$scope.submit = function(){
-			if($scope.thirteenthMonthPayEntryForm.$invalid){
-				angular.forEach($scope.thirteenthMonthPayEntryForm.$error, function(field){
-					angular.forEach(field, function(errorField){
-						errorField.$setTouched();
-					});
-				});
-
-				return;
-			}
-		}
+		thirteenthMonthPayEntry();
 	}]);
 payroll
 	.controller('thirteenthMonthPayProcessDialogController', ['$scope', 'Helper', function($scope, Helper){

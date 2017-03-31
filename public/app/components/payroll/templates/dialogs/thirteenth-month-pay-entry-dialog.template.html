@@ -1,0 +1,82 @@
+<md-dialog aria-label="Thirteenth Month Pay Entry Form"  flex flex-gt-sm="50" ng-cloak>
+    <form name="thirteenthMonthPayEntryForm">
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2 class="white-text">{{thirteenth_month_pay_entry.employee.last_name}}, {{thirteenth_month_pay_entry.employee.first_name}} {{thirteenth_month_pay_entry.employee.middle_name.charAt(0) +'.'}} {{thirteenth_month_pay_entry.employee.suffix + '.'}}</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <md-icon class="mdi mdi-close mdi-24px" aria-label="Close dialog"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content flex layout-padding layout-wrap>
+            <md-tabs md-dynamic-height md-border-bottom>
+                <md-tab label="Employee Information">
+                    <md-list layout="row" layout-wrap>
+                        <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm="45">
+                            <div class="md-list-item-text">
+                                <h3>{{thirteenth_month_pay_entry.employee.employee_number}}</h3>
+                                <p>Employee Number</p>
+                            </div>
+                        </md-list-item>
+                        <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm="45">
+                            <div class="md-list-item-text">
+                                <h3>{{thirteenth_month_pay_entry.employee.last_name}}, {{thirteenth_month_pay_entry.employee.first_name}} {{thirteenth_month_pay_entry.employee.middle_name}}</h3>
+                                <p>Employee Name</p>
+                            </div>
+                        </md-list-item>
+                        <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm="45">
+                            <div class="md-list-item-text">
+                                <h3>{{thirteenth_month_pay_entry.employee.tax_code.code}} - {{thirteenth_month_pay_entry.employee.tax_code.description}}</h3>
+                                <p>Tax Code</p>
+                            </div>
+                        </md-list-item>
+                        <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm="45">
+                            <div class="md-list-item-text">
+                                <h3>{{thirteenth_month_pay_entry.employee.basic_salary | number: 2}}</h3>
+                                <p>Basic Salary</p>
+                            </div>
+                        </md-list-item>
+                        <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm="45">
+                            <div class="md-list-item-text">
+                                <h3>{{thirteenth_month_pay_entry.employee.position.name}} - {{thirteenth_month_pay_entry.employee.position.description}}</h3>
+                                <p>Position</p>
+                            </div>
+                        </md-list-item>
+                        <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm="45">
+                            <div class="md-list-item-text">
+                                <h3>{{thirteenth_month_pay_entry.employee.employment_status}}</h3>
+                                <p>Employment Status</p>
+                            </div>
+                        </md-list-item>
+                    </md-list>
+                </md-tab>
+                <md-tab label="13th Month Breakdown">
+                    <md-list layout="row" layout-wrap flex>
+                        <md-list-item ng-repeat="payroll_entry in payroll_entries" class="md-3-line" flex="30">
+                            <div class="md-list-item-text">
+                                <h3>{{payroll_entry.payroll_process.payroll_period.start_cut_off | date: 'MMM. dd, yyyy'}} to {{payroll_entry.payroll_process.payroll_period.end_cut_off | date: 'MMM. dd, yyyy'}}</h3>
+                                <h4>Payout: {{payroll_entry.payroll_process.payroll_period.payout | date: 'MMM. dd, yyyy'}}</h4>
+                                <p>{{payroll_entry.partial_thirteenth_month_pay | number: 2}}</p>
+                            </div>
+                        </md-list-item>
+                    </md-list>
+                </md-tab>
+            </md-tabs>
+            <md-divider></md-divider>
+            <div layout="column" flex>
+                <h3 class="md-title" ng-if="thirteenth_month_pay_entry.taxable_amount">Taxable Amount: {{thirteenth_month_pay_entry.taxable_amount | number: 2}}</h3>
+                <h3 class="md-title">Net Pay: {{thirteenth_month_pay_entry.net_pay | number: 2}}</h3>
+            </div>
+        </md-dialog-content>
+    </form>
+    <div layout="row" layout-align="end center" ng-if="!thirteenth_month_pay_entry.thirteenth_month_pay_process.locked && !thirteenth_month_pay_entry.thirteenth_month_pay_process.processed">   
+        <md-button ng-if="!busy" class="md-primary" aria-label="Edit" ng-click="edit()">
+            Edit
+        </md-button>
+        <md-button ng-if="!busy" class="md-primary" aria-label="Edit" ng-click="delete()">
+            Delete
+        </md-button>
+        <md-progress-circular ng-if="busy" md-mode="indeterminate" class="md-primary" md-diameter="60"></md-progress-circular>
+    </div>
+</md-dialog>

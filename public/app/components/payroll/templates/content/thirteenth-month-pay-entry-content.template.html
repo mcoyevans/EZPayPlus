@@ -1,0 +1,76 @@
+<form name="form.thirteenthMonthPayEntryForm" layout="row" layout-align="center center" novalidate>
+    <div flex flex-gt-md="75" layout-padding>
+        <div layout="row" layout-wrap flex>
+            <!-- Employee -->
+            <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm ng-if="!edit">
+                <label>Employee</label>
+                <md-select name="Employee" ng-model="thirteenth_month_pay_entry.employee" required ng-disabled="busy" ng-change="fetchPartialAmount()">
+                    <md-option ng-repeat="employee in employees" ng-value="employee">{{employee.last_name}}, {{employee.first_name}} <span ng-if="employee.middle_name">{{employee.middle_name.charAt(0).toUpperCase()}}.</span> {{employee.suffix}}</md-option>
+                </md-select>
+                <div ng-messages="form.thirteenthMonthPayEntryForm.Employee.$error">
+                    <div ng-message="required">Employee is required.</div>
+                </div>
+            </md-input-container>
+            <md-list layout="row" layout-wrap ng-if="edit">
+                <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm="45">
+                    <div class="md-list-item-text">
+                        <h3>{{thirteenth_month_pay_entry.employee.employee_number}}</h3>
+                        <p>Employee Number</p>
+                    </div>
+                </md-list-item>
+                <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm="45">
+                    <div class="md-list-item-text">
+                        <h3>{{thirteenth_month_pay_entry.employee.last_name}}, {{thirteenth_month_pay_entry.employee.first_name}} {{thirteenth_month_pay_entry.employee.middle_name}}</h3>
+                        <p>Employee Name</p>
+                    </div>
+                </md-list-item>
+                <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm="45">
+                    <div class="md-list-item-text">
+                        <h3>{{thirteenth_month_pay_entry.employee.tax_code.code}} - {{thirteenth_month_pay_entry.employee.tax_code.description}}</h3>
+                        <p>Tax Code</p>
+                    </div>
+                </md-list-item>
+                <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm="45">
+                    <div class="md-list-item-text">
+                        <h3>{{thirteenth_month_pay_entry.employee.basic_salary | number: 2}}</h3>
+                        <p>Basic Salary</p>
+                    </div>
+                </md-list-item>
+                <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm="45">
+                    <div class="md-list-item-text">
+                        <h3>{{thirteenth_month_pay_entry.employee.position.name}} - {{thirteenth_month_pay_entry.employee.position.description}}</h3>
+                        <p>Position</p>
+                    </div>
+                </md-list-item>
+                <md-list-item class="md-2-line" flex-xs="100" flex-sm="100" flex-gt-sm="45">
+                    <div class="md-list-item-text">
+                        <h3>{{thirteenth_month_pay_entry.employee.employment_status}}</h3>
+                        <p>Employment Status</p>
+                    </div>
+                </md-list-item>
+            </md-list>
+        </div>
+        <md-subheader class="md-no-sticky">13th Month Pay Breakdown</md-subheader>
+        <md-list layout="row" layout-wrap flex>
+            <md-list-item ng-repeat="payroll_entry in payroll_entries" class="md-3-line" flex="30">
+                <div class="md-list-item-text">
+                    <h3>{{payroll_entry.payroll_process.payroll_period.start_cut_off | date: 'MMM. dd, yyyy'}} to {{payroll_entry.payroll_process.payroll_period.end_cut_off | date: 'MMM. dd, yyyy'}}</h3>
+                    <h4>Payout: {{payroll_entry.payroll_process.payroll_period.payout | date: 'MMM. dd, yyyy'}}</h4>
+                    <p>{{payroll_entry.partial_thirteenth_month_pay | number: 2}}</p>
+                </div>
+            </md-list-item>
+        </md-list>
+        <md-subheader class="md-no-sticky">Tax Ceiling: {{thirteenth_month_pay_process.tax_ceiling}}</md-subheader>
+        <div layout="row" layout-wrap flex>
+            <!-- Net Pay -->
+            <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                <label>Net Pay</label>
+                <input type="number" name="NetPay" ng-model="thirteenth_month_pay_entry.net_pay" required min="{{partial_amount}}" ng-disabled="busy" ng-change="calculateTaxableAmount()">
+                <div ng-messages="form.thirteenthMonthPayEntryForm.NetPay.$error">
+                    <div ng-message="required">Net Pay is required</div>
+                    <div ng-message="min">Net pay cannot be lower than the partial amount.</div>
+                </div>
+            </md-input-container>
+        </div>
+    </div>
+</form>

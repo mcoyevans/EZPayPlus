@@ -126,19 +126,7 @@ payroll
 		$scope.fab.label = 'Thirteenth Month Pay Entry';
 
 		$scope.fab.action = function(){
-			var dialog = {
-				'template': '/app/components/payroll/templates/dialogs/thirteenth-month-pay-entry-form-dialog.template.html',
-				'controller': 'thirteenthMonthPayEntryDialogController',
-			}
-
-			$scope.thirteenth_month_pay_process.action = 'create';
-
-			Helper.set($scope.thirteenth_month_pay_process);
-
-			Helper.customDialog(dialog)
-				.then(function(){
-					Helper.notify('Thirteenth month pay entry created.');
-				})
+			$state.go('main.thirteenth-month-pay-entry', {'thirteenthMonthPayProcessID': thirteenthMonthPayProcessID});
 		}
 
 		/* Action originates from toolbar */

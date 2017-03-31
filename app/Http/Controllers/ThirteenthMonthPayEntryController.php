@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 
 use App\ThirteenthMonthPayEntry;
+use App\ThirteenthMonthPayProcess;
 
 use Auth;
 use Carbon\Carbon;
@@ -92,7 +93,39 @@ class ThirteenthMonthPayEntryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        if(Gate::forUser($request->user())->denies('payroll'))
+        {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $thirteenth_month_pay_process = ThirteenthMonthPayProcess::where('id', $request->thirteenth_month_pay_process_id)->first();
+
+        if($thirteenth_month_pay_process->locked || $thirteenth_month_pay_process->processed)
+        {
+            abort(403, 'Thirteenth month pay process already locked or processed.');
+        }
+
+        $duplicate = ThirteenthMonthPayEntry::where('employee_id', $request->employee_id)->where('thirteenth_month_pay_process_id', $request->thirteenth_month_pay_process_id)->first();
+
+        if($duplicate)
+        {
+            return response()->json(true);
+        }
+
+        $this->validate($request, [
+            'employee_id' => 'required',
+            'thirteenth_month_pay_process_id' => 'required',
+            'net_pay' => 'required',
+        ]);
+
+        $thirteenth_month_pay_entry = new ThirteenthMonthPayEntry;
+
+        $thirteenth_month_pay_entry->thirteenth_month_pay_process_id = $request->thirteenth_month_pay_process_id;
+        $thirteenth_month_pay_entry->employee_id = $request->employee_id;
+        $thirteenth_month_pay_entry->taxable_amount = $request->taxable_amount;
+        $thirteenth_month_pay_entry->net_pay = $request->net_pay;
+
+        $thirteenth_month_pay_entry->save();
     }
 
     /**
@@ -126,7 +159,37 @@ class ThirteenthMonthPayEntryController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        if(Gate::forUser($request->user())->denies('payroll'))
+        {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $thirteenth_month_pay_process = ThirteenthMonthPayProcess::where('id', $request->thirteenth_month_pay_process_id)->first();
+
+        if($thirteenth_month_pay_process->locked || $thirteenth_month_pay_process->processed)
+        {
+            abort(403, 'Thirteenth month pay process already locked or processed.');
+        }
+
+        $duplicate = ThirteenthMonthPayEntry::whereNotIn('id', [$id])->where('employee_id', $request->employee_id)->where('thirteenth_month_pay_process_id', $request->thirteenth_month_pay_process_id)->first();
+
+        if($duplicate)
+        {
+            return response()->json(true);
+        }
+
+        $this->validate($request, [
+            'employee_id' => 'required',
+            'thirteenth_month_pay_process_id' => 'required',
+            'net_pay' => 'required',
+        ]);
+
+        $thirteenth_month_pay_entry = ThirteenthMonthPayEntry::find($id);
+
+        $thirteenth_month_pay_entry->taxable_amount = $request->taxable_amount;
+        $thirteenth_month_pay_entry->net_pay = $request->net_pay;
+
+        $thirteenth_month_pay_entry->save();
     }
 
     /**
@@ -137,6 +200,18 @@ class ThirteenthMonthPayEntryController extends Controller
      */
     public function destroy($id)
     {
-        //
+        if(Gate::forUser(Auth::user())->denies('payroll'))
+        {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $thirteenth_month_pay_entry = ThirteenthMonthPayEntry::with('thirteenth_month_pay_process')->where('id', $id)->first();
+
+        if($thirteenth_month_pay_entry->thirteenth_month_pay_process->locked || $thirteenth_month_pay_entry->thirteenth_month_pay_process->processed)
+        {
+            abort(403, 'Unable toThirteenth month pay process already locked or processed.');
+        }
+
+        $thirteenth_month_pay_entry->delete();        
     }
 }

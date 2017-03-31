@@ -17,7 +17,7 @@ class CreateThirteenthMonthPayEntriesTable extends Migration
             $table->increments('id');
             $table->integer('thirteenth_month_pay_process_id')->unsigned();
             $table->integer('employee_id')->unsigned();
-            $table->float('taxable_amount')->unsigned();
+            $table->float('taxable_amount')->unsigned()->nullable();
             $table->float('net_pay')->unsigned();
             $table->timestamps();
         });
