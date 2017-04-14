@@ -33,11 +33,17 @@ elixir(function(mix) {
         /* App Scripts */
         .scriptsIn('public/app/components/app', 'public/js/app.js')
 
+        /* Auth Scripts */
+        .scriptsIn('public/app/components/auth', 'public/js/auth.js')
+
         /* HRIS Scripts */
         .scriptsIn('public/app/components/hris', 'public/js/hris.js')
 
         /* Payroll Scripts */
         .scriptsIn('public/app/components/payroll', 'public/js/payroll.js')
+
+        /* HRIS Scripts */
+        .scriptsIn('public/app/components/bookkeeping', 'public/js/bookkeeping.js')
 
         /* Timekeeping Scripts */
         .scriptsIn('public/app/components/timekeeping', 'public/js/timekeeping.js')

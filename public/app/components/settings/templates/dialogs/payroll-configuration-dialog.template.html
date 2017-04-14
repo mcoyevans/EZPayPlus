@@ -1,0 +1,131 @@
+<md-dialog aria-label="Payroll Form"  flex flex-gt-sm="50" ng-cloak>
+    <form name="payrollForm">
+        <md-toolbar >
+            <div class="md-toolbar-tools">
+                <h2 class="white-text">Payroll</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <md-icon class="mdi mdi-close mdi-24px" aria-label="Close dialog"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content flex layout-padding layout-wrap>
+            <md-subheader class="md-accent" ng-if="error">Oops! Something went wrong! An error occured. Please try again.</md-subheader>
+            <md-subheader class="md-accent" ng-if="unchecked">Check at least one box in every Government Contribution.</md-subheader>
+            <div layout="row" layout-wrap flex>
+                <!-- Name -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Name</label>
+                    <input type="text" name="Name" required ng-model="payroll.name" ng-disabled="busy" ng-blur="checkDuplicate()">
+                    <div class="pattern" ng-if="duplicate">Payroll already exists.</div>
+                    <div ng-messages="payrollForm.Name.$error" ng-if="payrollForm.Name.$touched">
+                        <div ng-message="required">Name is required.</div>
+                    </div>
+                </md-input-container>
+                <!-- Description -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Description</label>
+                    <textarea name="Description" ng-model="payroll.description" ng-disabled="busy"></textarea>
+                </md-input-container>
+            </div>
+            <md-subheader class="md-no-sticky">Factor Rate</md-subheader>
+            <div layout="row" flex>
+                <!-- Working Days per Year -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Working Days per Year</label>
+                    <input type="number" name="WorkDaysPerYear" required ng-model="payroll.working_days_per_year" min="1" max="365" ng-disabled="busy">
+                    <div ng-messages="payrollForm.WorkDaysPerYear.$error" ng-if="payrollForm.WorkDaysPerYear.$touched">
+                        <div ng-message="required">Working days per year is required.</div>
+                        <div ng-message="min">Working days per year cannot be lower than 1.</div>
+                        <div ng-message="max">Working days per year cannot be higher than 365.</div>
+                    </div>
+                </md-input-container>
+                <!-- Working Days per Week -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Working Days per Week</label>
+                    <input type="number" name="WorkDaysPerWeek" required ng-model="payroll.working_days_per_week" min="0" max="7" ng-disabled="busy">
+                    <div ng-messages="payrollForm.WorkDaysPerWeek.$error" ng-if="payrollForm.WorkDaysPerWeek.$touched">
+                        <div ng-message="required">Working days per week is required.</div>
+                        <div ng-message="min">Working days per week cannot be lower than 0.</div>
+                        <div ng-message="max">Working days per week cannot be more than 7.</div>
+                    </div>
+                </md-input-container>
+                <!-- Working Hours per Day -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Working Hours per Day</label>
+                    <input type="number" name="WorkHoursPerDay" required ng-model="payroll.working_hours_per_day" min="0" max="8" ng-disabled="busy">
+                    <div ng-messages="payrollForm.WorkHoursPerDay.$error" ng-if="payrollForm.WorkHoursPerDay.$touched">
+                        <div ng-message="required">Working hours per day is required.</div>
+                        <div ng-message="min">Working hours per day cannot be lower than 0.</div>
+                        <div ng-message="max">Working hours per day cannot be more than 8.</div>
+                    </div>
+                </md-input-container>
+            </div>
+            <div layout="row" flex>
+                <!-- Pay Frequency -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Pay Frequency</label>
+                    <md-select name="PayFrequency" ng-model="payroll.pay_frequency" ng-change="resetGovernmentContributions()" required ng-disabled="busy">
+                        <md-option ng-repeat="pay_frequency in pay_frequencies" value="{{pay_frequency}}">{{pay_frequency}}</md-option>
+                    </md-select>
+                    <div ng-messages="payrollForm.PayFrequency.$error" ng-if="payrollForm.PayFrequency.$touched">
+                        <div ng-message="required">Pay frequency is required.</div>
+                    </div>
+                </md-input-container>
+                <!-- Time Interpretation -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Time Interpretation</label>
+                    <md-select name="TimeIntrepretation" ng-model="payroll.time_interpretation_id" required ng-if="time_interepretations.length" ng-disabled="busy">
+                        <md-option ng-repeat="item in time_interepretations" value="{{item.id}}">{{item.name}}</md-option>
+                    </md-select>
+                    <div ng-messages="payrollForm.TimeIntrepretation.$error" ng-if="payrollForm.TimeIntrepretation.$touched">
+                        <div ng-message="required">Time interpretation is required.</div>
+                    </div>
+                </md-input-container>
+                <!-- Thirteenth Month Pay Basis -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Thirteenth Month Pay Basis</label>
+                    <md-select name="thirteenthMonthPayBasis" ng-model="payroll.thirteenth_month_pay_basis" required ng-disabled="busy">
+                        <md-option ng-repeat="item in thirteenth_month_pay_basis" value="{{item}}">{{item}}</md-option>
+                    </md-select>
+                    <div ng-messages="payrollForm.thirteenthMonthPayBasis.$error" ng-if="payrollForm.thirteenthMonthPayBasis.$touched">
+                        <div ng-message="required">Thirteenth month pay basis is required.</div>
+                    </div>
+                </md-input-container>
+            </div>
+            <md-subheader class="md-no-sticky">Government Contribution</md-subheader>
+            <div layout="row" flex>
+                <table class="table">
+                    <tr>
+                        <th class="col-xs-4 col-sm-4 col-md-4 col-lg-4 secondary-text">Check at least one in every contribution.</th>
+                        <th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">1st</th>
+                        <th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">2nd</th>
+                        <!-- <th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">3rd</th> -->
+                        <!-- <th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">4th</th> -->
+                    </tr>
+                    <tr ng-repeat="item in payroll.government_contributions">
+                        <td class="col-xs-4 col-sm-4 col-md-4 col-lg-4">{{item.name}}</td>
+                        <td class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                            <md-checkbox aria-label="First Cut-off" ng-model="item.first_cut_off" ng-true-value="1" ng-false-value="0" ng-change="checkGovernmentContribution(item)" ng-disabled="busy"></md-checkbox>
+                        </td>
+                        <td class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                            <md-checkbox aria-label="Second Cut-off" ng-model="item.second_cut_off" ng-true-value="1" ng-false-value="0" ng-change="checkGovernmentContribution(item)" ng-disabled="busy || payroll.pay_frequency == 'Monthly'"></md-checkbox>
+                        </td>
+                        <!-- <td class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                            <md-checkbox aria-label="Third Cut-off" ng-model="item.third_cut_off" ng-true-value="1" ng-false-value="0" ng-change="checkGovernmentContribution(item)" ng-disabled="busy || payroll.pay_frequency == 'Semi-monthly' || payroll.pay_frequency == 'Monthly'"></md-checkbox>
+                        </td>
+                        <td class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                            <md-checkbox aria-label="Fourth Cut-off" ng-model="item.fourth_cut_off" ng-true-value="1" ng-false-value="0" ng-change="checkGovernmentContribution(item)" ng-disabled="busy || payroll.pay_frequency == 'Semi-monthly' || payroll.pay_frequency == 'Monthly'"></md-checkbox>
+                        </td> -->
+                    </tr>
+                </table>
+            </div>
+        </md-dialog-content>
+    </form>
+    <div layout="row" layout-align="end center">   
+        <md-button ng-if="!busy" class="md-primary" aria-label="Submit" ng-click="submit()">
+            Save
+        </md-button>
+        <md-progress-circular ng-if="busy" md-mode="indeterminate" class="md-primary" md-diameter="60"></md-progress-circular>
+    </div>
+</md-dialog>

@@ -1,0 +1,1 @@
+{"version":3,"sources":["bookkeeping.module.js"],"names":[],"mappings":"AAAA","file":"bookkeeping.js","sourcesContent":["var bookkeeping = angular.module('bookkeeping', []);"]}

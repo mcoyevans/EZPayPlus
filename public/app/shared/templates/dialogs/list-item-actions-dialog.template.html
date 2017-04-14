@@ -1,6 +1,6 @@
 <md-dialog flex-gt-sm="20">
 	<md-dialog-content>
-	    <md-subheader>{{data.name}} - {{data.description}}</md-subheader>
+	    <md-subheader>{{data.name}} {{data.start_cut_off | date: 'EEE, MMM. dd, yyyy'}} <span ng-if="data.name || data.start_cut_off">-</span> {{data.end_cut_off | date: 'EEE, MMM. dd, yyyy'}} {{data.description}}</md-subheader>
 	    <md-list ng-cloak>
 	        <md-list-item flex ng-repeat="item in data.current.menu" ng-if="item.show">
 	            <md-button flex ng-click="item.action(data)">

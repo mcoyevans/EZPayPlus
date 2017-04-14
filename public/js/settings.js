@@ -409,38 +409,61 @@ settings
 				data.current = $scope.subheader.current;
 
 				// condition for checking if the delete button can be allowed
-				if(data.current.label == 'Time Interpretation')
+				if(data.current.label == 'Time Interpretations')
 				{
 					// disable the delete button
 					data.current.menu[1].show = false;
 				}
 				// otherwise
-				else if(!data.current.label == 'Time Interpretation')
+				else if(!data.current.label == 'Time Interpretations')
 				{
 					// enable the delete button
 					data.current.menu[1].show = true;
 				}
 
-				Helper.set(data);
+				if((data.current.label == 'Payroll Configuration' || data.current.label == 'Payroll Period') && data.payroll_process_count)
+				{
+					Helper.alert('Notice', 'This data is locked for any modification.');
+				}
+				else
+				{
+					Helper.set(data);
 
-				var dialog = {};
-				dialog.controller = 'listItemActionsDialogController';
-				dialog.template = '/app/shared/templates/dialogs/list-item-actions-dialog.template.html';
-				dialog.fullScreen = false;
+					var dialog = {};
+					dialog.controller = 'listItemActionsDialogController';
+					dialog.template = '/app/shared/templates/dialogs/list-item-actions-dialog.template.html';
+					dialog.fullScreen = false;
 
-				Helper.customDialog(dialog);
+					Helper.customDialog(dialog);
+				}
+
 			}
 		}
 
 		/* Formats every data in the paginated call */
 		var pushItem = function(data){
 			data.created_at = new Date(data.created_at);
+			data.start_cut_off = data.start_cut_off ? new Date(data.start_cut_off) : null;
+			data.end_cut_off = data.end_cut_off ? new Date(data.end_cut_off) : null;
+			data.payout = data.payout ? new Date(data.payout) : null;
+			data.date = data.date ? new Date(data.date) : null;
 
 			var item = {};
 
-			item.display = data.name;
-			item.description = data.description;
-			item.gl_account = data.gl_account;
+			if($scope.subheader.current.label == 'Payroll Period')
+			{
+				item.display = data.payroll.name;
+			}
+			else if($scope.subheader.current.label == 'Holidays')
+			{
+				item.display = data.description;
+			}
+			else{
+				item.display = data.name;
+				item.description = data.description;
+				item.gl_account = data.gl_account;
+			}
+
 
 			$scope.toolbar.items.push(item);
 		}
@@ -471,7 +494,7 @@ settings
 								return;
 							});
 					}
-					$scope.fab.show = true;
+					$scope.fab.show = query.label == 'Time Interpretations' ? false : true;
 
 					if(data.data.length){
 						// iterate over each record and set the format
@@ -2440,6 +2463,22 @@ settings
 				'label':'Payroll Configuration',
 				'url': '/payroll/enlist',
 				'request' : {
+					'with': [
+						{
+							'relation': 'government_contributions',
+							'withTrashed': false
+						},
+						{
+							'relation': 'time_interpretation',
+							'withTrashed': false
+						},
+					],
+					'withCount': [
+						{
+							'relation': 'payroll_process',
+							'withTrashed': false,
+						},
+					],
 					'paginate':20,
 				},
 				'fab': {
@@ -2513,6 +2552,24 @@ settings
 				'label':'Payroll Period',
 				'url': '/payroll-period/enlist',
 				'request' : {
+					'with': [
+						{
+							'relation': 'payroll',
+							'withTrashed': true,
+						}
+					],
+					'orderBy': [
+						{
+							'column': 'start_cut_off',
+							'order': 'asc'
+						}
+					],
+					'withCount': [
+						{
+							'relation': 'payroll_process',
+							'withTrashed': false,
+						},
+					],
 					'paginate':20,
 				},
 				'fab': {
@@ -2557,7 +2614,7 @@ settings
 						action: function(data){
 							var dialog = {};
 							dialog.title = 'Delete';
-							dialog.message = 'Delete ' + data.name + ' payroll period?'
+							dialog.message = 'Delete ' + new Date(data.start_cut_off).toLocaleDateString() + ' to ' + new Date(data.end_cut_off).toLocaleDateString() + ' payroll period?'
 							dialog.ok = 'Delete';
 							dialog.cancel = 'Cancel';
 
@@ -2577,6 +2634,28 @@ settings
 						},
 					},
 				],
+				'sort': [
+					{
+						'label': 'Start Cut Off',
+						'type': 'start_cut_off',
+						'sortReverse': false,
+					},
+					{
+						'label': 'End Cut Off',
+						'type': 'end_cut_off',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Payout',
+						'type': 'payout',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
 				action: function(current){
 					setInit(current);
 				},
@@ -2586,6 +2665,17 @@ settings
 				'label':'Holidays',
 				'url': '/holiday/enlist',
 				'request' : {
+					'withTrashed': true,
+					'with': [
+						{		
+							'relation': 'branches',
+							'withTrashed': true,
+						},
+						{		
+							'relation': 'cost_centers',
+							'withTrashed': true,
+						},
+					],
 					'paginate':20,
 				},
 				'fab': {
@@ -2630,7 +2720,7 @@ settings
 						action: function(data){
 							var dialog = {};
 							dialog.title = 'Delete';
-							dialog.message = 'Delete ' + data.name + ' holiday?'
+							dialog.message = 'Delete ' + data.description + ' holiday?'
 							dialog.ok = 'Delete';
 							dialog.cancel = 'Cancel';
 
@@ -2648,6 +2738,23 @@ settings
 									return;
 								})
 						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Date',
+						'type': 'date',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
 					},
 				],
 				action: function(current){
@@ -3185,6 +3292,13 @@ settings
 				})
 		}
 
+		$scope.checkDuplicateUsername = function(){
+			Helper.post('/user/check-username', $scope.user)
+				.success(function(data){
+					$scope.duplicate_username = data ? true : false;
+				})
+		}
+
 		$scope.submit = function(){
 			$scope.error = false;
 			if($scope.userForm.$invalid){
@@ -3196,7 +3310,7 @@ settings
 
 				return;
 			}
-			if(!$scope.duplicate && $scope.user.password == $scope.user.confirm)
+			if(!$scope.duplicate && !$scope.duplicate_username && $scope.user.password == $scope.user.confirm)
 			{
 				$scope.busy = true;
 				Helper.post('/user', $scope.user)
@@ -3737,14 +3851,15 @@ settings
 
 			Helper.post('/company/enlist', query)
 				.success(function(data){
-					data.city = data.city.name;
-
-					$scope.pagibig = data.pagibig.replace(/-/g, '');
-					$scope.philhealth = data.philhealth.replace(/-/g, '');
-					$scope.sss = data.sss.replace(/-/g, '');
-					$scope.tin = data.tin.replace(/-/g, '');
-
 					$scope.company = data;
+
+					$scope.company.city = $scope.company.city.name;
+
+					$scope.pagibig = $scope.company.pagibig.replace(/-/g, '');
+					$scope.philhealth = $scope.company.philhealth.replace(/-/g, '');
+					$scope.sss = $scope.company.sss.replace(/-/g, '');
+					$scope.tin = $scope.company.tin.replace(/-/g, '');
+
 
 					$scope.checkCity();
 					$scope.fetchProvinces();
@@ -3784,6 +3899,13 @@ settings
 				})
 		}
 
+		$scope.checkDuplicateUsername = function(){
+			Helper.post('/user/check-username', $scope.user)
+				.success(function(data){
+					$scope.duplicate_username = data ? true : false;
+				})
+		}
+
 		$scope.submit = function(){
 			$scope.error = false;
 			if($scope.userForm.$invalid){
@@ -3811,6 +3933,226 @@ settings
 						$scope.busy = false;
 						$scope.error = true;
 					});
+			}
+		}
+	}]);
+settings
+	.controller('holidayDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.config = Helper.fetch();
+
+		$scope.holiday = {};
+
+		$scope.types = ['Regular Holiday', 'Special Non-Working Holiday']
+
+		if($scope.config.action == 'create')
+		{
+			$scope.holiday.date = new Date();
+
+			$scope.holiday.branches = [];
+			$scope.holiday.cost_centers = [];
+
+			Helper.get('/branch')
+				.success(function(data){
+					$scope.branches = data;
+				})
+
+			Helper.get('/cost-center')
+				.success(function(data){
+					$scope.cost_centers = data;
+				})
+		}
+
+		else if($scope.config.action == 'edit')
+		{
+			var query = {
+				'where': [
+					{
+						'label': 'id',
+						'condition': '=',
+						'value': $scope.config.id,
+					},
+				],
+				'first': true,
+			}
+
+			Helper.post('/holiday/enlist', query)
+				.success(function(data){
+					data.date = new Date(data.date);
+
+					$scope.holiday = data;
+
+					$scope.holiday.branches = [];
+					$scope.holiday.cost_centers = [];
+
+					Helper.get('/branch')
+						.success(function(data){
+							$scope.branches = data;
+
+							$scope.branches_count = $scope.branches.length;
+							angular.forEach($scope.branches, function(item, key){
+								$scope.holiday.branches.push(null);
+
+								var query = {};
+								query.with = [
+									{
+										'relation':'branch',
+										'withTrashed': false,
+									},
+								];
+								query.where = [
+									{
+										'label': 'holiday_id',
+										'condition': '=',
+										'value': $scope.config.id,
+									},
+									{
+										'label': 'branch_id',
+										'condition': '=',
+										'value': item.id,
+									},
+								];
+								query.first = true;
+
+								Helper.post('/branch-holiday/enlist', query)
+									.success(function(data){
+										$scope.branches_count--;
+										if(data)
+										{
+											$scope.holiday.branches.splice(key, 1, data.branch);
+										}
+									});
+							});
+						})
+
+					Helper.get('/cost-center')
+						.success(function(data){
+							$scope.cost_centers = data;
+
+							$scope.cost_centers_count = $scope.cost_centers.length;
+							angular.forEach($scope.cost_centers, function(item, key){
+								$scope.holiday.cost_centers.push(null);
+
+								var query = {};
+								query.with = [
+									{
+										'relation':'cost_center',
+										'withTrashed': false,
+									},
+								];
+								query.where = [
+									{
+										'label': 'holiday_id',
+										'condition': '=',
+										'value': $scope.config.id,
+									},
+									{
+										'label': 'cost_center_id',
+										'condition': '=',
+										'value': item.id,
+									},
+								];
+								query.first = true;
+
+								Helper.post('/cost-center-holiday/enlist', query)
+									.success(function(data){
+										$scope.cost_centers_count--;
+										if(data)
+										{
+											$scope.holiday.cost_centers.splice(key, 1, data.cost_center);
+										}
+									});
+							});
+						})
+				})
+				.error(function(){
+					Helper.error();
+				})
+		}
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			var back_up_date = {}
+
+			back_up_date.date = new Date($scope.holiday.date);
+
+			$scope.holiday.date = $scope.holiday.date.toDateString();
+
+			Helper.post('/holiday/check-duplicate', $scope.holiday)
+				.success(function(data){
+					$scope.duplicate = data;
+
+					$scope.holiday.date = new Date(back_up_date.date);
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.holidayForm.$invalid){
+				angular.forEach($scope.holidayForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+
+			angular.forEach($scope.holiday.branches, function(item){
+
+			});
+
+			if(!$scope.duplicate)
+			{
+				$scope.busy = true;
+
+				var back_up_date = {}
+
+				back_up_date.date = new Date($scope.holiday.date);
+
+				$scope.holiday.date = $scope.holiday.date.toDateString();
+
+				if($scope.config.action == 'create')
+				{
+					Helper.post('/holiday', $scope.holiday)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+
+							$scope.holiday.date = new Date(back_up_date.date);
+						});
+				}
+				if($scope.config.action == 'edit')
+				{
+					Helper.put('/holiday/' + $scope.config.id, $scope.holiday)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+
+							$scope.holiday.date = new Date(back_up_date.date);
+						});
+				}
 			}
 		}
 	}]);
@@ -3977,6 +4319,390 @@ settings
 				}
 			}
 		}
+	}]);
+settings
+	.controller('payrollConfigurationDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.config = Helper.fetch();
+
+		$scope.payroll = {};
+
+		$scope.pay_frequencies = ['Semi-monthly', 'Monthly'];
+
+		$scope.thirteenth_month_pay_basis = ['Base', 'Gross'];
+
+		if($scope.config.action == 'create')
+		{
+			$scope.payroll.thirteenth_month_pay_basis = 'Base';
+
+			$scope.payroll.government_contributions = [
+				{
+					'name':'Withholding Tax',
+				},
+				{
+					'name':'SSS',
+				},
+				{
+					'name':'Pagibig',
+				},
+				{
+					'name':'Philhealth',
+				},
+			]
+		}
+
+		else if($scope.config.action == 'edit')
+		{
+			var query = {
+				'with': [
+					{
+						'relation': 'government_contributions',
+						'withTrashed': false,
+					},
+				],
+				'where': [
+					{
+						'label': 'id',
+						'condition': '=',
+						'value': $scope.config.id,
+					},
+				],
+				'first': true,
+			}
+
+			Helper.post('/payroll/enlist', query)
+				.success(function(data){
+					angular.forEach(data.government_contributions, function(item){
+						$scope.checkGovernmentContribution(item);
+					})
+
+					$scope.payroll = data;
+				})
+				.error(function(){
+					Helper.error();
+				})
+		}
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkDuplicate = function(){
+			Helper.post('/payroll/check-duplicate', $scope.payroll)
+				.success(function(data){
+					$scope.duplicate = data;
+				})
+		}
+
+		$scope.resetGovernmentContributions = function(){
+			angular.forEach($scope.payroll.government_contributions, function(item){
+				if($scope.payroll.pay_frequency == 'Semi-monthly')
+				{
+					item.third_cut_off = 0;
+					item.fourth_cut_off = 0;
+				}
+				else if($scope.payroll.pay_frequency == 'Monthly')
+				{
+					item.second_cut_off = 0;
+					item.third_cut_off = 0;
+					item.fourth_cut_off = 0;
+				}
+			});
+		}
+
+		$scope.checkGovernmentContribution = function(item){
+			if(item.first_cut_off || item.second_cut_off || item.third_cut_off || item.fourth_cut_off)
+			{
+				item.checked = true;
+			}
+			else{
+				item.checked = false;				
+			}
+		}
+
+		$scope.submit = function(){
+			$scope.unchecked = false;
+
+			if($scope.payrollForm.$invalid){
+				angular.forEach($scope.payrollForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+
+			angular.forEach($scope.payroll.government_contributions, function(item){
+				if(!item.checked){
+					$scope.unchecked = true;
+				}
+			});
+
+			if(!$scope.duplicate && !$scope.unchecked)
+			{
+				$scope.busy = true;
+				if($scope.config.action == 'create')
+				{
+					Helper.post('/payroll', $scope.payroll)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+				if($scope.config.action == 'edit')
+				{
+					Helper.put('/payroll/' + $scope.config.id, $scope.payroll)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+						});
+				}
+			}
+		}
+
+		Helper.get('/time-interpretation')
+			.success(function(data){
+				$scope.time_interepretations = data;
+			})
+	}]);
+settings
+	.controller('payrollPeriodDialogController', ['$scope', 'Helper', function($scope, Helper){
+		$scope.config = Helper.fetch();
+
+		$scope.payroll_period = {};
+
+		$scope.today = new Date();
+
+		if($scope.config.action == 'create')
+		{
+			$scope.payroll_period.start_cut_off = new Date();
+			$scope.payroll_period.end_cut_off = new Date();
+			$scope.payroll_period.payout = new Date();
+		}
+
+		else if($scope.config.action == 'edit')
+		{
+			var query = {
+				'with': [
+					{
+						'relation': 'payroll',
+						'withTrashed': false,
+					},
+				],
+				'where': [
+					{
+						'label': 'id',
+						'condition': '=',
+						'value': $scope.config.id,
+					},
+				],
+				'first': true,
+			}
+
+			Helper.post('/payroll-period/enlist', query)
+				.success(function(data){
+					data.start_cut_off = new Date(data.start_cut_off);
+					data.end_cut_off = new Date(data.end_cut_off);
+					data.payout = new Date(data.payout);
+
+					$scope.payroll_period = data;
+				})
+				.error(function(){
+					Helper.error();
+				})
+		}
+
+		$scope.duplicate = false;
+
+		$scope.busy = false;
+
+		$scope.cancel = function(){
+			Helper.cancel();
+		}		
+
+		$scope.checkCutOffs = function(date){
+			if(date == 'start')
+			{
+				if($scope.payroll_period.start_cut_off > $scope.payroll_period.end_cut_off)
+				{
+					$scope.payroll_period.end_cut_off = new Date($scope.payroll_period.start_cut_off);	
+				}
+			}
+			else if(date == 'end')
+			{
+				if($scope.payroll_period.end_cut_off > $scope.payroll_period.payout)
+				{
+					$scope.payroll_period.payout = new Date($scope.payroll_period.end_cut_off);	
+				}	
+			}
+
+			if($scope.payroll_period.payroll_id)
+			{
+				var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+				var query = {
+					'withCount': [
+						{
+							'relation': 'payroll_periods',
+							'withTrashed': false,
+							'whereBetween': months[$scope.payroll_period.start_cut_off.getMonth()],
+						},
+					],
+					'where': [
+						{
+							'label': 'id',
+							'condition': '=',
+							'value': $scope.payroll_period.payroll_id,
+						},
+					],
+					'first' : true,
+				}
+
+				Helper.post('/payroll/enlist', query)
+					.success(function(data){
+						if(data.pay_frequency == 'Weekly')
+						{
+							var max_cut_off = 4;
+						}
+						else if(data.pay_frequency == 'Semi-monthly')
+						{
+							var max_cut_off = 2; 
+						}
+						else if(data.pay_frequency == 'Monthly')
+						{
+							var max_cut_off = 1; 
+						}
+
+						$scope.limit = data.payroll_periods_count == max_cut_off; 
+					})
+					.error(function(){
+						$scope.error = true
+					});
+			}
+
+			$scope.checkDuplicate();
+		}
+
+		$scope.checkDuplicate = function(){
+			var back_up_date = {}
+
+			back_up_date.start_cut_off = new Date($scope.payroll_period.start_cut_off);
+			back_up_date.end_cut_off = new Date($scope.payroll_period.end_cut_off);
+			back_up_date.payout = new Date($scope.payroll_period.payout);
+
+			$scope.payroll_period.start_cut_off = $scope.payroll_period.start_cut_off.toDateString();
+			$scope.payroll_period.end_cut_off = $scope.payroll_period.end_cut_off.toDateString();
+			$scope.payroll_period.payout = $scope.payroll_period.payout.toDateString();
+
+			Helper.post('/payroll-period/check-duplicate', $scope.payroll_period)
+				.success(function(data){
+					$scope.duplicate = data;
+
+					$scope.payroll_period.start_cut_off = new Date(back_up_date.start_cut_off);
+					$scope.payroll_period.end_cut_off = new Date(back_up_date.end_cut_off);
+					$scope.payroll_period.payout = new Date(back_up_date.payout);
+				})
+				.error(function(){
+					$scope.error = true;
+
+					$scope.payroll_period.start_cut_off = new Date(back_up_date.start_cut_off);
+					$scope.payroll_period.end_cut_off = new Date(back_up_date.end_cut_off);
+					$scope.payroll_period.payout = new Date(back_up_date.payout);	
+				})
+		}
+
+		$scope.submit = function(){
+			if($scope.payrollPeriodForm.$invalid){
+				angular.forEach($scope.payrollPeriodForm.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return;
+			}
+
+			if(!$scope.duplicate && !$scope.limit)
+			{
+				$scope.busy = true;
+
+				var back_up_date = {}
+
+				back_up_date.start_cut_off = new Date($scope.payroll_period.start_cut_off);
+				back_up_date.end_cut_off = new Date($scope.payroll_period.end_cut_off);
+				back_up_date.payout = new Date($scope.payroll_period.payout);
+
+				$scope.payroll_period.start_cut_off = $scope.payroll_period.start_cut_off.toDateString();
+				$scope.payroll_period.end_cut_off = $scope.payroll_period.end_cut_off.toDateString();
+				$scope.payroll_period.payout = $scope.payroll_period.payout.toDateString();
+
+				if($scope.config.action == 'create')
+				{
+					Helper.post('/payroll-period', $scope.payroll_period)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+
+							$scope.payroll_period.start_cut_off = new Date(back_up_date.start_cut_off);
+							$scope.payroll_period.end_cut_off = new Date(back_up_date.end_cut_off);
+							$scope.payroll_period.payout = new Date(back_up_date.payout);
+						});
+				}
+				if($scope.config.action == 'edit')
+				{
+					Helper.put('/payroll-period/' + $scope.config.id, $scope.payroll_period)
+						.success(function(duplicate){
+							if(duplicate){
+								$scope.busy = false;
+								return;
+							}
+
+							Helper.stop();
+						})
+						.error(function(){
+							$scope.busy = false;
+							$scope.error = true;
+
+							$scope.payroll_period.start_cut_off = new Date(back_up_date.start_cut_off);
+							$scope.payroll_period.end_cut_off = new Date(back_up_date.end_cut_off);
+							$scope.payroll_period.payout = new Date(back_up_date.payout);
+						});
+				}
+			}
+		}
+
+		Helper.get('/payroll')
+			.success(function(data){
+				$scope.payrolls = data;
+			})
 	}]);
 settings
 	.controller('positionDialogController', ['$scope', 'Helper', function($scope, Helper){

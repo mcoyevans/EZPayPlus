@@ -31,6 +31,13 @@ settings
 				})
 		}
 
+		$scope.checkDuplicateUsername = function(){
+			Helper.post('/user/check-username', $scope.user)
+				.success(function(data){
+					$scope.duplicate_username = data ? true : false;
+				})
+		}
+
 		$scope.submit = function(){
 			$scope.error = false;
 			if($scope.userForm.$invalid){

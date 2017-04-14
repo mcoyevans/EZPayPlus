@@ -46,6 +46,16 @@ class SSSController extends Controller
             }
         }
 
+        if($request->has('orderBy'))
+        {
+            $sss->orderBy($request->input('orderBy.label'), $request->input('orderBy.order'));
+        }
+
+        if($request->has('first'))
+        {
+            return $sss->first();
+        }
+
         if($request->has('paginate'))
         {
             return $sss->paginate($request->paginate);

@@ -1,5 +1,5 @@
 app
-	.controller('mainViewController', ['$scope', '$state', '$mdDialog', '$mdSidenav', '$mdToast', 'Helper', function($scope, $state, $mdDialog, $mdSidenav, $mdToast, Helper){
+	.controller('mainViewController', ['$scope', '$state', '$mdDialog', '$mdSidenav', '$mdToast', 'Helper', 'FileUploader', function($scope, $state, $mdDialog, $mdSidenav, $mdToast, Helper, FileUploader){
 		$scope.toggleSidenav = function(menuID){
 			$mdSidenav(menuID).toggle();
 		}
@@ -40,6 +40,41 @@ app
 		    });
 		}
 
+		var uploader = {};
+
+		uploader.filter = {
+            name: 'photoFilter',
+            fn: function(item /*{File|FileLikeObject}*/, options) {
+                var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
+                return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
+            }
+        };
+
+        uploader.sizeFilter = {
+		    'name': 'enforceMaxFileSize',
+		    'fn': function (item) {
+		        return item.size <= 2000000;
+		    }
+        }
+
+        uploader.error = function(item /*{File|FileLikeObject}*/, filter, options) {
+            $scope.fileError = true;
+            $scope.photoUploader.queue = [];
+        };
+
+        uploader.headers = { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')};
+
+		$scope.clickUpload = function(){
+		    angular.element('#upload').trigger('click');
+		};
+
+		$scope.markAllAsRead = function(){
+			Helper.post('/user/mark-all-as-read')
+				.success(function(){
+					$scope.user.unread_notifications = [];
+				})
+		}
+
 		Helper.post('/user/check')
 			.success(function(data){
 				angular.forEach(data.group.modules, function(module){
@@ -62,6 +97,16 @@ app
 						}
 
 						$scope.menu.static.push(payroll);
+					}
+					else if(module.name == 'Bookkeeping')
+					{
+						var bookkeeping = {
+							'state': 'main.bookkeeping',
+							'icon': 'mdi-book-multiple-variant',
+							'label': 'Bookkeeping',
+						}
+
+						$scope.menu.static.push(bookkeeping);
 					}
 					// else if(module.name == 'Timekeeping')
 					// {
@@ -121,7 +166,40 @@ app
 
 				$scope.user = data;
 
+				$scope.currentTime = Date.now();
+
 				Helper.setAuthUser(data);
+
+				/* Photo Uploader */
+				$scope.photoUploader = new FileUploader({
+					url: '/user/upload-avatar/' + $scope.user.id,
+					headers: uploader.headers,
+					queueLimit : 1
+				})
+
+				// FILTERS
+		        $scope.photoUploader.filters.push(uploader.filter);
+		        $scope.photoUploader.filters.push(uploader.sizeFilter);
+		        
+				$scope.photoUploader.onWhenAddingFileFailed = uploader.error;
+				$scope.photoUploader.onAfterAddingFile  = function(){
+					$scope.fileError = false;
+					if($scope.photoUploader.queue.length)
+					{	
+						$scope.photoUploader.uploadAll()
+					}
+				};
+
+				$scope.photoUploader.onCompleteItem  = function(data, response){
+					if($scope.user.avatar_path)
+					{
+						$scope.currentTime = Date.now();
+						$scope.photoUploader.queue = [];
+					}
+					else{
+						$state.go($state.current, {}, {reload:true});
+					}
+				}
 			})
 
 		$scope.$on('closeSidenav', function(){

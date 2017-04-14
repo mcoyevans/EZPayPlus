@@ -13,8 +13,13 @@ class EmployeeAllowanceType extends Model
     	return $this->belongsTo('App\Employee');
     }
 
-    public function allowance()
+    public function allowance_type()
     {
     	return $this->belongsTo('App\AllowanceType');
+    }
+
+    public function payroll_entries()
+    {
+    	return $this->belongsToMany('App\PayrollEntryAllowance', 'payroll_entry_employee_allowance_type');
     }
 }

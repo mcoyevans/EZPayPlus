@@ -170,6 +170,7 @@ hris
 
 		$scope.employee.allowance_types = [];
 		$scope.employee.deduction_types = [];
+		$scope.employee.minimum_wage_earner = false;
 
 		/*
 		 * Object for toolbar
@@ -193,6 +194,12 @@ hris
 				.success(function(data){
 					$scope.duplicate = data;
 				})
+				.error(function(){
+					Helper.failed()
+						.then(function(){
+							$scope.checkDuplicate();
+						})
+				})
 		}
 
 		$scope.checkCity = function(){
@@ -210,12 +217,24 @@ hris
 						$scope.checkProvince();
 					}
 				})
+				.error(function(){
+					Helper.failed()
+						.then(function(){
+							$scope.checkCity();
+						})
+				})
 		}
 
 		$scope.fetchProvinces = function(){
 			Helper.post('/province/enlist', $scope.employee)
 				.success(function(data){
 					$scope.provinces = data;
+				})
+				.error(function(){
+					Helper.failed()
+						.then(function(){
+							$scope.fetchProvinces();
+						})
 				})
 		}
 
@@ -234,6 +253,12 @@ hris
 			Helper.post('/province/enlist', query)
 				.success(function(data){
 					$scope.noMatches = data.cities.length ? false : true;
+				})
+				.error(function(){
+					Helper.failed()
+						.then(function(){
+							$scope.checkProvince();
+						})
 				})
 		}
 		
@@ -321,8 +346,6 @@ hris
 		}
 
 		$scope.checkDeduction = function(data, edit){
-			console.log(data);
-
 			var siblings = $filter('filter')($scope.employee.deduction_types, {'deduction_type_id': data.deduction_type_id});
 
 			if(!edit){
@@ -338,6 +361,7 @@ hris
 		// check the maximum amount you can still input
 		// check for siblings that used the same allowance type
 		$scope.checkDeMinimis = function(data, edit){
+			console.log($scope.allowance_types);
 			var allowance_type = $filter('filter')($scope.allowance_types, {'id': data.allowance_type_id})[0];
 
 			data.de_minimis = allowance_type.de_minimis_id ? allowance_type.de_minimis : null;
@@ -402,7 +426,8 @@ hris
 					});
 				});
 
-				Helper.alert('Oops!', 'Kindly check form for errors.')
+
+				Helper.alert('Oops!', 'Kindly check form for errors.');
 
 				return;
 			}
@@ -410,9 +435,40 @@ hris
 			if(!$scope.duplicate)
 			{
 				$scope.busy = true;
+
+				var allowance_unchecked = false;
+
+				angular.forEach($scope.employee.allowance_types, function(item, key){
+					if(!item.first_cut_off && !item.second_cut_off && !item.third_cut_off && !item.fourth_cut_off && !item.on_hold && item.allowance_type_id)
+					{
+						allowance_unchecked = true;
+					}
+				});
+
+				var deduction_unchecked = false;
+
+				angular.forEach($scope.employee.deduction_types, function(item, key){
+					if(!item.first_cut_off && !item.second_cut_off && !item.third_cut_off && !item.fourth_cut_off && !item.on_hold && item.deduction_type_id)
+					{
+						deduction_unchecked = true;
+					}
+				});
+
+				if(deduction_unchecked || allowance_unchecked)
+				{
+					Helper.alert('Oops!', 'Kindly check allowances or deductions for errors.')
+
+					return;
+				}
+
 				Helper.preload();
 
-				$scope.employee.birthdate = $scope.employee.birthdate.toLocaleDateString();
+				var date_back_up = {};
+
+				date_back_up.birthdate = new Date($scope.employee.birthdate);
+				date_back_up.date_hired = new Date($scope.employee.date_hired);
+
+				$scope.employee.birthdate = $scope.employee.birthdate.toDateString();
 				$scope.employee.date_hired = $scope.employee.date_hired.toDateString();
 
 				if(!$stateParams.employeeID)
@@ -430,8 +486,8 @@ hris
 							$state.go('main.hris');
 						})
 						.error(function(){
-							$scope.employee.birthdate = new Date($scope.employee.birthdate);
-							$scope.employee.date_hired = new Date($scope.employee.date_hired);
+							$scope.employee.birthdate = new Date(date_back_up.birthdate);
+							$scope.employee.date_hired = new Date(date_back_up.date_hired);
 
 							$scope.busy = false;
 							$scope.error = true;
@@ -441,50 +497,6 @@ hris
 				}
 				else
 				{
-					angular.forEach($scope.employee.allowance_types, function(item, key){
-						if(!item.first_cut_off){
-							delete item.first_cut_off;
-						}
-
-						if(!item.second_cut_off){
-							delete item.second_cut_off;
-						}
-
-						if(!item.third_cut_off){
-							delete item.third_cut_off;
-						}
-
-						if(!item.fourth_cut_off){
-							delete item.fourth_cut_off;
-						}
-
-						if(!item.on_hold){
-							delete item.on_hold;
-						}
-					});
-
-					angular.forEach($scope.employee.deduction_types, function(item, key){
-						if(!item.first_cut_off){
-							delete item.first_cut_off;
-						}
-
-						if(!item.second_cut_off){
-							delete item.second_cut_off;
-						}
-
-						if(!item.third_cut_off){
-							delete item.third_cut_off;
-						}
-
-						if(!item.fourth_cut_off){
-							delete item.fourth_cut_off;
-						}
-
-						if(!item.on_hold){
-							delete item.on_hold;
-						}
-					});
-
 					Helper.put('/employee/' + $stateParams.employeeID, $scope.employee)
 						.success(function(duplicate){
 							Helper.stop();
@@ -498,8 +510,8 @@ hris
 							$state.go('main.hris');
 						})
 						.error(function(){
-							$scope.employee.birthdate = new Date($scope.employee.birthdate);
-							$scope.employee.date_hired = new Date($scope.employee.date_hired);
+							$scope.employee.birthdate = date_back_up.birthdate;
+							$scope.employee.date_hired = date_back_up.date_hired;
 
 							$scope.busy = false;
 							$scope.error = true;
@@ -537,11 +549,14 @@ hris
 			$scope.pagibig = '012345678901';
 			$scope.philhealth = '012345678901';
 
+			$scope.checkCity();
+			$scope.fetchProvinces();
+
 			$scope.employee.tin = '012-345-678';
 			$scope.employee.sss = '01-2345678-9';
 			$scope.employee.pagibig = '0123-4567-8901';
 			$scope.employee.philhealth = '01-234567890-1';
-			$scope.employee.time_interpretation_id = 1;
+			$scope.employee.time_interpretation_id = 2;
 			$scope.employee.basic_salary = 14000;
 			$scope.employee.allowance_types = [
 				{
@@ -567,81 +582,153 @@ hris
 		}
 
 		$scope.init = function(){
-			Helper.get('/batch')
-				.success(function(data){
-					$scope.batches = data;
-				})
-
-			Helper.get('/branch')
-				.success(function(data){
-					$scope.branches = data;
-				})
-
-			Helper.get('/cost-center')
-				.success(function(data){
-					$scope.cost_centers = data;
-				})
-
-			Helper.get('/position')
-				.success(function(data){
-					$scope.positions = data;
-				})
-
-			Helper.get('/tax-code')
-				.success(function(data){
-					$scope.tax_codes = data;
-				})
-
-			Helper.get('/de-minimis')
-				.success(function(data){
-					$scope.de_minimis = data;
-					angular.forEach($scope.de_minimis, function(item){
-						item.balance = item.maximum_amount_per_month;
+			var batches = function(){
+				Helper.get('/batch')
+					.success(function(data){
+						$scope.batches = data;
+					})
+					.error(function(){
+						Helper.failed()
+							.then(function(){
+								batches();
+							})
 					});
-				})
-
-			var allowance_type_request = {
-				'with': [
-					{
-						'relation': 'de_minimis',
-						'withTrashed': false,
-					}
-				]
 			}
 
-			Helper.post('/allowance-type/enlist', allowance_type_request)
-				.success(function(data){
-					$scope.allowance_types = data;
-				})
-
-			var deduction_type_request = {
-				'where': [
-					{
-						'label': 'government_deduction',
-						'condition': '=',
-						'value': false,
-					}
-				]
+			var branches = function(){
+				Helper.get('/branch')
+					.success(function(data){
+						$scope.branches = data;
+					})
+					.error(function(){
+						Helper.failed()
+							.then(function(){
+								branches();
+							})
+					});
 			}
 
-			Helper.post('/deduction-type/enlist', deduction_type_request)
-				.success(function(data){
-					$scope.deduction_types = data;
-				})
+			var costCenters = function(){
+				Helper.get('/cost-center')
+					.success(function(data){
+						$scope.cost_centers = data;
+					})
+					.error(function(){
+						Helper.failed()
+							.then(function(){
+								costCenters();
+							})
+					});
+			}
 
-			Helper.get('/time-interpretation')
-				.success(function(data){
-					$scope.time_interpretations = data;
-				})
+			var positions = function(){
+				Helper.get('/position')
+					.success(function(data){
+						$scope.positions = data;
+					})
+					.error(function(){
+						Helper.failed()
+							.then(function(){
+								positions();
+							})
+					});
+			}
 
-			$scope.checkCity();
-			$scope.fetchProvinces();
+			var taxCodes = function(){
+				Helper.get('/tax-code')
+					.success(function(data){
+						$scope.tax_codes = data;
+					})
+					.error(function(){
+						Helper.failed()
+							.then(function(){
+								taxCodes();
+							})
+					});
+			}
+
+			var deMinimis = function()
+			{
+				Helper.get('/de-minimis')
+					.success(function(data){
+						$scope.de_minimis = data;
+						angular.forEach($scope.de_minimis, function(item){
+							item.balance = item.maximum_amount_per_month;
+						});
+					})
+					.error(function(){
+						Helper.failed()
+							.then(function(){
+								deMinimis();
+							})
+					});
+
+			}
+
+			var allowanceTypes = function(){
+				var allowance_type_request = {
+					'with': [
+						{
+							'relation': 'de_minimis',
+							'withTrashed': false,
+						}
+					]
+				}
+
+				Helper.post('/allowance-type/enlist', allowance_type_request)
+					.success(function(data){
+						$scope.allowance_types = data;
+						$scope.employee_fetch();
+					})
+					.error(function(){
+						Helper.failed()
+							.then(function(){
+								allowanceTypes();
+							})
+					});
+			}
+
+			var deductionTypes = function(){
+				var deduction_type_request = {
+					'where': [
+						{
+							'label': 'government_deduction',
+							'condition': '=',
+							'value': false,
+						}
+					]
+				}
+
+				Helper.post('/deduction-type/enlist', deduction_type_request)
+					.success(function(data){
+						$scope.deduction_types = data;
+					})
+					.error(function(){
+						Helper.failed()
+							.then(function(){
+								deductionTypes();
+							})
+					});
+			}
+
+			var timeInterpretations = function(){
+				Helper.get('/time-interpretation')
+					.success(function(data){
+						$scope.time_interpretations = data;
+					})
+					.error(function(){
+						Helper.failed()
+							.then(function(){
+								timeInterpretations();
+							})
+					});
+			}
 
 			var request = {};
 
 			request.orderBy = [
 				{
-					'label': 'employee_number',
+					'label': 'created_at',
 					'sort' : 'desc'
 				}
 			]
@@ -649,10 +736,18 @@ hris
 			request.first = true;
 			request.withTrashed = true;
 
-			Helper.post('/employee/enlist', request)
-				.success(function(data){
-					$scope.last_employee_number = data.employee_number;
-				})
+			var lastEmployee = function(){
+				Helper.post('/employee/enlist', request)
+					.success(function(data){
+						$scope.last_employee_number = data.employee_number;
+					})
+					.error(function(){
+						Helper.failed()
+							.then(function(){
+								lastEmployee();
+							})
+					});
+			}
 
 			if($stateParams.employeeID)
 			{
@@ -701,53 +796,71 @@ hris
 					},
 				]
 
+				request.where = [
+					{
+						'label': 'id',
+						'condition': '=',
+						'value': $stateParams.employeeID,
+					},
+				]
+
 				request.withTrashed = true;
 
 				request.first = true;
 
-				Helper.post('/employee/enlist', request)
-					.success(function(data){
-						$scope.employee = data;
-						$scope.employee.birthdate = new Date(data.birthdate);
-						$scope.employee.date_hired = new Date(data.date_hired);
-						$scope.employee.city = data.city.name;
-						$scope.employee.province = data.province.name;
+				$scope.employee_fetch = function(){
+					Helper.post('/employee/enlist', request)
+						.success(function(data){
+							$scope.employee = data;
+							$scope.employee.birthdate = new Date(data.birthdate);
+							$scope.employee.date_hired = new Date(data.date_hired);
+							$scope.employee.city = data.city.name;
+							$scope.employee.province = data.province.name;
 
-						$scope.tin = data.tin.replace(/-/g, '');
-						$scope.sss = data.sss.replace(/-/g, '');
-						$scope.pagibig = data.pagibig.replace(/-/g, '');
-						$scope.philhealth = data.philhealth.replace(/-/g, '');
+							$scope.checkCity();
+							$scope.fetchProvinces();
 
-						angular.forEach($scope.employee.allowance_types, function(item, key){
-							$scope.employee.allowance_types[key] = item.pivot;
-							$scope.checkDeMinimis($scope.employee.allowance_types[key], true);
+							$scope.tin = data.tin.replace(/-/g, '');
+							$scope.sss = data.sss.replace(/-/g, '');
+							$scope.pagibig = data.pagibig.replace(/-/g, '');
+							$scope.philhealth = data.philhealth.replace(/-/g, '');
 
-							if($scope.employee.allowance_types[key].first_cut_off){
-								$scope.checkFrequency($scope.employee.allowance_types[key], 1)
-							}
+							angular.forEach($scope.employee.allowance_types, function(item, key){
+								$scope.employee.allowance_types[key] = item.pivot;
+								$scope.checkDeMinimis($scope.employee.allowance_types[key], true);
 
-							if($scope.employee.allowance_types[key].second_cut_off){
-								$scope.checkFrequency($scope.employee.allowance_types[key], 1)
-							}
+								if($scope.employee.allowance_types[key].first_cut_off){
+									$scope.checkFrequency($scope.employee.allowance_types[key], 1)
+								}
 
-							if($scope.employee.allowance_types[key].third_cut_off){
-								$scope.checkFrequency($scope.employee.allowance_types[key], 1)
-							}
+								if($scope.employee.allowance_types[key].second_cut_off){
+									$scope.checkFrequency($scope.employee.allowance_types[key], 1)
+								}
 
-							if($scope.employee.allowance_types[key].fourth_cut_off){
-								$scope.checkFrequency($scope.employee.allowance_types[key], 1)
-							}
+								if($scope.employee.allowance_types[key].third_cut_off){
+									$scope.checkFrequency($scope.employee.allowance_types[key], 1)
+								}
+
+								if($scope.employee.allowance_types[key].fourth_cut_off){
+									$scope.checkFrequency($scope.employee.allowance_types[key], 1)
+								}
+							})
+
+							angular.forEach($scope.employee.deduction_types, function(item, key){
+								$scope.employee.deduction_types[key] = item.pivot;
+							})
+
+							$scope.toolbar.childState = data.last_name + ', ' + data.first_name;
+
+							$scope.show = true;
 						})
-
-						angular.forEach($scope.employee.deduction_types, function(item, key){
-							$scope.employee.deduction_types[key] = item.pivot;
-						})
-
-						$scope.toolbar.childState = data.last_name + ', ' + data.first_name;
-					})
-					.error(function(){
-						Helper.error();
-					});
+						.error(function(){
+							Helper.failed()
+								.then(function(){
+									$scope.employee_fetch();
+								});
+						});
+				}
 			}
 			else{
 				$scope.toolbar.childState = 'Employee';
@@ -757,7 +870,19 @@ hris
 				$scope.employee.date_hired = new Date();
 
 				$scope.calculateAge(new Date());
+				$scope.show = true;
 			}
+
+			batches();
+			branches();
+			costCenters();
+			positions();
+			taxCodes();
+			deMinimis();
+			allowanceTypes();
+			deductionTypes();
+			timeInterpretations();
+			lastEmployee();
 		}();
 	}]);
 hris

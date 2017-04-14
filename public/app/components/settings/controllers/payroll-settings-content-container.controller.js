@@ -61,38 +61,61 @@ settings
 				data.current = $scope.subheader.current;
 
 				// condition for checking if the delete button can be allowed
-				if(data.current.label == 'Time Interpretation')
+				if(data.current.label == 'Time Interpretations')
 				{
 					// disable the delete button
 					data.current.menu[1].show = false;
 				}
 				// otherwise
-				else if(!data.current.label == 'Time Interpretation')
+				else if(!data.current.label == 'Time Interpretations')
 				{
 					// enable the delete button
 					data.current.menu[1].show = true;
 				}
 
-				Helper.set(data);
+				if((data.current.label == 'Payroll Configuration' || data.current.label == 'Payroll Period') && data.payroll_process_count)
+				{
+					Helper.alert('Notice', 'This data is locked for any modification.');
+				}
+				else
+				{
+					Helper.set(data);
 
-				var dialog = {};
-				dialog.controller = 'listItemActionsDialogController';
-				dialog.template = '/app/shared/templates/dialogs/list-item-actions-dialog.template.html';
-				dialog.fullScreen = false;
+					var dialog = {};
+					dialog.controller = 'listItemActionsDialogController';
+					dialog.template = '/app/shared/templates/dialogs/list-item-actions-dialog.template.html';
+					dialog.fullScreen = false;
 
-				Helper.customDialog(dialog);
+					Helper.customDialog(dialog);
+				}
+
 			}
 		}
 
 		/* Formats every data in the paginated call */
 		var pushItem = function(data){
 			data.created_at = new Date(data.created_at);
+			data.start_cut_off = data.start_cut_off ? new Date(data.start_cut_off) : null;
+			data.end_cut_off = data.end_cut_off ? new Date(data.end_cut_off) : null;
+			data.payout = data.payout ? new Date(data.payout) : null;
+			data.date = data.date ? new Date(data.date) : null;
 
 			var item = {};
 
-			item.display = data.name;
-			item.description = data.description;
-			item.gl_account = data.gl_account;
+			if($scope.subheader.current.label == 'Payroll Period')
+			{
+				item.display = data.payroll.name;
+			}
+			else if($scope.subheader.current.label == 'Holidays')
+			{
+				item.display = data.description;
+			}
+			else{
+				item.display = data.name;
+				item.description = data.description;
+				item.gl_account = data.gl_account;
+			}
+
 
 			$scope.toolbar.items.push(item);
 		}
@@ -123,7 +146,7 @@ settings
 								return;
 							});
 					}
-					$scope.fab.show = true;
+					$scope.fab.show = query.label == 'Time Interpretations' ? false : true;
 
 					if(data.data.length){
 						// iterate over each record and set the format

@@ -206,7 +206,28 @@
                 <!-- Salary -->
                 <md-tab label="Salary">
                     <md-content class="md-padding">
-                        <md-subheader class="md-no-sticky">Additional Earnings</md-subheader>
+                        <md-list>
+                            <md-list-item class="md-3-line">
+                                <div class="md-avatar" layout="row" layout-align="center center">
+                                    <md-icon class="mdi mdi-currency-usd grey"></md-icon>
+                                </div>
+                                <div class="md-list-item-text">
+                                    <h3>{{employee.basic_salary}}</h3>
+                                    <h4>Basic Salary</h4>
+                                    <p ng-if="employee.minimum_wage_earner">Minimum Wage Earner</p>
+                                </div>
+                            </md-list-item>
+                            <md-list-item class="md-2-line">
+                                <div class="md-avatar" layout="row" layout-align="center center">
+                                    <md-icon class="mdi mdi-clock grey"></md-icon>
+                                </div>
+                                <div class="md-list-item-text">
+                                    <h3>{{employee.time_interpretation.name}}</h3>
+                                    <p>Time Interpretation</p>
+                                </div>
+                            </md-list-item>
+                        </md-list>
+                        <md-subheader class="md-no-sticky" ng-if="employee.allowance_types.length">Additional Earnings</md-subheader>
                         <md-list ng-if="employee.allowance_types.length">
                             <md-list-item class="md-2-line" ng-repeat="item in employee.allowance_types">
                                 <h2 class="md-avatar" layout="row" layout-align="center center">
@@ -218,14 +239,14 @@
                                 </div>
                             </md-list-item>
                         </md-list>
-                        <md-subheader class="md-no-sticky">Additional Deductions</md-subheader>
+                        <md-subheader class="md-no-sticky" ng-if="employee.deduction_types.length">Additional Deductions</md-subheader>
                         <md-list ng-if="employee.deduction_types.length">
                             <md-list-item class="md-2-line" ng-repeat="item in employee.deduction_types">
                                 <h2 class="md-avatar" layout="row" layout-align="center center">
                                     <span class="md-headline secondary-text">{{item.name.charAt(0)}}</span>
                                 </h2>
                                 <div class="md-list-item-text">
-                                    <h3>{{item.pivot.amount}} - <span ng-if="item.pivot.on_hold">On Hold</span> <span ng-if="item.pivot.first_cut_off">1st</span>, <span ng-if="item.pivot.second_cut_off">2nd</span><span ng-if="item.pivot.third_cut_off">, 3rd</span>, <span ng-if="item.pivot.fourth_cut_off">4th</span> <span ng-if="!item.pivot.on_hold">cut-off</span></h3>
+                                    <h3>{{item.pivot.amount}} - <span ng-if="item.pivot.on_hold">On Hold</span> <span ng-if="item.pivot.first_cut_off">1st</span><span ng-if="item.pivot.second_cut_off">, 2nd</span><span ng-if="item.pivot.third_cut_off">, 3rd</span><span ng-if="item.pivot.fourth_cut_off">, 4th</span><span ng-if="!item.pivot.on_hold"> cut-off</span></h3>
                                     <p>{{item.name}}</p>
                                 </div>
                             </md-list-item>

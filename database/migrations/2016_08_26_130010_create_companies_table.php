@@ -16,16 +16,16 @@ class CreateCompaniesTable extends Migration
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string('name');
-            $table->text('address');
-            $table->integer('city_id')->unsigned();
-            $table->integer('province_id')->unsigned();
-            $table->integer('country_id')->unsigned();
-            $table->string('postal_code');
-            $table->string('contact_number');
-            $table->string('tin');
-            $table->string('sss');
-            $table->string('pagibig');
-            $table->string('philhealth');
+            $table->text('address')->nullable();
+            $table->integer('city_id')->nullable()->unsigned();
+            $table->integer('province_id')->nullable()->unsigned();
+            $table->integer('country_id')->nullable()->unsigned();
+            $table->string('postal_code')->nullable();
+            $table->string('contact_number')->nullable();
+            $table->string('tin')->nullable();
+            $table->string('sss')->nullable();
+            $table->string('pagibig')->nullable();
+            $table->string('philhealth')->nullable();
             $table->timestamps();
         });
     }

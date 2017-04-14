@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Auth;
 use App\User;
+use App\Company;
 
 class HomeController extends Controller
 {
@@ -15,7 +16,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('auth')->only('index');;
     }
 
     /**
@@ -31,15 +32,40 @@ class HomeController extends Controller
     }
 
     /**
+     * Show the application registration page.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function register()
+    {
+        $company = Company::first();
+
+        if($company)
+        {
+            return redirect('/home');
+        }
+
+        return view('auth.register');
+    }
+
+    /**
      * Redirects user to appropriate home page if authenticated.
      *
      * @return \Illuminate\Http\Response
      */
     public function home()
-    {
+    {   
+        $company = Company::first();
+
+        if(!$company)
+        {
+            return redirect('/register');
+        }
+
         if (Auth::check()) {
             return redirect('/home');
         }
+
         return view('auth.login');
     }   
 }

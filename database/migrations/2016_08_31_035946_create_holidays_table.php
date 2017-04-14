@@ -15,11 +15,10 @@ class CreateHolidaysTable extends Migration
         Schema::create('holidays', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
-            $table->date('date');
+            $table->dateTime('date');
             $table->string('description');
-            $table->integer('days_before')->unsigned();
-            $table->integer('days_after')->unsigned();
             $table->string('type');
+            $table->boolean('repeat');
             $table->timestamps();
             $table->softDeletes();
         });

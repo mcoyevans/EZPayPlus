@@ -16,10 +16,12 @@ class CreateUsersTable extends Migration
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string('name');
-            $table->string('email')->unique();
+            $table->string('username')->unique();
+            $table->string('email')->unique()->nullable();
             $table->string('password');
+            $table->text('avatar_path')->nullable();
             $table->integer('group_id');
-            $table->boolean('super_user');
+            $table->boolean('super_user')->default(false);
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

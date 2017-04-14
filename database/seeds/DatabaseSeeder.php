@@ -33,5 +33,10 @@ class DatabaseSeeder extends Seeder
         $this->call(DeMinimisTableSeeder::class);
         $this->call(DeductionTypesTableSeeder::class);
         $this->call(AllowanceTypesTableSeeder::class);
+        $this->call(PayrollsTableSeeder::class);
+        $this->call(GovernmentContributionsTableSeeder::class);
+        $this->call(HolidaysTableSeeder::class);
+        $this->call(BranchHolidayTableSeeder::class);
+        $this->call(CostCenterHolidayTableSeeder::class);
     }
 }

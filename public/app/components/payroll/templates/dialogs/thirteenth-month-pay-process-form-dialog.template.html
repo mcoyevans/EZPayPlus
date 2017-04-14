@@ -1,0 +1,67 @@
+<md-dialog aria-label="Thirteenth Month Pay Process Form"  flex flex-gt-sm="50" ng-cloak>
+    <form name="thirteenthMonthPayProcessForm">
+        <md-toolbar >
+            <div class="md-toolbar-tools">
+                <h2 class="white-text">Thirteenth Month Pay Process</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <md-icon class="mdi mdi-close mdi-24px" aria-label="Close dialog"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content flex layout-padding layout-wrap>
+            <md-subheader class="md-accent" ng-if="error">Oops! Something went wrong! An error occured. Please try again.</md-subheader>
+            <md-subheader class="md-accent" ng-if="duplicate">Thirteenth month pay process has conflict with other process.</md-subheader>
+            <div layout="row" layout-wrap flex>
+                <!-- Batch -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Batch</label>
+                    <md-select name="Batch" ng-model="thirteenth_month_pay_process.batch_id" required ng-disabled="busy || !batches.length" ng-change="checkDuplicate()" ng-if="batches.length">
+                        <md-option ng-repeat="batch in batches" value="{{batch.id}}">{{batch.name}} - {{batch.description}}</md-option>
+                    </md-select>
+                    <div ng-messages="thirteenthMonthPayProcessForm.Batch.$error" ng-if="thirteenthMonthPayProcessForm.Batch.$touched">
+                        <div ng-message="required">Batch is required.</div>
+                    </div>
+                </md-input-container>
+            </div>
+            <div layout="row" layout-wrap flex>
+               <!-- Start -->
+                <div flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <h4>Start</h4>
+                    <md-datepicker name="Start" ng-model="thirteenth_month_pay_process.start" md-placeholder="Enter date" md-max-date="today" required ng-change="checkDuplicate('start')"></md-datepicker>
+                    <div class="validation-messages" ng-messages="thirteenthMonthPayProcessForm.Start.$error" ng-if="thirteenthMonthPayProcessForm.Start.$touched">
+                        <div ng-message="valid">The entered value is not a date.</div>
+                        <div ng-message="required">Start is required.</div>
+                        <div ng-message="maxdate">Start cannot be later than today.</div>
+                    </div>
+                </div>
+                <!-- End -->
+                <div flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <h4>End</h4>
+                    <md-datepicker name="End" ng-model="thirteenth_month_pay_process.end" md-placeholder="Enter date" required md-min-date="thirteenth_month_pay_process.start" ng-change="checkDuplicate('end')"></md-datepicker>
+                    <div class="validation-messages" ng-messages="thirteenthMonthPayProcessForm.End.$error" ng-if="thirteenthMonthPayProcessForm.End.$touched">
+                        <div ng-message="valid">The entered value is not a date.</div>
+                        <div ng-message="required">End is required.</div>
+                        <div ng-message="mindate">End cannot be earlier than start.</div>
+                    </div>
+                </div>
+                <!-- Payout -->
+                <div flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <h4>Payout</h4>
+                    <md-datepicker name="Payout" ng-model="thirteenth_month_pay_process.payout" md-placeholder="Enter date" required md-min-date="thirteenth_month_pay_process.start" ng-change="checkDuplicate()"></md-datepicker>
+                    <div class="validation-messages" ng-messages="thirteenthMonthPayProcessForm.Payout.$error" ng-if="thirteenthMonthPayProcessForm.Payout.$touched">
+                        <div ng-message="valid">The entered value is not a date.</div>
+                        <div ng-message="required">Payout is required.</div>
+                        <div ng-message="mindate">Payout cannot be earlier than start.</div>
+                    </div>
+                </div>
+            </div>
+        </md-dialog-content>
+    </form>
+    <div layout="row" layout-align="end center">   
+        <md-button ng-if="!busy" class="md-primary" aria-label="Submit" ng-click="submit()">
+            Save
+        </md-button>
+        <md-progress-circular ng-if="busy" md-mode="indeterminate" class="md-primary" md-diameter="60"></md-progress-circular>
+    </div>
+</md-dialog>

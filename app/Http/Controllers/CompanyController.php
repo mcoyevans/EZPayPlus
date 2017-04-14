@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 
 use App\Company;
+use App\User;
 use App\City;
+use Auth;
 use Gate;
 use DB;
 
@@ -60,7 +62,37 @@ class CompanyController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'company' => 'required',
+            'name' => 'required',
+            'username' => 'required|unique:users',
+            'password' => 'required|confirmed'
+        ]);
+
+        // DB::transaction(function() use($request){
+            $company = new Company();
+
+            $company->name = $request->company;
+
+            $company->save();
+
+            $user = new User;
+
+            $user->name = $request->name;
+            $user->username = $request->username;
+            $user->password = bcrypt($request->password);
+            $user->group_id = 1;
+
+            $user->save();
+
+            if (Auth::attempt(['username' => $request->username, 'password' => $request->password])) {
+                // Authentication passed...
+                return redirect('/home');
+            }
+
+            return redirect('/login');
+        // });
+
     }
 
     /**
@@ -98,15 +130,15 @@ class CompanyController extends Controller
         {
             $this->validate($request, [
                 'name' => 'required',
-                'address' => 'required',
-                'city' => 'required',
-                'province_id' => 'required|numeric',
-                'postal_code' => 'required',
-                'contact_number' => 'required',
-                'pagibig' => 'required',
-                'philhealth' => 'required',
-                'sss' => 'required',
-                'tin' => 'required',
+                // 'address' => 'required',
+                // 'city' => 'required',
+                // 'province_id' => 'required|numeric',
+                // 'postal_code' => 'required',
+                // 'contact_number' => 'required',
+                // 'pagibig' => 'required',
+                // 'philhealth' => 'required',
+                // 'sss' => 'required',
+                // 'tin' => 'required',
             ]);
 
             DB::transaction(function() use ($request, $id){
@@ -114,7 +146,7 @@ class CompanyController extends Controller
 
                 $company->name = $request->name;
                 $company->address = $request->address;
-                $company->city_id = City::where('name', $request->city)->where('province_id', $request->province_id)->firstOrFail()->id;
+                $company->city_id = $request->city && $request->province_id ? City::where('name', $request->city)->where('province_id', $request->province_id)->firstOrFail()->id : null;
                 $company->province_id = $request->province_id;
                 $company->postal_code = $request->postal_code;
                 $company->contact_number = $request->contact_number;

@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class BranchHoliday extends Model
 {
+	protected $table = 'branch_holiday';
+
     public function branch()
     {
     	return $this->belongsTo('App\Branch');

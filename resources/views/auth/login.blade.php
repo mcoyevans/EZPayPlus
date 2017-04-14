@@ -6,10 +6,15 @@
 			<form method="POST" action="/login" class="form">
 				<div layout="column" flex>
 					{!! csrf_field() !!}
-					<!-- Email -->
+					<!-- Email
 					<md-input-container>
 						<label>Email</label>
 						<input type="email" name="email" value="{{ old('email') }}">
+					</md-input-container> -->
+					<!-- Username -->
+					<md-input-container>
+						<label>Username</label>
+						<input type="text" name="username" value="{{ old('username') }}">
 					</md-input-container>
 					<!-- Password -->
 					<md-input-container>

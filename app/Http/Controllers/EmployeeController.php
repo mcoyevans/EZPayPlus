@@ -67,6 +67,17 @@ class EmployeeController extends Controller
             }
         }
 
+        if($request->has('whereDoesntHave'))
+        {
+            for ($i=0; $i < count($request->whereDoesntHave); $i++) { 
+                $employees->whereDoesntHave($request->input('whereDoesntHave')[$i]['relation'], function($query) use($request, $i){
+                    for ($j=0; $j < count($request->input('whereDoesntHave')[$i]['where']); $j++) { 
+                        $query->where($request->input('whereDoesntHave')[$i]['where'][$j]['label'], $request->input('whereDoesntHave')[$i]['where'][$j]['condition'], $request->input('whereDoesntHave')[$i]['where'][$j]['value']);
+                    }
+                });
+            }
+        }
+
         if($request->has('search'))
         {
             $employees->where('first_name', 'like', '%'.$request->search.'%')->orWhere('middle_name', 'like', '%'.$request->search.'%')->orWhere('last_name', 'like', '%'.$request->search.'%')->orWhere('employee_number', '=', $request->search);
@@ -149,6 +160,7 @@ class EmployeeController extends Controller
             'tax_code_id' => 'required',
             'time_interpretation_id' => 'required',
             'basic_salary' => 'required',
+            'minimum_wage_earner' => 'required',
         ]);
 
         DB::transaction(function() use($request){
@@ -158,6 +170,7 @@ class EmployeeController extends Controller
             $employee->batch_id = $request->batch_id;
             $employee->branch_id = $request->branch_id;
             $employee->basic_salary = $request->basic_salary;
+            $employee->minimum_wage_earner = $request->minimum_wage_earner;
             $employee->birthdate = Carbon::parse($request->birthdate);
             $employee->civil_status = $request->civil_status;
             $employee->cost_center_id = $request->cost_center_id;
@@ -193,11 +206,11 @@ class EmployeeController extends Controller
                 $employee_allowance->employee_id = $employee->id;
                 $employee_allowance->allowance_type_id = $request->input('allowance_types')[$i]['allowance_type_id'];
                 $employee_allowance->amount = $request->input('allowance_types')[$i]['amount'];
-                $employee_allowance->first_cut_off = isset($request->input('allowance_types')[$i]['first_cut_off']) ? true : false;
-                $employee_allowance->second_cut_off = isset($request->input('allowance_types')[$i]['second_cut_off']) ? true : false;
-                $employee_allowance->third_cut_off = isset($request->input('allowance_types')[$i]['third_cut_off']) ? true : false;
-                $employee_allowance->fourth_cut_off = isset($request->input('allowance_types')[$i]['fourth_cut_off']) ? true : false;
-                $employee_allowance->on_hold = isset($request->input('allowance_types')[$i]['on_hold']) ? true : false;
+                $employee_allowance->first_cut_off = isset($request->input('allowance_types')[$i]['first_cut_off']) ? $request->input('allowance_types')[$i]['first_cut_off'] : false;
+                $employee_allowance->second_cut_off = isset($request->input('allowance_types')[$i]['second_cut_off']) ? $request->input('allowance_types')[$i]['second_cut_off'] : false;
+                $employee_allowance->third_cut_off = isset($request->input('allowance_types')[$i]['third_cut_off']) ? $request->input('allowance_types')[$i]['third_cut_off'] : false;
+                $employee_allowance->fourth_cut_off = isset($request->input('allowance_types')[$i]['fourth_cut_off']) ? $request->input('allowance_types')[$i]['fourth_cut_off'] : false;
+                $employee_allowance->on_hold = isset($request->input('allowance_types')[$i]['on_hold']) ? $request->input('allowance_types')[$i]['on_hold'] : false;
 
                 $employee_allowance->save();
             }
@@ -208,11 +221,11 @@ class EmployeeController extends Controller
                 $employee_deduction->employee_id = $employee->id;
                 $employee_deduction->deduction_type_id = $request->input('deduction_types')[$i]['deduction_type_id'];
                 $employee_deduction->amount = $request->input('deduction_types')[$i]['amount'];
-                $employee_deduction->first_cut_off = isset($request->input('deduction_types')[$i]['first_cut_off']) ? true : false;
-                $employee_deduction->second_cut_off = isset($request->input('deduction_types')[$i]['second_cut_off']) ? true : false;
-                $employee_deduction->third_cut_off = isset($request->input('deduction_types')[$i]['third_cut_off']) ? true : false;
-                $employee_deduction->fourth_cut_off = isset($request->input('deduction_types')[$i]['fourth_cut_off']) ? true : false;
-                $employee_deduction->on_hold = isset($request->input('deduction_types')[$i]['on_hold']) ? true : false;
+                $employee_deduction->first_cut_off = isset($request->input('deduction_types')[$i]['first_cut_off']) ? $request->input('deduction_types')[$i]['first_cut_off'] : false;
+                $employee_deduction->second_cut_off = isset($request->input('deduction_types')[$i]['second_cut_off']) ? $request->input('deduction_types')[$i]['second_cut_off'] : false;
+                $employee_deduction->third_cut_off = isset($request->input('deduction_types')[$i]['third_cut_off']) ? $request->input('deduction_types')[$i]['third_cut_off'] : false;
+                $employee_deduction->fourth_cut_off = isset($request->input('deduction_types')[$i]['fourth_cut_off']) ? $request->input('deduction_types')[$i]['fourth_cut_off'] : false;
+                $employee_deduction->on_hold = isset($request->input('deduction_types')[$i]['on_hold']) ? $request->input('deduction_types')[$i]['on_hold'] : false;
 
                 $employee_deduction->save();
             }
@@ -286,6 +299,7 @@ class EmployeeController extends Controller
             'tax_code_id' => 'required',
             'time_interpretation_id' => 'required',
             'basic_salary' => 'required',
+            'minimum_wage_earner' => 'required',
         ]);
 
         DB::transaction(function() use($request, $id){
@@ -295,6 +309,7 @@ class EmployeeController extends Controller
             $employee->batch_id = $request->batch_id;
             $employee->branch_id = $request->branch_id;
             $employee->basic_salary = $request->basic_salary;
+            $employee->minimum_wage_earner = $request->minimum_wage_earner;
             $employee->birthdate = Carbon::parse($request->birthdate);
             $employee->civil_status = $request->civil_status;
             $employee->cost_center_id = $request->cost_center_id;
@@ -324,35 +339,47 @@ class EmployeeController extends Controller
 
             $employee->save();
 
-            EmployeeAllowanceType::where('employee_id', $employee->id)->delete();
-            EmployeeDeductionType::where('employee_id', $employee->id)->delete();
+            // EmployeeAllowanceType::where('employee_id', $employee->id)->delete();
+            // EmployeeDeductionType::where('employee_id', $employee->id)->delete();
 
             for ($i=0; $i < count($request->allowance_types); $i++) { 
-                $employee_allowance = new EmployeeAllowanceType;
+                if(isset($request->input('allowance_types')[$i]['id']))
+                {
+                    $employee_allowance = EmployeeAllowanceType::find($request->input('allowance_types')[$i]['id']);
+                }
+                else{
+                    $employee_allowance = new EmployeeAllowanceType;
+                }
 
                 $employee_allowance->employee_id = $employee->id;
                 $employee_allowance->allowance_type_id = $request->input('allowance_types')[$i]['allowance_type_id'];
                 $employee_allowance->amount = $request->input('allowance_types')[$i]['amount'];
-                $employee_allowance->first_cut_off = isset($request->input('allowance_types')[$i]['first_cut_off']) ? true : false;
-                $employee_allowance->second_cut_off = isset($request->input('allowance_types')[$i]['second_cut_off']) ? true : false;
-                $employee_allowance->third_cut_off = isset($request->input('allowance_types')[$i]['third_cut_off']) ? true : false;
-                $employee_allowance->fourth_cut_off = isset($request->input('allowance_types')[$i]['fourth_cut_off']) ? true : false;
-                $employee_allowance->on_hold = isset($request->input('allowance_types')[$i]['on_hold']) ? true : false;
+                $employee_allowance->first_cut_off = isset($request->input('allowance_types')[$i]['first_cut_off']) ? $request->input('allowance_types')[$i]['first_cut_off'] : false;
+                $employee_allowance->second_cut_off = isset($request->input('allowance_types')[$i]['second_cut_off']) ? $request->input('allowance_types')[$i]['second_cut_off'] : false;
+                $employee_allowance->third_cut_off = isset($request->input('allowance_types')[$i]['third_cut_off']) ? $request->input('allowance_types')[$i]['third_cut_off'] : false;
+                $employee_allowance->fourth_cut_off = isset($request->input('allowance_types')[$i]['fourth_cut_off']) ? $request->input('allowance_types')[$i]['fourth_cut_off'] : false;
+                $employee_allowance->on_hold = isset($request->input('allowance_types')[$i]['on_hold']) ? $request->input('allowance_types')[$i]['on_hold'] : false;
 
                 $employee_allowance->save();
             }
 
             for ($i=0; $i < count($request->deduction_types); $i++) { 
-                $employee_deduction = new EmployeeDeductionType;
+                if(isset($request->input('deduction_types')[$i]['id']))
+                {
+                    $employee_allowance = EmployeeDeductionType::find($request->input('deduction_types')[$i]['id']);
+                }
+                else{
+                    $employee_deduction = new EmployeeDeductionType;
+                }
 
                 $employee_deduction->employee_id = $employee->id;
                 $employee_deduction->deduction_type_id = $request->input('deduction_types')[$i]['deduction_type_id'];
                 $employee_deduction->amount = $request->input('deduction_types')[$i]['amount'];
-                $employee_deduction->first_cut_off = isset($request->input('deduction_types')[$i]['first_cut_off']) ? true : false;
-                $employee_deduction->second_cut_off = isset($request->input('deduction_types')[$i]['second_cut_off']) ? true : false;
-                $employee_deduction->third_cut_off = isset($request->input('deduction_types')[$i]['third_cut_off']) ? true : false;
-                $employee_deduction->fourth_cut_off = isset($request->input('deduction_types')[$i]['fourth_cut_off']) ? true : false;
-                $employee_deduction->on_hold = isset($request->input('deduction_types')[$i]['on_hold']) ? true : false;
+                $employee_deduction->first_cut_off = isset($request->input('deduction_types')[$i]['first_cut_off']) ? $request->input('deduction_types')[$i]['first_cut_off'] : false;
+                $employee_deduction->second_cut_off = isset($request->input('deduction_types')[$i]['second_cut_off']) ? $request->input('deduction_types')[$i]['second_cut_off'] : false;
+                $employee_deduction->third_cut_off = isset($request->input('deduction_types')[$i]['third_cut_off']) ? $request->input('deduction_types')[$i]['third_cut_off'] : false;
+                $employee_deduction->fourth_cut_off = isset($request->input('deduction_types')[$i]['fourth_cut_off']) ? $request->input('deduction_types')[$i]['fourth_cut_off'] : false;
+                $employee_deduction->on_hold = isset($request->input('deduction_types')[$i]['on_hold']) ? $request->input('deduction_types')[$i]['on_hold'] : false;
 
                 $employee_deduction->save();
             }

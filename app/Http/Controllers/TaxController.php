@@ -46,6 +46,16 @@ class TaxController extends Controller
             }
         }
 
+        if($request->has('orderBy'))
+        {
+            $taxes->orderBy($request->input('orderBy.label'), $request->input('orderBy.order'));   
+        }
+
+        if($request->has('first'))
+        {
+            return $taxes->first();
+        }
+
         if($request->has('paginate'))
         {
             return $taxes->paginate($request->paginate);

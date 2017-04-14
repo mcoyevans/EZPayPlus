@@ -33,11 +33,11 @@
                  <!-- GL Account -->
                 <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
                     <label>GL Account</label>
-                    <input type="text" name="GLAccount" required ng-model="branch.gl_account" ng-pattern="/^\d+$/" minlength="12" maxlength="12" ng-change="checkDuplicate()" ng-disabled="busy">
+                    <input type="text" name="GLAccount" required ng-model="branch.gl_account" minlength="12" maxlength="12" ng-change="checkDuplicate()" ng-disabled="busy">
                     <div class="pattern" ng-if="duplicate && branchForm.GLAccount.$valid">GL Account already in use.</div>
                     <div ng-messages="branchForm.GLAccount.$error" ng-if="branchForm.GLAccount.$touched">
-                        <div ng-message-exp="['required', 'pattern', 'minlength', 'maxlength']">
-                            GL Account is required, unique, has 12 characters, and must be numeric.
+                        <div ng-message-exp="['required', 'minlength', 'maxlength']">
+                            GL Account is required, unique, and has 12 characters.
                         </div>
                     </div>
                 </md-input-container>

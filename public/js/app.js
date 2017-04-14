@@ -3,6 +3,7 @@ var app = angular.module('app', [
 	'hris',
 	'payroll',
 	'timekeeping',
+	'bookkeeping',
 	'settings',
 ]);
 app
@@ -17,7 +18,7 @@ app
 					},
 					'content-container@main': {
 						templateUrl: '/app/shared/views/content-container.view.html',
-						// controller: 'dashboardContentContainerController',
+						controller: 'dashboardContentContainerController',
 					},
 					'toolbar@main': {
 						templateUrl: '/app/shared/templates/toolbar.template.html',
@@ -29,7 +30,7 @@ app
 					// 	templateUrl: '/app/shared/templates/subheaders/dashboard-subheader.template.html',
 					// },
 					'content@main':{
-						// templateUrl: '/app/components/app/templates/content/dashboard-content.template.html',
+						templateUrl: '/app/components/app/templates/content/dashboard-content.template.html',
 					}
 				}
 			})
@@ -64,6 +65,169 @@ app
 					},
 					'content@main.hris':{
 						templateUrl: '/app/components/hris/templates/content/hris-content.template.html',
+					}
+				}
+			})
+			.state('main.payroll', {
+				url: 'payroll',
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/3')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'payrollContentContainerController',
+					},
+					'toolbar@main.payroll': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'payrollToolbarController',
+					},
+					'left-sidenav@main.payroll': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'subheader@main.payroll': {
+						templateUrl: '/app/components/payroll/templates/subheaders/payroll-subheader.template.html',
+						controller: 'payrollSubheaderController',
+					},
+					'content@main.payroll':{
+						templateUrl: '/app/components/payroll/templates/content/payroll-content.template.html',
+					}
+				}
+			})
+			.state('main.payroll-process', {
+				url: 'payroll-process/{payrollProcessID}',
+				params: {payrollProcessID:null},
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/3')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'payrollProcessContentContainerController',
+					},
+					'toolbar@main.payroll-process': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'payrollProcessToolbarController',
+					},
+					'left-sidenav@main.payroll-process': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'subheader@main.payroll-process': {
+						templateUrl: '/app/components/payroll/templates/subheaders/payroll-process-subheader.template.html',
+					},
+					'content@main.payroll-process':{
+						templateUrl: '/app/components/payroll/templates/content/payroll-process-content.template.html',
+					}
+				}
+			})
+			.state('main.payroll-entry', {
+				url: 'payroll-process/{payrollProcessID}/payroll-entry/{payrollEntryID}',
+				params: {'payrollEntryID':null},
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/3')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'payrollEntryContentContainerController',
+					},
+					'toolbar@main.payroll-entry': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'payrollEntryToolbarController',
+					},
+					'left-sidenav@main.payroll-entry': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'content@main.payroll-entry':{
+						templateUrl: '/app/components/payroll/templates/content/payroll-entry-content.template.html',
+					}
+				}
+			})
+			.state('main.thirteenth-month-pay-process', {
+				url: 'thirteenth-month-pay-process/{thirteenthMonthPayProcessID}',
+				params: {'thirteenthMonthPayProcessID':null},
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/3')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'thirteenthMonthPayProcessContentContainerController',
+					},
+					'toolbar@main.thirteenth-month-pay-process': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'thirteenthMonthPayProcessToolbarController',
+					},
+					'left-sidenav@main.thirteenth-month-pay-process': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'subheader@main.thirteenth-month-pay-process': {
+						templateUrl: '/app/components/payroll/templates/subheaders/payroll-process-subheader.template.html',
+					},
+					'content@main.thirteenth-month-pay-process':{
+						templateUrl: '/app/components/payroll/templates/content/thirteenth-month-pay-process-content.template.html',
+					}
+				}
+			})
+			.state('main.thirteenth-month-pay-entry', {
+				url: 'thirteenth-month-pay-process/{thirteenthMonthPayProcessID}/thirteenth-month-pay-entry/{thirteenthMonthPayEntryID}',
+				params: {'thirteenthMonthPayProcessID':null, 'thirteenthMonthPayEntryID':null},
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/3')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'thirteenthMonthPayEntryContentContainerController',
+					},
+					'toolbar@main.thirteenth-month-pay-entry': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+					},
+					'left-sidenav@main.thirteenth-month-pay-entry': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'content@main.thirteenth-month-pay-entry':{
+						templateUrl: '/app/components/payroll/templates/content/thirteenth-month-pay-entry-content.template.html',
 					}
 				}
 			})
@@ -265,7 +429,49 @@ app
 			})
 	}]);
 app
-	.controller('mainViewController', ['$scope', '$state', '$mdDialog', '$mdSidenav', '$mdToast', 'Helper', function($scope, $state, $mdDialog, $mdSidenav, $mdToast, Helper){
+	.controller('dashboardContentContainerController', ['$scope', function($scope){
+		$scope.events = [
+			{
+				'icon': 'mdi-view-dashboard',
+				'title': 'Dashboard',
+				'content': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem repudiandae sequi iure dolor vel nobis praesentium adipisci qui tempore illo non commodi, itaque quis consectetur totam assumenda, est fugiat quisquam!'
+			},
+			{
+				'icon': 'mdi-account-multiple',
+				'title': 'Human Resource Information System',
+				'content': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem repudiandae sequi iure dolor vel nobis praesentium adipisci qui tempore illo non commodi, itaque quis consectetur totam assumenda, est fugiat quisquam!'
+			},
+			{
+				'icon': 'mdi-currency-usd',
+				'title': 'Payroll',
+				'content': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem repudiandae sequi iure dolor vel nobis praesentium adipisci qui tempore illo non commodi, itaque quis consectetur totam assumenda, est fugiat quisquam!'
+			},
+			{
+				'icon': 'mdi-check',
+				'title': 'Awesome title',
+				'content': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem repudiandae sequi iure dolor vel nobis praesentium adipisci qui tempore illo non commodi, itaque quis consectetur totam assumenda, est fugiat quisquam!'
+			},
+			{
+				'icon': 'mdi-check',
+				'title': 'Awesome title',
+				'content': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem repudiandae sequi iure dolor vel nobis praesentium adipisci qui tempore illo non commodi, itaque quis consectetur totam assumenda, est fugiat quisquam!'
+			},
+		];
+
+		$scope.toolbar = {}
+
+		$scope.toolbar.childState = 'Dashboard';
+
+		$scope.addNewEvent = function(){
+			$scope.events.push({
+				'icon': 'mdi-check',
+				'title': 'Awesome title',
+				'content': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem repudiandae sequi iure dolor vel nobis praesentium adipisci qui tempore illo non commodi, itaque quis consectetur totam assumenda, est fugiat quisquam!'
+			});
+		}
+	}]);
+app
+	.controller('mainViewController', ['$scope', '$state', '$mdDialog', '$mdSidenav', '$mdToast', 'Helper', 'FileUploader', function($scope, $state, $mdDialog, $mdSidenav, $mdToast, Helper, FileUploader){
 		$scope.toggleSidenav = function(menuID){
 			$mdSidenav(menuID).toggle();
 		}
@@ -306,6 +512,41 @@ app
 		    });
 		}
 
+		var uploader = {};
+
+		uploader.filter = {
+            name: 'photoFilter',
+            fn: function(item /*{File|FileLikeObject}*/, options) {
+                var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
+                return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
+            }
+        };
+
+        uploader.sizeFilter = {
+		    'name': 'enforceMaxFileSize',
+		    'fn': function (item) {
+		        return item.size <= 2000000;
+		    }
+        }
+
+        uploader.error = function(item /*{File|FileLikeObject}*/, filter, options) {
+            $scope.fileError = true;
+            $scope.photoUploader.queue = [];
+        };
+
+        uploader.headers = { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')};
+
+		$scope.clickUpload = function(){
+		    angular.element('#upload').trigger('click');
+		};
+
+		$scope.markAllAsRead = function(){
+			Helper.post('/user/mark-all-as-read')
+				.success(function(){
+					$scope.user.unread_notifications = [];
+				})
+		}
+
 		Helper.post('/user/check')
 			.success(function(data){
 				angular.forEach(data.group.modules, function(module){
@@ -328,6 +569,16 @@ app
 						}
 
 						$scope.menu.static.push(payroll);
+					}
+					else if(module.name == 'Bookkeeping')
+					{
+						var bookkeeping = {
+							'state': 'main.bookkeeping',
+							'icon': 'mdi-book-multiple-variant',
+							'label': 'Bookkeeping',
+						}
+
+						$scope.menu.static.push(bookkeeping);
 					}
 					// else if(module.name == 'Timekeeping')
 					// {
@@ -387,7 +638,40 @@ app
 
 				$scope.user = data;
 
+				$scope.currentTime = Date.now();
+
 				Helper.setAuthUser(data);
+
+				/* Photo Uploader */
+				$scope.photoUploader = new FileUploader({
+					url: '/user/upload-avatar/' + $scope.user.id,
+					headers: uploader.headers,
+					queueLimit : 1
+				})
+
+				// FILTERS
+		        $scope.photoUploader.filters.push(uploader.filter);
+		        $scope.photoUploader.filters.push(uploader.sizeFilter);
+		        
+				$scope.photoUploader.onWhenAddingFileFailed = uploader.error;
+				$scope.photoUploader.onAfterAddingFile  = function(){
+					$scope.fileError = false;
+					if($scope.photoUploader.queue.length)
+					{	
+						$scope.photoUploader.uploadAll()
+					}
+				};
+
+				$scope.photoUploader.onCompleteItem  = function(data, response){
+					if($scope.user.avatar_path)
+					{
+						$scope.currentTime = Date.now();
+						$scope.photoUploader.queue = [];
+					}
+					else{
+						$state.go($state.current, {}, {reload:true});
+					}
+				}
 			})
 
 		$scope.$on('closeSidenav', function(){

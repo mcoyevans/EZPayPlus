@@ -15,17 +15,14 @@ class CreatePayrollsTable extends Migration
         Schema::create('payrolls', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
-            $table->string('code');
+            $table->string('name');
             $table->text('description');
-            $table->decimal('working_days_per_year', 5,2);
-            $table->decimal('working_hours_per_day', 4,2);
-            $table->tinyInteger('pay_frequency');
-            $table->string('tax');
-            $table->string('sss');
-            $table->string('pagibig');
-            $table->string('philhealth');
-            $table->string('basis_of_computation');
+            $table->float('working_days_per_year');
+            $table->float('working_hours_per_day');
+            $table->integer('working_days_per_week');
+            $table->string('pay_frequency');
             $table->integer('time_interpretation_id')->unsigned();
+            $table->string('thirteenth_month_pay_basis');
             $table->timestamps();
             $table->softDeletes();
         });

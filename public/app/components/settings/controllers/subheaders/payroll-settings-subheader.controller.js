@@ -91,6 +91,22 @@ settings
 				'label':'Payroll Configuration',
 				'url': '/payroll/enlist',
 				'request' : {
+					'with': [
+						{
+							'relation': 'government_contributions',
+							'withTrashed': false
+						},
+						{
+							'relation': 'time_interpretation',
+							'withTrashed': false
+						},
+					],
+					'withCount': [
+						{
+							'relation': 'payroll_process',
+							'withTrashed': false,
+						},
+					],
 					'paginate':20,
 				},
 				'fab': {
@@ -164,6 +180,24 @@ settings
 				'label':'Payroll Period',
 				'url': '/payroll-period/enlist',
 				'request' : {
+					'with': [
+						{
+							'relation': 'payroll',
+							'withTrashed': true,
+						}
+					],
+					'orderBy': [
+						{
+							'column': 'start_cut_off',
+							'order': 'asc'
+						}
+					],
+					'withCount': [
+						{
+							'relation': 'payroll_process',
+							'withTrashed': false,
+						},
+					],
 					'paginate':20,
 				},
 				'fab': {
@@ -208,7 +242,7 @@ settings
 						action: function(data){
 							var dialog = {};
 							dialog.title = 'Delete';
-							dialog.message = 'Delete ' + data.name + ' payroll period?'
+							dialog.message = 'Delete ' + new Date(data.start_cut_off).toLocaleDateString() + ' to ' + new Date(data.end_cut_off).toLocaleDateString() + ' payroll period?'
 							dialog.ok = 'Delete';
 							dialog.cancel = 'Cancel';
 
@@ -228,6 +262,28 @@ settings
 						},
 					},
 				],
+				'sort': [
+					{
+						'label': 'Start Cut Off',
+						'type': 'start_cut_off',
+						'sortReverse': false,
+					},
+					{
+						'label': 'End Cut Off',
+						'type': 'end_cut_off',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Payout',
+						'type': 'payout',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
+					},
+				],
 				action: function(current){
 					setInit(current);
 				},
@@ -237,6 +293,17 @@ settings
 				'label':'Holidays',
 				'url': '/holiday/enlist',
 				'request' : {
+					'withTrashed': true,
+					'with': [
+						{		
+							'relation': 'branches',
+							'withTrashed': true,
+						},
+						{		
+							'relation': 'cost_centers',
+							'withTrashed': true,
+						},
+					],
 					'paginate':20,
 				},
 				'fab': {
@@ -281,7 +348,7 @@ settings
 						action: function(data){
 							var dialog = {};
 							dialog.title = 'Delete';
-							dialog.message = 'Delete ' + data.name + ' holiday?'
+							dialog.message = 'Delete ' + data.description + ' holiday?'
 							dialog.ok = 'Delete';
 							dialog.cancel = 'Cancel';
 
@@ -299,6 +366,23 @@ settings
 									return;
 								})
 						},
+					},
+				],
+				'sort': [
+					{
+						'label': 'Description',
+						'type': 'description',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Date',
+						'type': 'date',
+						'sortReverse': false,
+					},
+					{
+						'label': 'Recently added',
+						'type': 'created_at',
+						'sortReverse': false,
 					},
 				],
 				action: function(current){

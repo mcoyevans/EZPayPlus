@@ -14,6 +14,11 @@
 	color: #ffffff;
 }
 
+.red-text {
+	/* Red */
+	color: $red500;
+}
+
 .main-text {
 	/* Dark Text */
 	color: $main-text;
@@ -140,6 +145,10 @@ md-content.dirty-white{
 	width: 300px;
 }
 
+.form-medium{
+	width: 450px;
+}
+
 [ng\:cloak], [ng-cloak], .ng-cloak {
   display: none !important;
 }
@@ -252,8 +261,8 @@ md-content.dirty-white{
 
 .avatar{
 	border-radius: 50%;
-	width: 200px;
-	height: 200px;
+	width: 150px;
+	height: 150px;
 }
 
 .static{
@@ -300,4 +309,8 @@ md-content.dirty-white{
 		-o-transition: -o-transform 0.3s ease-in-out;
 		transition: transform 0.3s ease-in-out;
 	}
+}
+
+.not-visible {
+  visibility: hidden;
 }

@@ -1,0 +1,63 @@
+<div layout="column" flex flex-sm="80" flex-gt-md="70">
+    <div ng-repeat="type in type.items | filter: toolbar.searchText">
+      	<div layout="row" layout-align="space-between center">
+        	<span class="md-title">{{type.name}}</span>
+        	<md-button class="md-icon-button" ng-click="listItemAction(type)">
+        		<md-icon class="mdi mdi-dots-vertical grey"></md-icon>
+        		<md-tooltip>Menu</md-tooltip>
+        	</md-button>
+      	</div>
+      	<table class="table">
+      		<tr>
+      			<td colspan="3"></td>
+      			<td colspan="2">Greater than 8 hours</td>
+      			<td colspan="2">Worked on rest day</td>
+      			<td colspan="2">Greater than 8 hours</td>
+      		</tr>
+      		<tr>
+      			<th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">Days</th>
+      			<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">RWH</th>
+      			<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">Night Diff</th>
+      			<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">OT Hr.</th>
+      			<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">OT Night Diff.</th>
+      			<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">RWH</th>
+      			<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">Night Diff</th>
+      			<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">OT Hr.</th>
+      			<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">OT Night Diff.</th>
+      		</tr>
+      		<tr>
+      			<td class="col-xs-2 col-sm-2 col-md-2 col-lg-2">Regular Days</td>
+      			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.regular_working_hours}}</td>
+      			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.night_differential}}</td>
+      			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.overtime}}</td>
+      			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.overtime_night_differential}}</td>
+      			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.rest_day_rate}}</td>
+      			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.rest_day_night_differential}}</td>
+      			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.rest_day_overtime}}</td>
+      			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.rest_day_overtime_night_differential}}</td>
+      		</tr>
+      		<tr>
+      			<td class="col-xs-2 col-sm-2 col-md-2 col-lg-2">Special Holidays</td>
+      			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.special_holiday_rate}}</td>
+      			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.special_holiday_night_differential}}</td>
+      			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.special_holiday_overtime}}</td>
+      			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.special_holiday_overtime_night_differential}}</td>
+      			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.special_holiday_rest_day_rate}}</td>
+      			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.special_holiday_rest_day_night_differential}}</td>
+      			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.special_holiday_rest_day_overtime}}</td>
+      			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.special_holiday_rest_day_overtime_night_differential}}</td>
+      		</tr>
+      		<tr>
+      			<td class="col-xs-2 col-sm-2 col-md-2 col-lg-2">Regular Holidays</td>
+      			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.regular_holiday_rate}}</td>
+      			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.regular_holiday_night_differential}}</td>
+      			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.regular_holiday_overtime}}</td>
+      			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.regular_holiday_overtime_night_differential}}</td>
+      			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.regular_holiday_rest_day_rate}}</td>
+      			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.regular_holiday_rest_day_night_differential}}</td>
+      			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.regular_holiday_rest_day_overtime}}</td>
+      			<td class="col-xs-1 col-sm-1 col-md-1 col-lg-1">{{type.regular_holiday_rest_day_overtime_night_differential}}</td>
+      		</tr>
+      	</table>
+    </div>
+</div>

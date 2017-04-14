@@ -15,7 +15,7 @@ class CreateEmployeesTable extends Migration
         Schema::create('employees', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
-            $table->integer('employee_number')->unsigned();
+            $table->string('employee_number')->unique();
             $table->string('first_name');
             $table->string('middle_name')->nullable();
             $table->string('last_name');
@@ -46,9 +46,9 @@ class CreateEmployeesTable extends Migration
             $table->string('email');
             $table->integer('time_interpretation_id')->unsigned();
             $table->float('basic_salary');
+            $table->boolean('minimum_wage_earner');
             // $table->string('payment_type');
             // $table->integer('account_number');
-            // $table->boolean('minimum_wage_earner');
             // $table->string('emergency_contact_person')->nullable();
             // $table->text('emergency_contact_person_address')->nullable();
             // $table->text('emergency_contact_person_relationship')->nullable();

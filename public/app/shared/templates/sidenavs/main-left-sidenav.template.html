@@ -7,15 +7,26 @@
 </md-toolbar>
 <md-content flex>
     <div layout="column" layout-align="center center" layout-padding>
-        <!-- <img src="/img/batman.png" alt="avatar" class="avatar"> -->
-        <h2 class="md-headline">{{ user.name }}</h2>
-        <h3 class="md-subhead">{{ user.email }}</h3>
-        <!-- <p class="md-subhead center-text"><em>"I am vengence. I am the knight. I am BATMAN!!!"</em></p> -->
+        <div layout="column" layout-align="center center">
+            <img ng-if="user.avatar_path" ng-src="/user/avatar/{{user.id}}?={{currentTime}}" alt="avatar" class="avatar">
+            <img ng-if="user && !user.avatar_path" src="/img/ezpayplus.png" class="avatar" alt="">
+            <input id="upload" type="file" nv-file-select uploader="photoUploader" style="display: none;" ng-if="user">
+            <md-button ng-mouseover="show = true" ng-mouseleave = "show=false" ng-click="clickUpload()">
+                <div layout="row" flex>                
+                    <md-icon class="mdi mdi-camera grey"></md-icon>
+                    <span flex="5"></span>
+                    <span flex class="fade-transition" ng-if="show">Update Photo</span>
+                </div>
+            </md-button>
+            <p ng-if="fileError" class="red-text center-text">File must be an image and not larger than 2MB.</p>
+        </div>
+        <span class="md-headline">{{ user.name }}</span>
+        <span class="md-subhead">{{ user.email }}</span>
     </div>
     <md-divider></md-divider>
     <md-subheader class="md-no-sticky">Menu</md-subheader>
     <ul class="no-padding">
-        <li layout="row" flex ng-repeat="page in menu.static | orderBy:'label'">
+        <li layout="row" flex ng-repeat="page in menu.static">
             <md-button class="static" flex ui-sref="{{page.state}}">
                 <div layout="row" flex>
                     <md-icon class="mdi {{page.icon}} grey"></md-icon>
@@ -53,7 +64,7 @@
     <md-divider></md-divider>
     <md-subheader class="md-no-sticky">Account</md-subheader>
     <ul class="no-padding">
-        <li layout="row" flex>
+        <!-- <li layout="row" flex>
             <md-button flex ui-sref="main.notifications">
                 <div layout="row" flex>
                     <md-icon class="mdi mdi-bell grey"></md-icon>
@@ -62,7 +73,7 @@
                     <span flex></span>
                 </div>
             </md-button>
-        </li>
+        </li> -->
         <li layout="row" flex>
             <md-button flex ng-click="changePassword()">
                 <div layout="row" flex>

@@ -15,4 +15,14 @@ class Batch extends Model
     {
     	return $this->hasMany('App\Employee');
     }
+
+    public function payroll_process()
+    {
+    	return $this->hasMany('App\PayrollProcess');
+    }
+
+    public function thirteenth_month_pay_processes()
+    {
+        return $this->hasMany('App\ThirteenthMonthPayProcess');
+    }
 }

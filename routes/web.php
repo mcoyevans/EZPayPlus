@@ -11,10 +11,13 @@
 |
 */
 
+Auth::routes();
 
 Route::get('/', 'HomeController@home');
 
-Auth::routes();
+Route::get('/register', 'HomeController@register');
+Route::get('/login', 'HomeController@home');
+Route::post('/register', 'CompanyController@store');
 
 /* Determines what type of user then returns the appropriate views*/
 Route::get('/home', 'HomeController@index');
@@ -24,9 +27,11 @@ Route::resource('allowance-type', 'AllowanceTypeController');
 Route::resource('biometric', 'BiometricController');
 Route::resource('batch', 'BatchController');
 Route::resource('branch', 'BranchController');
+Route::resource('branch-holiday', 'BranchHolidayController');
 Route::resource('city', 'CityController');
 Route::resource('company', 'CompanyController');
 Route::resource('cost-center', 'CostCenterController');
+Route::resource('cost-center-holiday', 'CostCenterHolidayController');
 Route::resource('country', 'CountryController');
 Route::resource('currency', 'CurrencyController');
 Route::resource('deduction-type', 'DeductionTypeController');
@@ -36,6 +41,7 @@ Route::resource('employee', 'EmployeeController');
 Route::resource('employee-allowance-type', 'EmployeeAllowanceTypeController');
 Route::resource('employee-deduction-type', 'EmployeeDeductionTypeController');
 Route::resource('employee-shift-schedule', 'EmployeeShiftScheduleController');
+Route::resource('government-contribution', 'GovernmentContributionController');
 Route::resource('group', 'GroupController');
 Route::resource('group-module', 'GroupModuleController');
 Route::resource('holiday', 'HolidayController');
@@ -47,6 +53,11 @@ Route::resource('module', 'ModuleController');
 Route::resource('pagibig', 'PagibigController');
 Route::resource('payroll', 'PayrollController');
 Route::resource('payroll-period', 'PayrollPeriodController');
+Route::resource('payroll-process', 'PayrollProcessController');
+Route::resource('payroll-entry', 'PayrollEntryController');
+Route::resource('payroll-entry-allowance', 'PayrollEntryAllowanceController');
+Route::resource('payroll-entry-deduction', 'PayrollEntryDeductionController');
+Route::resource('payroll-entry-gov-deduction', 'PayrollEntryGovernmentContributionController');
 Route::resource('payslip', 'PayslipController');
 Route::resource('philhealth', 'PhilhealthController');
 Route::resource('position', 'PositionController');
@@ -58,16 +69,21 @@ Route::resource('sss', 'SSSController');
 Route::resource('tax', 'TaxController');
 Route::resource('tax-code', 'TaxCodeController');
 Route::resource('time-interpretation', 'TimeInterpretationController');
+Route::resource('thirteenth-month-pay-process', 'ThirteenthMonthPayProcessController');
+Route::resource('thirteenth-month-pay-entry', 'ThirteenthMonthPayEntryController');
 Route::resource('user', 'UserController');
 
 /* User Routes */
 Route::group(['prefix' => 'user'], function(){
 	Route::post('check', 'UserController@check');
 	Route::post('check-email', 'UserController@checkEmail');
+	Route::post('check-username', 'UserController@checkUsername');
 	Route::post('change-password', 'UserController@changePassword');
 	Route::post('check-password', 'UserController@checkPassword');
 	Route::post('enlist', 'UserController@enlist');
 	Route::post('logout', 'UserController@logout');
+	Route::post('upload-avatar/{userID}', 'UserController@uploadAvatar');
+	Route::get('avatar/{userID}', 'UserController@avatar');
 });
 
 /* Company Routes */
@@ -219,8 +235,63 @@ Route::group(['prefix' => 'employee'], function(){
 	Route::post('check-duplicate', 'EmployeeController@checkDuplicate');
 });
 
+/* Payroll */
+Route::group(['prefix' => 'payroll'], function(){
+	Route::post('enlist', 'PayrollController@enlist');
+	Route::post('check-duplicate', 'PayrollController@checkDuplicate');
+});
+
 /* Payroll Period */
 Route::group(['prefix' => 'payroll-period'], function(){
 	Route::post('enlist', 'PayrollPeriodController@enlist');
 	Route::post('check-duplicate', 'PayrollPeriodController@checkDuplicate');
+});
+
+/* Holiday */
+Route::group(['prefix' => 'holiday'], function(){
+	Route::post('enlist', 'HolidayController@enlist');
+	Route::post('check-duplicate', 'HolidayController@checkDuplicate');
+});
+
+/* Branch Holiday */
+Route::group(['prefix' => 'branch-holiday'], function(){
+	Route::post('enlist', 'BranchHolidayController@enlist');
+	Route::post('check-duplicate', 'BranchHolidayController@checkDuplicate');
+});
+
+/* Cost Center Holiday */
+Route::group(['prefix' => 'cost-center-holiday'], function(){
+	Route::post('enlist', 'CostCenterHolidayController@enlist');
+	Route::post('check-duplicate', 'CostCenterHolidayController@checkDuplicate');
+});
+
+/* Payroll Process */
+Route::group(['prefix' => 'payroll-process'], function(){
+	Route::post('enlist', 'PayrollProcessController@enlist');
+	Route::post('check-duplicate', 'PayrollProcessController@checkDuplicate');
+	Route::post('lock', 'PayrollProcessController@lock');
+});
+
+/* Payroll Entry */
+Route::group(['prefix' => 'payroll-entry'], function(){
+	Route::post('enlist', 'PayrollEntryController@enlist');
+	Route::post('check-duplicate', 'PayrollEntryController@checkDuplicate');
+});
+
+/* Government Contribution */
+Route::group(['prefix' => 'government-contribution'], function(){
+	Route::post('enlist', 'GovernmentContributionController@enlist');
+});
+
+/* Thirteenth Month Pay Process */
+Route::group(['prefix' => 'thirteenth-month-pay-process'], function(){
+	Route::post('check-duplicate', 'ThirteenthMonthPayProcessController@checkDuplicate');
+	Route::post('enlist', 'ThirteenthMonthPayProcessController@enlist');
+	Route::post('lock', 'ThirteenthMonthPayProcessController@lock');
+});
+
+/* Thirteenth Month Pay Entry */
+Route::group(['prefix' => 'thirteenth-month-pay-entry'], function(){
+	Route::post('check-duplicate', 'ThirteenthMonthPayEntryController@checkDuplicate');
+	Route::post('enlist', 'ThirteenthMonthPayEntryController@enlist');
 });

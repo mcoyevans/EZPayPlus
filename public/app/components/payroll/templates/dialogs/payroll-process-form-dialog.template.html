@@ -1,0 +1,57 @@
+<md-dialog aria-label="Payroll Period Form"  flex flex-gt-sm="50" ng-cloak>
+    <form name="payrollProcessForm">
+        <md-toolbar >
+            <div class="md-toolbar-tools">
+                <h2 class="white-text">Payroll Process</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <md-icon class="mdi mdi-close mdi-24px" aria-label="Close dialog"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content flex layout-padding layout-wrap>
+            <md-subheader class="md-accent" ng-if="error">Oops! Something went wrong! An error occured. Please try again.</md-subheader>
+            <md-subheader class="md-accent" ng-if="duplicate">Payroll process already exists.</md-subheader>
+            <div layout="row" layout-wrap flex>
+                <!-- Payroll -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Payroll</label>
+                    <md-select name="Payroll" ng-model="payroll_process.payroll_id" required ng-disabled="busy || !payrolls.length" ng-change="fetchPayrollPeriod()">
+                        <md-option ng-repeat="payroll in payrolls" value="{{payroll.id}}">{{payroll.name}} - {{payroll.description}}</md-option>
+                    </md-select>
+                    <div ng-messages="payrollProcessForm.Payroll.$error" ng-if="payrollProcessForm.Payroll.$touched">
+                        <div ng-message="required">Payroll is required.</div>
+                    </div>
+                </md-input-container>
+                <!-- Batch -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Batch</label>
+                    <md-select name="Batch" ng-model="payroll_process.batch_id" required ng-disabled="busy || !batches.length" ng-change="fetchPayrollPeriod()">
+                        <md-option ng-repeat="batch in batches" value="{{batch.id}}">{{batch.name}} - {{batch.description}}</md-option>
+                    </md-select>
+                    <div ng-messages="payrollProcessForm.Batch.$error" ng-if="payrollProcessForm.Batch.$touched">
+                        <div ng-message="required">Batch is required.</div>
+                    </div>
+                </md-input-container>
+            </div>
+            <div layout="row" layout-wrap flex>
+               <!-- Payroll Period -->
+                <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                    <label>Payroll Period</label>
+                    <md-select name="PayrollPeriod" ng-model="payroll_process.payroll_period_id" required ng-disabled="busy || !payroll_periods.length" ng-change="checkDuplicate()">
+                        <md-option ng-repeat="payroll_period in payroll_periods" value="{{payroll_period.id}}">{{payroll_period.start_cut_off | date: 'MMM. dd, yyyy'}} - {{payroll_period.end_cut_off | date: 'MMM. dd, yyyy'}}</md-option>
+                    </md-select>
+                    <div ng-messages="payrollProcessForm.PayrollPeriod.$error" ng-if="payrollProcessForm.PayrollPeriod.$touched">
+                        <div ng-message="required">Payroll period is required.</div>
+                    </div>
+                </md-input-container>
+            </div>
+        </md-dialog-content>
+    </form>
+    <div layout="row" layout-align="end center">   
+        <md-button ng-if="!busy" class="md-primary" aria-label="Submit" ng-click="submit()">
+            Save
+        </md-button>
+        <md-progress-circular ng-if="busy" md-mode="indeterminate" class="md-primary" md-diameter="60"></md-progress-circular>
+    </div>
+</md-dialog>

@@ -10,9 +10,50 @@ use App\User;
 use Auth;
 use Hash;
 use Gate;
+use Storage;
 
 class UserController extends Controller
 {
+    /**
+     * View user avatar and upload new avatar.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function avatar($id)
+    {
+        $user = User::withTrashed()->where('id', $id)->first();
+
+        return response()->file(storage_path() .'/app/'. $user->avatar_path);
+    }
+
+    /**
+     * Upload post photo.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function uploadAvatar(Request $request, $id)
+    {
+        if($request->user()->id != $id)
+        {
+            abort(403, 'Unauthorized action');
+        }
+
+        $user = User::where('id', $request->user()->id)->first();
+
+        if($user->avatar_path)
+        {
+            Storage::delete($user->avatar_path);
+        }
+
+        $path = Storage::putFileAs('avatars', $request->file('file'), $request->user()->id);
+
+        $user->avatar_path = $path;
+
+        $user->save();
+
+        return $user->avatar_path;
+    }
+    
     /**
      * Display a listing of the resource with parameters.
      *
@@ -89,6 +130,18 @@ class UserController extends Controller
 
         return response()->json($user ? true : false);
     }
+
+    /**
+     * Checks if the username is already taken.
+     *
+     * @return bool
+     */
+    public function checkUsername(Request $request)
+    {
+        $user = $request->id ? User::withTrashed()->whereNotIn('id', [$request->id])->where('username', $request->username)->first() : User::withTrashed()->where('username', $request->username)->first();
+
+        return response()->json($user ? true : false);
+    }
     
     /**
      * Changes the password of the authenticated user.
@@ -157,7 +210,7 @@ class UserController extends Controller
     {
         if(Gate::forUser($request->user())->allows('settings-access'))
         {
-            $duplicate = User::where('email', $request->email)->first();
+            $duplicate = User::where('email', $request->email)->orWhere('username', $request->username)->first();
 
             if($duplicate)
             {
@@ -166,7 +219,8 @@ class UserController extends Controller
 
             $this->validate($request, [
                 'name' => 'required',
-                'email' => 'required|unique:users',
+                'email' => 'unique:users',
+                'username' => 'required|unique:users',
                 'password' => 'required',
                 'group_id' => 'required|numeric',
             ]);
@@ -175,6 +229,7 @@ class UserController extends Controller
 
             $user->name = $request->name;
             $user->email = $request->email;
+            $user->username = $request->username;
             $user->password = bcrypt($request->password);
             $user->group_id = $request->group_id;
             $user->super_user = false;
@@ -220,7 +275,7 @@ class UserController extends Controller
     {
         if(Gate::forUser($request->user())->allows('settings-access'))
         {
-            $duplicate = User::whereNotIn('id', [$id])->where('email', $request->email)->first();
+            $duplicate = User::whereNotIn('id', [$id])->where('email', $request->email)->orWhere('username', $request->username)->first();
 
             if($duplicate)
             {

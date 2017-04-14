@@ -1,3 +1,4 @@
+var bookkeeping = angular.module('bookkeeping', []);
 var hris = angular.module('hris', []);
 var payroll = angular.module('payroll', []);
 var settings = angular.module('settings', []);
@@ -8,7 +9,8 @@ var sharedModule = angular.module('sharedModule', [
 	'infinite-scroll',
 	'chart.js',
 	'angularMoment',
-	'angularFileUpload'
+	'angularFileUpload',
+	'angular-timeline'
 ]);
 sharedModule
 	.config(['$urlRouterProvider', '$stateProvider', '$mdThemingProvider', function($urlRouterProvider, $stateProvider, $mdThemingProvider){
@@ -37,6 +39,12 @@ sharedModule
 	.service('Helper', ['$mdDialog', '$mdToast', '$http', function($mdDialog, $mdToast, $http){
 		var dataHolder = null;
 		var user = null;
+
+		var error_dialog = {
+			'title': 'Aw Snap!',
+			'message': 'An error occured on the server.',
+			'ok': 'Try Again'
+		}
 
 		return {
 			cancel: function(){
@@ -117,6 +125,9 @@ sharedModule
 				        .ariaLabel('Error Message')
 				        .ok('Got it!')
 				);
+			},
+			failed(){
+			 	return this.confirm(error_dialog);
 			},
 			/* Send temporary data for retrival */
 			set: function(data){

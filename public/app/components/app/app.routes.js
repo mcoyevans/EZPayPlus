@@ -10,7 +10,7 @@ app
 					},
 					'content-container@main': {
 						templateUrl: '/app/shared/views/content-container.view.html',
-						// controller: 'dashboardContentContainerController',
+						controller: 'dashboardContentContainerController',
 					},
 					'toolbar@main': {
 						templateUrl: '/app/shared/templates/toolbar.template.html',
@@ -22,7 +22,7 @@ app
 					// 	templateUrl: '/app/shared/templates/subheaders/dashboard-subheader.template.html',
 					// },
 					'content@main':{
-						// templateUrl: '/app/components/app/templates/content/dashboard-content.template.html',
+						templateUrl: '/app/components/app/templates/content/dashboard-content.template.html',
 					}
 				}
 			})
@@ -57,6 +57,169 @@ app
 					},
 					'content@main.hris':{
 						templateUrl: '/app/components/hris/templates/content/hris-content.template.html',
+					}
+				}
+			})
+			.state('main.payroll', {
+				url: 'payroll',
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/3')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'payrollContentContainerController',
+					},
+					'toolbar@main.payroll': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'payrollToolbarController',
+					},
+					'left-sidenav@main.payroll': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'subheader@main.payroll': {
+						templateUrl: '/app/components/payroll/templates/subheaders/payroll-subheader.template.html',
+						controller: 'payrollSubheaderController',
+					},
+					'content@main.payroll':{
+						templateUrl: '/app/components/payroll/templates/content/payroll-content.template.html',
+					}
+				}
+			})
+			.state('main.payroll-process', {
+				url: 'payroll-process/{payrollProcessID}',
+				params: {payrollProcessID:null},
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/3')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'payrollProcessContentContainerController',
+					},
+					'toolbar@main.payroll-process': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'payrollProcessToolbarController',
+					},
+					'left-sidenav@main.payroll-process': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'subheader@main.payroll-process': {
+						templateUrl: '/app/components/payroll/templates/subheaders/payroll-process-subheader.template.html',
+					},
+					'content@main.payroll-process':{
+						templateUrl: '/app/components/payroll/templates/content/payroll-process-content.template.html',
+					}
+				}
+			})
+			.state('main.payroll-entry', {
+				url: 'payroll-process/{payrollProcessID}/payroll-entry/{payrollEntryID}',
+				params: {'payrollEntryID':null},
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/3')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'payrollEntryContentContainerController',
+					},
+					'toolbar@main.payroll-entry': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'payrollEntryToolbarController',
+					},
+					'left-sidenav@main.payroll-entry': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'content@main.payroll-entry':{
+						templateUrl: '/app/components/payroll/templates/content/payroll-entry-content.template.html',
+					}
+				}
+			})
+			.state('main.thirteenth-month-pay-process', {
+				url: 'thirteenth-month-pay-process/{thirteenthMonthPayProcessID}',
+				params: {'thirteenthMonthPayProcessID':null},
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/3')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'thirteenthMonthPayProcessContentContainerController',
+					},
+					'toolbar@main.thirteenth-month-pay-process': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'thirteenthMonthPayProcessToolbarController',
+					},
+					'left-sidenav@main.thirteenth-month-pay-process': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'subheader@main.thirteenth-month-pay-process': {
+						templateUrl: '/app/components/payroll/templates/subheaders/payroll-process-subheader.template.html',
+					},
+					'content@main.thirteenth-month-pay-process':{
+						templateUrl: '/app/components/payroll/templates/content/thirteenth-month-pay-process-content.template.html',
+					}
+				}
+			})
+			.state('main.thirteenth-month-pay-entry', {
+				url: 'thirteenth-month-pay-process/{thirteenthMonthPayProcessID}/thirteenth-month-pay-entry/{thirteenthMonthPayEntryID}',
+				params: {'thirteenthMonthPayProcessID':null, 'thirteenthMonthPayEntryID':null},
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/3')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'thirteenthMonthPayEntryContentContainerController',
+					},
+					'toolbar@main.thirteenth-month-pay-entry': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+					},
+					'left-sidenav@main.thirteenth-month-pay-entry': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'content@main.thirteenth-month-pay-entry':{
+						templateUrl: '/app/components/payroll/templates/content/thirteenth-month-pay-entry-content.template.html',
 					}
 				}
 			})

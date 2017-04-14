@@ -13,12 +13,12 @@ class Employee extends Model
 
     public function allowance_types()
     {
-    	return $this->belongsToMany('App\AllowanceType', 'employee_allowance_type')->withPivot('amount', 'first_cut_off', 'second_cut_off', 'third_cut_off', 'fourth_cut_off', 'on_hold');
+    	return $this->belongsToMany('App\AllowanceType', 'employee_allowance_type')->withPivot('id', 'amount', 'first_cut_off', 'second_cut_off', 'third_cut_off', 'fourth_cut_off', 'on_hold');
     }
 
     public function deduction_types()
     {
-        return $this->belongsToMany('App\DeductionType', 'employee_deduction_type')->withPivot('amount', 'first_cut_off', 'second_cut_off', 'third_cut_off', 'fourth_cut_off', 'on_hold');
+        return $this->belongsToMany('App\DeductionType', 'employee_deduction_type')->withPivot('id', 'amount', 'first_cut_off', 'second_cut_off', 'third_cut_off', 'fourth_cut_off', 'on_hold');
     }
 
     // public function shift_schedules()
@@ -69,5 +69,15 @@ class Employee extends Model
     public function time_interpretation()
     {
         return $this->belongsTo('App\TimeInterpretation');
+    }
+
+    public function payroll_entries()
+    {
+        return $this->hasMany('App\PayrollEntry');
+    }
+
+    public function thirteen_month_pay_entries()
+    {
+        return $this->hasMany('App\ThirteenthMonthPayEntry');
     }
 }

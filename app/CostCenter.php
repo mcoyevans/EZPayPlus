@@ -15,4 +15,10 @@ class CostCenter extends Model
     {
     	return $this->hasMany('App\Deployment');
     }
+
+    public function holidays()
+    {
+        return $this->belongsToMany('App\Holiday');
+    }
+
 }

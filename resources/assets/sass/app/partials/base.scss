@@ -23,3 +23,7 @@ md-nav-bar{
 td, th{
     @extend .center-text;
 }
+
+timeline-badge{
+    z-index: 50;
+}
