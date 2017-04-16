@@ -33,6 +33,7 @@ Route::resource('company', 'CompanyController');
 Route::resource('cost-center', 'CostCenterController');
 Route::resource('cost-center-holiday', 'CostCenterHolidayController');
 Route::resource('country', 'CountryController');
+Route::resource('customer', 'CustomerController');
 Route::resource('currency', 'CurrencyController');
 Route::resource('deduction-type', 'DeductionTypeController');
 Route::resource('department', 'DepartmentController');
@@ -66,6 +67,7 @@ Route::resource('sanction-level', 'SanctionLevelController');
 Route::resource('sanction-type', 'SanctionTypeController');
 Route::resource('shift-schedule', 'ShiftScheduleController');
 Route::resource('sss', 'SSSController');
+Route::resource('suplier', 'SuplierController');
 Route::resource('tax', 'TaxController');
 Route::resource('tax-code', 'TaxCodeController');
 Route::resource('time-interpretation', 'TimeInterpretationController');
@@ -294,4 +296,14 @@ Route::group(['prefix' => 'thirteenth-month-pay-process'], function(){
 Route::group(['prefix' => 'thirteenth-month-pay-entry'], function(){
 	Route::post('check-duplicate', 'ThirteenthMonthPayEntryController@checkDuplicate');
 	Route::post('enlist', 'ThirteenthMonthPayEntryController@enlist');
+});
+
+/* Customer Pay Entry */
+Route::group(['prefix' => 'customer'], function(){
+	Route::post('enlist', 'CustomerController@enlist');
+});
+
+/* Supplier Pay Entry */
+Route::group(['prefix' => 'supplier'], function(){
+	Route::post('enlist', 'SupplierController@enlist');
 });

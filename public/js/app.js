@@ -262,6 +262,240 @@ app
 					}
 				}
 			})
+			.state('main.business-partners', {
+				url: 'bookkeeping/business-partners',
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/4')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'businessPartnersContentContainerController',
+					},
+					'toolbar@main.business-partners': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'businessPartnersToolbarController',
+					},
+					'left-sidenav@main.business-partners': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'subheader@main.business-partners': {
+						templateUrl: '/app/components/bookkeeping/templates/subheaders/business-partners-subheader.template.html',
+						controller: 'businessPartnersSubheaderController',
+					},
+					'content@main.business-partners':{
+						templateUrl: '/app/components/bookkeeping/templates/content/business-partners-content.template.html',
+					}
+				}
+			})
+			.state('main.manage-customer', {
+				url: 'customer/{customerID}',
+				params: {'customerID':null},
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/2')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'manageCustomerContentContainerController',
+					},
+					'toolbar@main.manage-customer': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+					},
+					'left-sidenav@main.manage-customer': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'content@main.manage-customer':{
+						templateUrl: '/app/components/bookkeeping/templates/content/manage-customer-content.template.html',
+					}
+				}
+			})
+			.state('main.financials', {
+				url: 'bookkeeping/financials',
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/4')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'financialsContentContainerController',
+					},
+					'toolbar@main.financials': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'financialsToolbarController',
+					},
+					'left-sidenav@main.financials': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'subheader@main.financials': {
+						templateUrl: '/app/components/bookkeeping/templates/subheaders/financials-subheader.template.html',
+						controller: 'financialsSubheaderController',
+					},
+					'content@main.financials':{
+						templateUrl: '/app/components/bookkeeping/templates/content/financials-content.template.html',
+					}
+				}
+			})
+			.state('main.inventory', {
+				url: 'bookkeeping/inventory',
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/4')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'inventoryContentContainerController',
+					},
+					'toolbar@main.inventory': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'inventoryToolbarController',
+					},
+					'left-sidenav@main.inventory': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'subheader@main.inventory': {
+						templateUrl: '/app/components/bookkeeping/templates/subheaders/inventory-subheader.template.html',
+						controller: 'inventorySubheaderController',
+					},
+					'content@main.inventory':{
+						templateUrl: '/app/components/bookkeeping/templates/content/inventory-content.template.html',
+					}
+				}
+			})
+			.state('main.sales', {
+				url: 'bookkeeping/sales',
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/4')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'salesContentContainerController',
+					},
+					'toolbar@main.sales': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'salesToolbarController',
+					},
+					'left-sidenav@main.sales': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'subheader@main.sales': {
+						templateUrl: '/app/components/bookkeeping/templates/subheaders/sales-subheader.template.html',
+						controller: 'salesSubheaderController',
+					},
+					'content@main.sales':{
+						templateUrl: '/app/components/bookkeeping/templates/content/sales-content.template.html',
+					}
+				}
+			})
+			.state('main.purchasing', {
+				url: 'bookkeeping/purchasing',
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/4')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'purchasingContentContainerController',
+					},
+					'toolbar@main.purchasing': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'purchasingToolbarController',
+					},
+					'left-sidenav@main.purchasing': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'subheader@main.purchasing': {
+						templateUrl: '/app/components/bookkeeping/templates/subheaders/purchasing-subheader.template.html',
+						controller: 'purchasingSubheaderController',
+					},
+					'content@main.purchasing':{
+						templateUrl: '/app/components/bookkeeping/templates/content/purchasing-content.template.html',
+					}
+				}
+			})
+			.state('main.banking', {
+				url: 'bookkeeping/banking',
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/4')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'bankingContentContainerController',
+					},
+					'toolbar@main.banking': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'bankingToolbarController',
+					},
+					'left-sidenav@main.banking': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'subheader@main.banking': {
+						templateUrl: '/app/components/bookkeeping/templates/subheaders/banking-subheader.template.html',
+						controller: 'bankingSubheaderController',
+					},
+					'content@main.banking':{
+						templateUrl: '/app/components/bookkeeping/templates/content/banking-content.template.html',
+					}
+				}
+			})
 			.state('main.admin-settings', {
 				url: 'settings/admin',
 				resolve:{
@@ -471,7 +705,7 @@ app
 		}
 	}]);
 app
-	.controller('mainViewController', ['$scope', '$state', '$mdDialog', '$mdSidenav', '$mdToast', 'Helper', 'FileUploader', function($scope, $state, $mdDialog, $mdSidenav, $mdToast, Helper, FileUploader){
+	.controller('mainViewController', ['$scope', '$filter', '$state', '$mdDialog', '$mdSidenav', '$mdToast', 'Helper', 'FileUploader', function($scope, $filter, $state, $mdDialog, $mdSidenav, $mdToast, Helper, FileUploader){
 		$scope.toggleSidenav = function(menuID){
 			$mdSidenav(menuID).toggle();
 		}
@@ -485,6 +719,9 @@ app
 				'label': 'Dashboard',
 			},
 		];
+
+		$scope.menu.section = [];
+		$scope.menu.pages = [];
 
 		// set section as active
 		$scope.setActive = function(index){
@@ -549,92 +786,110 @@ app
 
 		Helper.post('/user/check')
 			.success(function(data){
-				angular.forEach(data.group.modules, function(module){
-					if(module.name == 'HRIS')
-					{
-						var hris = {
-							'state': 'main.hris',
-							'icon': 'mdi-account-multiple',
-							'label': 'HRIS',
-						}
+				var hris = $filter('filter')(data.group.modules, {name: 'HRIS'}, true);
+				var payroll = $filter('filter')(data.group.modules, {name: 'Payroll'}, true);
+				var bookkeeping = $filter('filter')(data.group.modules, {name: 'Bookkeeping'}, true);
+				var settings = $filter('filter')(data.group.modules, {name: 'Settings'}, true);
+				
+				if(hris)
+				{
+					$scope.menu.static.push({
+						'state': 'main.hris',
+						'icon': 'mdi-account-multiple',
+						'label': 'HRIS'
+					});
+				}
 
-						$scope.menu.static.push(hris);
-					}
-					else if(module.name == 'Payroll')
-					{
-						var payroll = {
-							'state': 'main.payroll',
-							'icon': 'mdi-currency-usd',
-							'label': 'Payroll',
-						}
+				if(payroll)
+				{
+					$scope.menu.static.push({
+						'state': 'main.payroll',
+						'icon': 'mdi-currency-usd',
+						'label': 'Payroll'
+					});
+				}
 
-						$scope.menu.static.push(payroll);
-					}
-					else if(module.name == 'Bookkeeping')
-					{
-						var bookkeeping = {
-							'state': 'main.bookkeeping',
-							'icon': 'mdi-book-multiple-variant',
-							'label': 'Bookkeeping',
-						}
+				if(bookkeeping)
+				{
+					$scope.menu.section.push({
+						'icon': 'mdi-book-multiple-variant',
+						'name': 'Bookkeeping',
+					});
 
-						$scope.menu.static.push(bookkeeping);
-					}
-					// else if(module.name == 'Timekeeping')
-					// {
-					// 	var payroll = {
-					// 		'state': 'main.timekeeping',
-					// 		'icon': 'mdi-calendar-clock',
-					// 		'label': 'Timekeeping',
-					// 	}
-
-					// 	$scope.menu.static.push(payroll);
-					// }
-					else if(module.name == 'Settings')
-					{
-						$scope.menu.section = [
-							{
-								'name':'Settings',
-								'icon':'mdi-settings',
+					$scope.menu.pages.push([
+						{
+							'label': 'Business Partners',
+							action: function(){
+								$state.go('main.business-partners');
 							},
-						];
+						},
+						{
+							'label': 'Financials',
+							action: function(){
+								$state.go('main.financials');
+							},
+						},
+						{
+							'label': 'Inventory',
+							action: function(){
+								$state.go('main.inventory');
+							},
+						},
+						{
+							'label': 'Sales',
+							action: function(){
+								$state.go('main.sales');
+							},
+						},
+						{
+							'label': 'Purchasing',
+							action: function(){
+								$state.go('main.purchasing');
+							},
+						},
+						{
+							'label': 'Banking',
+							action: function(){
+								$state.go('main.purchasing');
+							},
+						},
+					]);
+				}
 
-						$scope.menu.pages = [
-							[
-								{
-									'label': 'Admin',
-									action: function(){
-										$state.go('main.admin-settings');
-									},
-								},
-								{
-									'label': 'HRIS',
-									action: function(){
-										$state.go('main.hris-settings');
-									},
-								},
-								{
-									'label': 'Payroll',
-									action: function(){
-										$state.go('main.payroll-settings');
-									},
-								},
-								{
-									'label': 'Profile',
-									action: function(){
-										$state.go('main.profile-settings');
-									}, 
-								},
-								// {
-								// 	'label': 'Timekeeping',
-								// 	action: function(){
-								// 		$state.go('main.timekeeping-settings');
-								// 	},
-								// },
-							]
-						];
-					}
-				});
+				if(settings)
+				{
+					$scope.menu.section.push({
+						'icon': 'mdi-settings',
+						'name': 'Settings',
+					});
+
+					$scope.menu.pages.push([
+						{
+							'label': 'Admin',
+							action: function(){
+								$state.go('main.admin-settings');
+							},
+						},
+						{
+							'label': 'HRIS',
+							action: function(){
+								$state.go('main.hris-settings');
+							},
+						},
+						{
+							'label': 'Payroll',
+							action: function(){
+								$state.go('main.payroll-settings');
+							},
+						},
+						{
+							'label': 'Profile',
+							action: function(){
+								$state.go('main.profile-settings');
+							}, 
+						},
+					]);
+				}
 
 				$scope.user = data;
 

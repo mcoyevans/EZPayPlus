@@ -71,6 +71,19 @@ class AuthServiceProvider extends ServiceProvider
             }
 
             return false;
-        });       
+        });  
+
+        Gate::define('bookkeeping', function($user){
+            $user = User::with('group.modules')->where('id', $user->id)->first();
+
+            foreach ($user->group->modules as $module) {
+                if($module->name == 'Bookkeeping')
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        });     
     }
 }

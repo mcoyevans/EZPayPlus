@@ -254,6 +254,240 @@ app
 					}
 				}
 			})
+			.state('main.business-partners', {
+				url: 'bookkeeping/business-partners',
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/4')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'businessPartnersContentContainerController',
+					},
+					'toolbar@main.business-partners': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'businessPartnersToolbarController',
+					},
+					'left-sidenav@main.business-partners': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'subheader@main.business-partners': {
+						templateUrl: '/app/components/bookkeeping/templates/subheaders/business-partners-subheader.template.html',
+						controller: 'businessPartnersSubheaderController',
+					},
+					'content@main.business-partners':{
+						templateUrl: '/app/components/bookkeeping/templates/content/business-partners-content.template.html',
+					}
+				}
+			})
+			.state('main.manage-customer', {
+				url: 'customer/{customerID}',
+				params: {'customerID':null},
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/2')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'manageCustomerContentContainerController',
+					},
+					'toolbar@main.manage-customer': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+					},
+					'left-sidenav@main.manage-customer': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'content@main.manage-customer':{
+						templateUrl: '/app/components/bookkeeping/templates/content/manage-customer-content.template.html',
+					}
+				}
+			})
+			.state('main.financials', {
+				url: 'bookkeeping/financials',
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/4')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'financialsContentContainerController',
+					},
+					'toolbar@main.financials': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'financialsToolbarController',
+					},
+					'left-sidenav@main.financials': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'subheader@main.financials': {
+						templateUrl: '/app/components/bookkeeping/templates/subheaders/financials-subheader.template.html',
+						controller: 'financialsSubheaderController',
+					},
+					'content@main.financials':{
+						templateUrl: '/app/components/bookkeeping/templates/content/financials-content.template.html',
+					}
+				}
+			})
+			.state('main.inventory', {
+				url: 'bookkeeping/inventory',
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/4')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'inventoryContentContainerController',
+					},
+					'toolbar@main.inventory': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'inventoryToolbarController',
+					},
+					'left-sidenav@main.inventory': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'subheader@main.inventory': {
+						templateUrl: '/app/components/bookkeeping/templates/subheaders/inventory-subheader.template.html',
+						controller: 'inventorySubheaderController',
+					},
+					'content@main.inventory':{
+						templateUrl: '/app/components/bookkeeping/templates/content/inventory-content.template.html',
+					}
+				}
+			})
+			.state('main.sales', {
+				url: 'bookkeeping/sales',
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/4')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'salesContentContainerController',
+					},
+					'toolbar@main.sales': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'salesToolbarController',
+					},
+					'left-sidenav@main.sales': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'subheader@main.sales': {
+						templateUrl: '/app/components/bookkeeping/templates/subheaders/sales-subheader.template.html',
+						controller: 'salesSubheaderController',
+					},
+					'content@main.sales':{
+						templateUrl: '/app/components/bookkeeping/templates/content/sales-content.template.html',
+					}
+				}
+			})
+			.state('main.purchasing', {
+				url: 'bookkeeping/purchasing',
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/4')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'purchasingContentContainerController',
+					},
+					'toolbar@main.purchasing': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'purchasingToolbarController',
+					},
+					'left-sidenav@main.purchasing': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'subheader@main.purchasing': {
+						templateUrl: '/app/components/bookkeeping/templates/subheaders/purchasing-subheader.template.html',
+						controller: 'purchasingSubheaderController',
+					},
+					'content@main.purchasing':{
+						templateUrl: '/app/components/bookkeeping/templates/content/purchasing-content.template.html',
+					}
+				}
+			})
+			.state('main.banking', {
+				url: 'bookkeeping/banking',
+				resolve:{
+					authorization: ['Helper', '$state', function(Helper, $state){
+						Helper.get('/module/4')
+							.success(function(data){
+								return;
+							})
+							.error(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'bankingContentContainerController',
+					},
+					'toolbar@main.banking': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'bankingToolbarController',
+					},
+					'left-sidenav@main.banking': {
+						templateUrl: '/app/shared/templates/sidenavs/main-left-sidenav.template.html',
+					},
+					'subheader@main.banking': {
+						templateUrl: '/app/components/bookkeeping/templates/subheaders/banking-subheader.template.html',
+						controller: 'bankingSubheaderController',
+					},
+					'content@main.banking':{
+						templateUrl: '/app/components/bookkeeping/templates/content/banking-content.template.html',
+					}
+				}
+			})
 			.state('main.admin-settings', {
 				url: 'settings/admin',
 				resolve:{

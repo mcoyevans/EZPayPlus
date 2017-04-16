@@ -1,0 +1,137 @@
+<form name="form.customerForm" layout="row" flex layout-align="center center" layout-padding ng-if="show">
+	<md-content layout="column" flex flex-gt-md="70">
+		<div layout="row" layout-wrap flex>	
+			<!-- Customer Type -->
+	    	<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+	    		<label>Customer Type</label>
+	    		<md-select name="CustomerType" ng-model="customer.type" required ng-disabled="busy">
+	    			<md-option ng-repeat="item in customerTypes" value="{{item}}">{{item}}</md-option>
+	    		</md-select>
+	    		<div ng-messages="form.customerForm.CustomerType.$error" ng-if="form.customerForm.CustomerType.$touched">
+	    			<div ng-message="required">Customer Type is required.</div>
+	    		</div>
+	    	</md-input-container>
+		</div>
+		<div layout="row" layout-wrap flex ng-if="customer.type == 'Individual'">
+			<!-- First Name -->
+			<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+				<label>First Name</label>
+				<input type="text" name="FirstName" ng-model="customer.first_name" required ng-disabled="busy">
+				<div ng-messages="form.customerForm.FirstName.$error" ng-if="form.customerForm.FirstName.$touched">
+					<div ng-message="required">First name is required.</div>
+				</div>
+			</md-input-container>
+			<!-- Middle Name -->
+			<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+				<label>Middle Name</label>
+				<input type="text" name="MiddleName" ng-model="customer.middle_name" ng-disabled="busy">
+			</md-input-container>
+			<!-- Last Name -->
+			<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+				<label>Last Name</label>
+				<input type="text" name="LastName" ng-model="customer.last_name" required ng-disabled="busy">
+				<div ng-messages="form.customerForm.LastName.$error" ng-if="form.customerForm.LastName.$touched">
+					<div ng-message="required">Last name is required.</div>
+				</div>
+			</md-input-container>
+			<!-- Suffix -->
+			<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+				<label>Suffix</label>
+				<input type="text" name="Suffix" ng-model="customer.suffix" ng-disabled="busy">
+			</md-input-container>
+		</div>
+		<div layout="row" layout-wrap flex ng-if="customer.type == 'Corporation'">
+			<!-- Corporation -->
+			<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+				<label>Corporation</label>
+				<input type="text" name="CorporationName" ng-model="customer.corporation_name" required ng-disabled="busy">
+				<div ng-messages="form.customerForm.CorporationName.$error" ng-if="form.customerForm.CorporationName.$touched">
+					<div ng-message="required">Corporation is required.</div>
+				</div>
+			</md-input-container>
+			<!-- Contact Person -->
+			<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+				<label>Contact Person</label>
+				<input type="text" name="ContactPerson" ng-model="customer.contact_person" required ng-disabled="busy">
+				<div ng-messages="form.customerForm.ContactPerson.$error" ng-if="form.customerForm.ContactPerson.$touched">
+					<div ng-message="required">Contact Person is required.</div>
+				</div>
+			</md-input-container>
+		</div>
+		<div layout="row" layout-wrap flex>
+			<!-- TIN -->
+            <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                <label>TIN</label>
+                <input type="text" name="TIN" ng-model="tin" minlength="9" maxlength="9" ng-pattern="/^\d+$/" ng-change="formatTIN(tin)" ng-disabled="busy">
+                <div class="hint" ng-if="!form.customerForm.TIN.$touched && !tin">9 digit number</div>
+                <div class="hint" ng-if="form.customerForm.TIN.$valid">{{customer.tin}}</div>
+                <div ng-messages="form.customerForm.TIN.$error" ng-if="form.customerForm.TIN.$touched">
+                    <div ng-message-exp="['pattern', 'minlength', 'maxlength']">TIN is 9 characters long, and must be numeric.</div>
+                </div>
+            </md-input-container>
+		</div>
+		<div layout="row" layout-wrap flex>
+			<!-- Street Address -->
+            <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                <label>Street Address</label>
+                <input type="text" name="StreetAddress" ng-model="customer.street_address">
+            </md-input-container>
+		</div>
+		<div layout="row" layout-wrap flex>
+            <!-- City -->
+            <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                <label>City</label>
+                <input type="text" name="City" required ng-model="customer.city" ng-blur="checkCity()" ng-disabled="busy">
+                <div class="pattern" ng-if="!cities.length && showError">No cities or municipalities matching "{{customer.city}}" were found.</div>
+                <div ng-messages="form.customerForm.City.$error" ng-if="form.customerForm.City.$touched">
+                    <div ng-message="required">City is required.</div>
+                </div>
+            </md-input-container>
+            <!-- Province -->
+            <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                <label>Province</label>
+                <md-select name="Province" ng-model="customer.province_id" md-on-open="fetchProvinces()" ng-change="checkProvince()" required ng-disabled="!cities.length" ng-disabled="busy">
+                    <md-option ng-value="province.id" ng-repeat="province in provinces" ng-if="province.cities.length">
+                        {{province.name}}
+                    </md-option>
+                </md-select>
+                <div class="pattern" ng-if="noMatches">No cities or municipalities matching "{{customer.city}}" were found in this province.</div>
+                <div ng-messages="form.customerForm.Province.$error" ng-if="form.customerForm.Province.$touched">
+                    <div ng-message="required">Province is required.</div>
+                </div>
+            </md-input-container>
+            <!-- Postal Code -->
+            <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                <label>Postal Code</label>
+                <input type="number" name="PostalCode" ng-model="customer.postal_code" ng-disabled="busy">
+            </md-input-container>
+        </div>
+        <div layout="row" layout-wrap flex>
+        	<md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+        		<label>Email</label>
+        		<input type="email" name="Email" ng-model="customer.email" ng-disabled="busy" minlength="10" maxlength="100" ng-pattern="/^.+@.+\..+$/">
+        		<div ng-messages="form.customerForm.Email.$error" ng-if="form.customerForm.Email.$touched">
+        			<div ng-message-exp="['minlength', 'maxlength', 'pattern']">
+		              Email must be between 10 and 100 characters long and look like an e-mail address.
+		            </div>
+        		</div>
+        	</md-input-container>
+        	<!-- Mobile Number -->
+            <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+                <label>Mobile Number</label>
+                <input type="text" name="MobileNumber" ng-model="customer.mobile_number" required ng-disabled="busy" minlength="11" maxlength="11" ng-pattern="/^\d+$/">
+                <div class="hint" ng-if="form.customerForm.MobileNumber.$untouched">11 digit number</div>
+                <div ng-messages="form.customerForm.MobileNumber.$error" ng-if="form.customerForm.MobileNumber.$touched">
+                    <div ng-message-exp="['required', 'minlength', 'maxlength', 'pattern']">
+				        Mobile phone number is required, numeric, and must be 11 characters long.
+				    </div>
+                </div>
+            </md-input-container>
+            <!-- Phone Number -->
+            <md-input-container class="md-block" flex-xs="100" flex-sm="100" flex-gt-sm>
+            	<label>Phone Number</label>
+            	<input type="text" name="PhoneNumber" ng-model="customer.telephone_number" ng-disabled="busy">
+            </md-input-container>
+        </div>
+	</md-content>
+</form>

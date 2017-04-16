@@ -1,5 +1,5 @@
 app
-	.controller('mainViewController', ['$scope', '$state', '$mdDialog', '$mdSidenav', '$mdToast', 'Helper', 'FileUploader', function($scope, $state, $mdDialog, $mdSidenav, $mdToast, Helper, FileUploader){
+	.controller('mainViewController', ['$scope', '$filter', '$state', '$mdDialog', '$mdSidenav', '$mdToast', 'Helper', 'FileUploader', function($scope, $filter, $state, $mdDialog, $mdSidenav, $mdToast, Helper, FileUploader){
 		$scope.toggleSidenav = function(menuID){
 			$mdSidenav(menuID).toggle();
 		}
@@ -13,6 +13,9 @@ app
 				'label': 'Dashboard',
 			},
 		];
+
+		$scope.menu.section = [];
+		$scope.menu.pages = [];
 
 		// set section as active
 		$scope.setActive = function(index){
@@ -77,92 +80,110 @@ app
 
 		Helper.post('/user/check')
 			.success(function(data){
-				angular.forEach(data.group.modules, function(module){
-					if(module.name == 'HRIS')
-					{
-						var hris = {
-							'state': 'main.hris',
-							'icon': 'mdi-account-multiple',
-							'label': 'HRIS',
-						}
+				var hris = $filter('filter')(data.group.modules, {name: 'HRIS'}, true);
+				var payroll = $filter('filter')(data.group.modules, {name: 'Payroll'}, true);
+				var bookkeeping = $filter('filter')(data.group.modules, {name: 'Bookkeeping'}, true);
+				var settings = $filter('filter')(data.group.modules, {name: 'Settings'}, true);
+				
+				if(hris)
+				{
+					$scope.menu.static.push({
+						'state': 'main.hris',
+						'icon': 'mdi-account-multiple',
+						'label': 'HRIS'
+					});
+				}
 
-						$scope.menu.static.push(hris);
-					}
-					else if(module.name == 'Payroll')
-					{
-						var payroll = {
-							'state': 'main.payroll',
-							'icon': 'mdi-currency-usd',
-							'label': 'Payroll',
-						}
+				if(payroll)
+				{
+					$scope.menu.static.push({
+						'state': 'main.payroll',
+						'icon': 'mdi-currency-usd',
+						'label': 'Payroll'
+					});
+				}
 
-						$scope.menu.static.push(payroll);
-					}
-					else if(module.name == 'Bookkeeping')
-					{
-						var bookkeeping = {
-							'state': 'main.bookkeeping',
-							'icon': 'mdi-book-multiple-variant',
-							'label': 'Bookkeeping',
-						}
+				if(bookkeeping)
+				{
+					$scope.menu.section.push({
+						'icon': 'mdi-book-multiple-variant',
+						'name': 'Bookkeeping',
+					});
 
-						$scope.menu.static.push(bookkeeping);
-					}
-					// else if(module.name == 'Timekeeping')
-					// {
-					// 	var payroll = {
-					// 		'state': 'main.timekeeping',
-					// 		'icon': 'mdi-calendar-clock',
-					// 		'label': 'Timekeeping',
-					// 	}
-
-					// 	$scope.menu.static.push(payroll);
-					// }
-					else if(module.name == 'Settings')
-					{
-						$scope.menu.section = [
-							{
-								'name':'Settings',
-								'icon':'mdi-settings',
+					$scope.menu.pages.push([
+						{
+							'label': 'Business Partners',
+							action: function(){
+								$state.go('main.business-partners');
 							},
-						];
+						},
+						{
+							'label': 'Financials',
+							action: function(){
+								$state.go('main.financials');
+							},
+						},
+						{
+							'label': 'Inventory',
+							action: function(){
+								$state.go('main.inventory');
+							},
+						},
+						{
+							'label': 'Sales',
+							action: function(){
+								$state.go('main.sales');
+							},
+						},
+						{
+							'label': 'Purchasing',
+							action: function(){
+								$state.go('main.purchasing');
+							},
+						},
+						{
+							'label': 'Banking',
+							action: function(){
+								$state.go('main.purchasing');
+							},
+						},
+					]);
+				}
 
-						$scope.menu.pages = [
-							[
-								{
-									'label': 'Admin',
-									action: function(){
-										$state.go('main.admin-settings');
-									},
-								},
-								{
-									'label': 'HRIS',
-									action: function(){
-										$state.go('main.hris-settings');
-									},
-								},
-								{
-									'label': 'Payroll',
-									action: function(){
-										$state.go('main.payroll-settings');
-									},
-								},
-								{
-									'label': 'Profile',
-									action: function(){
-										$state.go('main.profile-settings');
-									}, 
-								},
-								// {
-								// 	'label': 'Timekeeping',
-								// 	action: function(){
-								// 		$state.go('main.timekeeping-settings');
-								// 	},
-								// },
-							]
-						];
-					}
-				});
+				if(settings)
+				{
+					$scope.menu.section.push({
+						'icon': 'mdi-settings',
+						'name': 'Settings',
+					});
+
+					$scope.menu.pages.push([
+						{
+							'label': 'Admin',
+							action: function(){
+								$state.go('main.admin-settings');
+							},
+						},
+						{
+							'label': 'HRIS',
+							action: function(){
+								$state.go('main.hris-settings');
+							},
+						},
+						{
+							'label': 'Payroll',
+							action: function(){
+								$state.go('main.payroll-settings');
+							},
+						},
+						{
+							'label': 'Profile',
+							action: function(){
+								$state.go('main.profile-settings');
+							}, 
+						},
+					]);
+				}
 
 				$scope.user = data;
 
