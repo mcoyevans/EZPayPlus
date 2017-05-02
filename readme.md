@@ -1,1 +1,1 @@
-HRIS, Timekeeping, and Payroll System
+HRIS, Payroll and Bookkeeping done the easy way.
